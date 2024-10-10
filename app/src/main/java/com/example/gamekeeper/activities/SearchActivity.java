@@ -19,7 +19,9 @@ import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SearchActivity extends AppCompatActivity {
     private DatabaseHelper dB;
@@ -71,21 +73,29 @@ public class SearchActivity extends AppCompatActivity {
                 Log.d("COLUMN_NAME", name); // Imprimir los nombres de las columnas
             }
 
+            Set<String> uniqueResults = new HashSet<>(); // Usar un Set para evitar duplicados
+
             if (cursor.moveToFirst()) {
                 do {
                     int columnIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NAME);
                     if (columnIndex != -1) { // Solo proceder si el índice es válido
                         String name = cursor.getString(columnIndex);
-                        ListElement element = new ListElement(name);
-                        searchResults.add(element);
+                        uniqueResults.add(name); // Agregar solo nombres únicos
                     } else {
                         Log.e("SEARCH_ACTIVITY", "Columna no encontrada: " + DatabaseHelper.COLUMN_BOARDGAME_NAME);
                     }
                 } while (cursor.moveToNext());
             }
             cursor.close();
+
+            // Convertir el Set a una lista y añadir a searchResults
+            for (String uniqueName : uniqueResults) {
+                ListElement element = new ListElement(uniqueName);
+                searchResults.add(element);
+            }
         }
 
         listAdapter.notifyDataSetChanged();
     }
+
 }

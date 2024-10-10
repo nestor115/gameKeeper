@@ -131,6 +131,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     public boolean addBoardgame(String name, byte[] photo, String description, int yearPublished, String numberOfPlayers, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        // Verificar si el juego ya existe
+        Cursor cursor = db.query(TABLE_BOARDGAME, new String[]{COLUMN_BOARDGAME_NAME}, COLUMN_BOARDGAME_NAME + "=?", new String[]{name}, null, null, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.close(); // Cierra el cursor si el juego ya existe
+            return false; // El juego ya existe, no se inserta
+        }
+
         ContentValues values = new ContentValues();
         values.put(COLUMN_BOARDGAME_NAME, name);
         values.put(COLUMN_BOARDGAME_PHOTO, photo);
@@ -138,9 +146,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_BOARDGAME_YEAR_PUBLISHED, yearPublished);
         values.put(COLUMN_BOARDGAME_NUMBER_OF_PLAYERS, numberOfPlayers);
         values.put(COLUMN_BOARDGAME_TIME, time);
+
         long result = db.insert(TABLE_BOARDGAME, null, values);
+        cursor.close(); // Asegúrate de cerrar el cursor aquí también
         db.close();
-        return result != -1;
+        return result != -1; // Devuelve true si la inserción fue exitosa
     }
 
     public boolean addBoardgameGenre(int boardgameId, int genreId) {
