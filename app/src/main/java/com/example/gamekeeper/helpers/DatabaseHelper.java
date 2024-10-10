@@ -177,6 +177,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "JOIN " + TABLE_USER_BOARDGAME + " ub ON bg.id = ub.boardgame_id " +
                 "WHERE ub.user_id = ?", new String[]{String.valueOf(userId)});
     }
+    public Cursor searchBoardgamesByName(String query) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT * FROM " + TABLE_BOARDGAME + " WHERE " + COLUMN_BOARDGAME_NAME + " LIKE ?";
+        String[] selectionArgs = new String[]{"%" + query + "%"};
+        return db.rawQuery(sql, selectionArgs);
+    }
 
     
 }
