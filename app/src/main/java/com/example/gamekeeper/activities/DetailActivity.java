@@ -84,11 +84,40 @@ public class DetailActivity extends AppCompatActivity {
                     tvPlayers.setText(players);
                     tvTime.setText(time);
 
-                    // Asigna el género manualmente
-                    tvGenre.setText("Estrategia");
+                    // Asigna el género manualmente si no existe en la base de datos
+                    String genre = getBoardGameGenre(id);
+                    if (genre == null || genre.isEmpty()) {
+                        tvGenre.setText("Estrategia");
+                    } else {
+                        tvGenre.setText(genre);
+                    }
                 }
             }
             cursor.close();
         }
     }
+
+    private String getBoardGameGenre(int boardGameId) {
+        SQLiteDatabase db = dB.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT g." + DatabaseHelper.COLUMN_GENRE_NAME +
+                " FROM " + DatabaseHelper.TABLE_GENRE + " g " +
+                " JOIN " + DatabaseHelper.TABLE_BOARDGAME_GENRE + " bg " +
+                " ON g." + DatabaseHelper.COLUMN_GENRE_ID + " = bg." + DatabaseHelper.COLUMN_G_ID +
+                " WHERE bg." + DatabaseHelper.COLUMN_BG_ID + " = ?", new String[]{String.valueOf(boardGameId)});
+
+        String genre = null;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int genreIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_GENRE_NAME);
+                if (genreIndex != -1) {
+                    genre = cursor.getString(genreIndex);
+                } else {
+                    Log.e("DetailActivity", "Column index not found for genre");
+                }
+            }
+            cursor.close();
+        }
+        return genre;
+    }
+
 }

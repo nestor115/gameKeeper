@@ -44,8 +44,8 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(int position) {
                 Intent intent = new Intent(SearchActivity.this, DetailActivity.class);
-                // Puedes pasar el ID del juego seleccionado aquí
-                intent.putExtra("BOARDGAME_ID", 1);
+                // Pasa el ID del juego seleccionado
+                intent.putExtra("BOARDGAME_ID", searchResults.get(position).getId());
                 startActivity(intent);
             }
         });
