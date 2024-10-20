@@ -4,6 +4,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.example.gamekeeper.models.BoardGame;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "gamekeeper.db";
@@ -109,17 +116,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public boolean checkUser(String email, String password){
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(TABLE_USERS,
-                new String[]{COLUMN_ID},
-                COLUMN_EMAIL + "=? AND " + COLUMN_PASSWORD + "=?",
-                new String[]{email, password}, null, null, null);
-
-                boolean exists = (cursor.getCount() > 0);
-                cursor.close();
-                db.close();
-                return exists;
+    public int checkUser(String email, String password) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT id FROM users WHERE email = ? AND password = ?", new String[]{email, password});
+        if (cursor.moveToFirst()) {
+            int userId = cursor.getInt(0); // Suponiendo que la primera columna es el ID
+            cursor.close();
+            return userId;
+        }
+        cursor.close();
+        return -1; // Indica que el usuario no fue encontrado
     }
     public boolean addGenre(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -179,13 +185,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return result != -1;
     }
+    public boolean removeUserBoardgame(int userId, int boardgameId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsAffected = db.delete(TABLE_USER_BOARDGAME,
+                COLUMN_UB_USER_ID + " = ? AND " + COLUMN_UB_BOARDGAME_ID + " = ?",
+                new String[]{String.valueOf(userId), String.valueOf(boardgameId)});
+        db.close();
+        return rowsAffected > 0; // Retorna true si se eliminó al menos una fila
+    }
+
 
     // Método para obtener todos los juegos de mesa de un usuario
-    public Cursor getUserBoardgames(int userId) {
+    public List<BoardGame> getUserBoardgames(int userId) {
+        List<BoardGame> boardgames = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT bg.* FROM " + TABLE_BOARDGAME + " bg " +
-                "JOIN " + TABLE_USER_BOARDGAME + " ub ON bg.id = ub.boardgame_id " +
+        Cursor cursor = db.rawQuery("SELECT b.* FROM " + TABLE_BOARDGAME + " b " +
+                "INNER JOIN " + TABLE_USER_BOARDGAME + " ub ON b.id = ub.boardgame_id " +
                 "WHERE ub.user_id = ?", new String[]{String.valueOf(userId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                try {
+                    // Usa getColumnIndexOrThrow para obtener las columnas
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_ID));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NAME));
+                    String description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_DESCRIPTION));
+                    int yearPublished = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_YEAR_PUBLISHED));
+                    String numberOfPlayers = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NUMBER_OF_PLAYERS));
+                    String time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_TIME));
+
+                    // Crea un objeto Boardgame con los datos obtenidos
+                    BoardGame boardgame = new BoardGame(id, name, null, description, yearPublished, numberOfPlayers, time, null);
+                    boardgames.add(boardgame);
+                } catch (IllegalArgumentException e) {
+                    Log.e("DBError", "Una de las columnas no existe: " + e.getMessage());
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return boardgames;
     }
     public Cursor searchBoardgamesByName(String query) {
         SQLiteDatabase db = this.getReadableDatabase();

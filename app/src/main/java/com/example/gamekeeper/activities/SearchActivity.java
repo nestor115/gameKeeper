@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +32,9 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        // Inicializa el botón aquí
+        Button btnBack = findViewById(R.id.btn_Back); // Inicializa el botón
 
         dB = new DatabaseHelper(this);
         editTextSearch = findViewById(R.id.et_BoardgamesSearch);
@@ -64,6 +69,17 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 // No es necesario implementar
+            }
+        });
+
+        // Establece el listener para el botón de retroceso
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Llama a HomeActivity
+                Intent intent = new Intent(SearchActivity.this, HomeActivity.class);
+                startActivity(intent);
+                finish(); // Opcional: Llama finish() si no deseas volver a esta actividad
             }
         });
     }

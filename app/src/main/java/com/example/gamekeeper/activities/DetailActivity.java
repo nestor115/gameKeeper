@@ -1,11 +1,14 @@
 package com.example.gamekeeper.activities;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +23,7 @@ public class DetailActivity extends AppCompatActivity {
     private ImageView ivGame;
     private DatabaseHelper dB;
 
+    private Button btnAddBoardgame;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,11 +36,35 @@ public class DetailActivity extends AppCompatActivity {
         tvTime = findViewById(R.id.tv_time);
         tvGenre = findViewById(R.id.tv_genre);
         ivGame = findViewById(R.id.iv_Game);
+        btnAddBoardgame = findViewById(R.id.btn_AddBoardgame);
+
 
         dB = new DatabaseHelper(this);
 
         int boardGameId = getIntent().getIntExtra("BOARDGAME_ID", 1); // Obtén el ID del juego, por defecto 1
         loadBoardGameDetails(boardGameId);
+
+        btnAddBoardgame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Obtener el ID del usuario actual
+                SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+                int userId = sharedPreferences.getInt("user_id", -1); // -1 es el valor por defecto si no se encuentra
+
+
+                if (userId != -1) {
+                    boolean added = dB.addUserBoardgame(userId, boardGameId);
+                    if (added) {
+                        Toast.makeText(DetailActivity.this, "Juego añadido a tu colección", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(DetailActivity.this, "Error al añadir el juego a tu colección", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(DetailActivity.this, "Usuario no identificado", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
     private void loadBoardGameDetails(int id) {

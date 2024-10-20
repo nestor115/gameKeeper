@@ -1,6 +1,7 @@
 package com.example.gamekeeper.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
@@ -10,14 +11,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
+import com.example.gamekeeper.adapters.BoardGameAdapter;
 import com.example.gamekeeper.helpers.DatabaseHelper;
+import com.example.gamekeeper.models.BoardGame;
+
+import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
     private DatabaseHelper dB;
     private Button buttonGoSearch;
+    private RecyclerView recyclerView;
+    private int currentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +34,20 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         dB = new DatabaseHelper(this);
+        // Obtener el ID del usuario actual desde SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        int currentUserId = sharedPreferences.getInt("user_id", -1); // -1 es el valor por defecto si no se encuentra
+
+// Comprobar que el ID del usuario es válido
+        if (currentUserId != -1) {
+            // Obtener los juegos del usuario
+            List<BoardGame> userBoardgames = dB.getUserBoardgames(currentUserId);
+
+            // Mostrar los juegos en la vista
+            displayBoardgames(userBoardgames);
+        } else {
+            Toast.makeText(this, "No se encontró el ID del usuario.", Toast.LENGTH_SHORT).show();
+        }
 
         insertExampleBoardgames();
 
@@ -53,17 +76,17 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    private void displayBoardgames(List<BoardGame> boardgames) {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        int currentUserId = sharedPreferences.getInt("user_id", -1); // -1 es el valor por defecto si no se encuentra
+
+        recyclerView = findViewById(R.id.recyclerViewBoardgames); // Asegúrate de que este ID exista en tu layout
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        BoardGameAdapter adapter = new BoardGameAdapter(boardgames, dB, currentUserId); // Asegúrate de crear un adaptador
+        recyclerView.setAdapter(adapter);
+    }
 }
-// Obtener el ID del usuario actual
-//  int currentUserId = dB.getUserId(currentUserEmail);
 
-// Obtener IDs de los juegos de mesa insertados
-//  int explodingKittensId = dbHelper.getBoardgameIdByName("Exploding Kittens");
-//   int sushiGoId = dbHelper.getBoardgameIdByName("Sushi Go!");
 
-// Asignar juegos de mesa al usuario actual
-//   dbHelper.addUserBoardgame(currentUserId, explodingKittensId);
-//  dbHelper.addUserBoardgame(currentUserId, sushiGoId);
-// }
 
-//}
