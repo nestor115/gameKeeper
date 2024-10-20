@@ -16,21 +16,21 @@
         tools:layout_editor_absoluteY="1dp">
 
         <TextView
-            android:id="@+id/tvLogin"
+            android:id="@+id/tv_Login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Login"
             android:textSize="34sp" />
 
         <TextView
-            android:id="@+id/tvEmailLabelLogin"
+            android:id="@+id/tv_EmailLabelLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Email"
             android:textSize="24sp" />
 
         <EditText
-            android:id="@+id/etEmailInputLogin"
+            android:id="@+id/et_EmailInputLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -38,14 +38,14 @@
             android:inputType="textEmailAddress" />
 
         <TextView
-            android:id="@+id/tvPasswordLabelLogin"
+            android:id="@+id/tv_PasswordLabelLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Contraseña"
             android:textSize="24sp" />
 
         <EditText
-            android:id="@+id/etPasswordInputLogin"
+            android:id="@+id/et_PasswordInputLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -53,7 +53,7 @@
             android:inputType="textPassword" />
 
         <Button
-            android:id="@+id/buttonLogin"
+            android:id="@+id/btn_Login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#59DF3B"

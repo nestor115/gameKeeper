@@ -193,6 +193,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] selectionArgs = new String[]{"%" + query + "%"};
         return db.rawQuery(sql, selectionArgs);
     }
+    public Cursor getBoardgameDetailsById(int boardgameId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.query(TABLE_BOARDGAME, null, COLUMN_ID + "=?", new String[]{String.valueOf(boardgameId)}, null, null, null);
+    }
+    public Cursor getBoardgameById(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_BOARDGAME + " WHERE " + COLUMN_BOARDGAME_ID + " = ?", new String[]{String.valueOf(id)});
+    }
 
-    
+
+
 }

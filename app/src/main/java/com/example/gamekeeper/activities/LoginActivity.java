@@ -6,11 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
@@ -27,9 +23,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        etEmailInputLogin = findViewById(R.id.etEmailInputLogin);
-        etPasswordInputLogin = findViewById(R.id.etPasswordInputLogin);
-        buttonLogin= findViewById(R.id.buttonLogin);
+        etEmailInputLogin = findViewById(R.id.et_EmailInputLogin);
+        etPasswordInputLogin = findViewById(R.id.et_PasswordInputLogin);
+        buttonLogin= findViewById(R.id.btn_Login);
         dB = new DatabaseHelper(this);
 
         buttonLogin.setOnClickListener(v-> {

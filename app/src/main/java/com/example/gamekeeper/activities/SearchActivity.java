@@ -1,5 +1,6 @@
 package com.example.gamekeeper.activities;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
@@ -7,21 +8,16 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
+import com.example.gamekeeper.adapters.ListAdapter;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class SearchActivity extends AppCompatActivity {
     private DatabaseHelper dB;
@@ -36,13 +32,23 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         dB = new DatabaseHelper(this);
-        editTextSearch = findViewById(R.id.editTextBoardGames);
+        editTextSearch = findViewById(R.id.et_BoardgamesSearch);
         recyclerViewSearchResults = findViewById(R.id.listRecyclerView);
 
         searchResults = new ArrayList<>();
         listAdapter = new ListAdapter(searchResults, this);
         recyclerViewSearchResults.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewSearchResults.setAdapter(listAdapter);
+
+        listAdapter.setOnItemClickListener(new ListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Intent intent = new Intent(SearchActivity.this, DetailActivity.class);
+                // Puedes pasar el ID del juego seleccionado aquí
+                intent.putExtra("BOARDGAME_ID", 1);
+                startActivity(intent);
+            }
+        });
 
         editTextSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -73,29 +79,28 @@ public class SearchActivity extends AppCompatActivity {
                 Log.d("COLUMN_NAME", name); // Imprimir los nombres de las columnas
             }
 
-            Set<String> uniqueResults = new HashSet<>(); // Usar un Set para evitar duplicados
-
             if (cursor.moveToFirst()) {
                 do {
-                    int columnIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NAME);
-                    if (columnIndex != -1) { // Solo proceder si el índice es válido
-                        String name = cursor.getString(columnIndex);
-                        uniqueResults.add(name); // Agregar solo nombres únicos
+                    // Obtener los índices de las columnas necesarias
+                    int columnIndexName = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NAME);
+                    int columnIndexId = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_ID); // Asume que este es el nombre de la columna del ID
+
+                    if (columnIndexName != -1 && columnIndexId != -1) {
+                        // Obtener el nombre y el ID del juego
+                        String name = cursor.getString(columnIndexName);
+                        int id = cursor.getInt(columnIndexId);
+
+                        // Crear un nuevo ListElement con el nombre y el ID
+                        ListElement element = new ListElement(name, id);
+                        searchResults.add(element);
                     } else {
-                        Log.e("SEARCH_ACTIVITY", "Columna no encontrada: " + DatabaseHelper.COLUMN_BOARDGAME_NAME);
+                        Log.e("SEARCH_ACTIVITY", "Columnas no encontradas");
                     }
                 } while (cursor.moveToNext());
             }
             cursor.close();
-
-            // Convertir el Set a una lista y añadir a searchResults
-            for (String uniqueName : uniqueResults) {
-                ListElement element = new ListElement(uniqueName);
-                searchResults.add(element);
-            }
         }
 
         listAdapter.notifyDataSetChanged();
     }
-
 }

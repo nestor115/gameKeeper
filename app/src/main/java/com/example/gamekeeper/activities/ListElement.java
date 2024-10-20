@@ -1,22 +1,23 @@
 package com.example.gamekeeper.activities;
 
 public class ListElement {
+    private String name; // Nombre del juego
+    private int id; // ID del juego
 
-
-    public String name;
-
-    public ListElement(String name) {
+    // Constructor
+    public ListElement(String name, int id) {
         this.name = name;
+        this.id = id;
     }
 
-
-
+    // Método para obtener el nombre
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    // Método para obtener el ID
+    public int getId() {
+        return id;
     }
 }
 
