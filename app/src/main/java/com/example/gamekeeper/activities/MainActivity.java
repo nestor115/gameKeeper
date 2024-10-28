@@ -24,22 +24,14 @@ public class MainActivity extends AppCompatActivity {
         buttonGoLogin =findViewById(R.id.buttonGoLogin);
 
         buttonGoRegister.setOnClickListener(v -> {
-
-
-
-                        Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
-                        startActivity(intent);
-                        finish();
-
-
+            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+            startActivity(intent);
+            finish();
         });
         buttonGoLogin.setOnClickListener(v -> {
-
-
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
-
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         });
 
     }

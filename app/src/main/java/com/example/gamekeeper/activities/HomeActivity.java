@@ -34,16 +34,16 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         dB = new DatabaseHelper(this);
-        // Obtener el ID del usuario actual desde SharedPreferences
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        int currentUserId = sharedPreferences.getInt("user_id", -1); // -1 es el valor por defecto si no se encuentra
 
-// Comprobar que el ID del usuario es válido
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        int currentUserId = sharedPreferences.getInt("user_id", -1);
+
+
         if (currentUserId != -1) {
-            // Obtener los juegos del usuario
+
             List<BoardGame> userBoardgames = dB.getUserBoardgames(currentUserId);
 
-            // Mostrar los juegos en la vista
+
             displayBoardgames(userBoardgames);
         } else {
             Toast.makeText(this, "No se encontró el ID del usuario.", Toast.LENGTH_SHORT).show();
@@ -78,12 +78,12 @@ public class HomeActivity extends AppCompatActivity {
 
     private void displayBoardgames(List<BoardGame> boardgames) {
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        int currentUserId = sharedPreferences.getInt("user_id", -1); // -1 es el valor por defecto si no se encuentra
+        int currentUserId = sharedPreferences.getInt("user_id", -1);
 
-        recyclerView = findViewById(R.id.recyclerViewBoardgames); // Asegúrate de que este ID exista en tu layout
+        recyclerView = findViewById(R.id.recyclerViewBoardgames);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        BoardGameAdapter adapter = new BoardGameAdapter(boardgames, dB, currentUserId); // Asegúrate de crear un adaptador
+        BoardGameAdapter adapter = new BoardGameAdapter(boardgames, dB, currentUserId);
         recyclerView.setAdapter(adapter);
     }
 }

@@ -21,13 +21,13 @@ import java.util.List;
 public class BoardGameAdapter extends RecyclerView.Adapter<BoardGameAdapter.BoardGameViewHolder> {
 
     private final List<BoardGame> boardGames;
-    private final DatabaseHelper dbHelper; // Añadir una referencia a DatabaseHelper
-    private final int userId; // Añadir el userId
+    private final DatabaseHelper dbHelper;
+    private final int userId;
     // Constructor
     public BoardGameAdapter(List<BoardGame> boardGames, DatabaseHelper dbHelper, int userId) {
         this.boardGames = boardGames;
-        this.dbHelper = dbHelper; // Inicializar DatabaseHelper
-        this.userId = userId; // Inicializar userId
+        this.dbHelper = dbHelper;
+        this.userId = userId;
     }
 
     @NonNull
@@ -46,14 +46,14 @@ public class BoardGameAdapter extends RecyclerView.Adapter<BoardGameAdapter.Boar
         holder.deleteButton.setOnClickListener(v -> {
             Log.d("BoardGameAdapter", "Removing boardgame with ID: " + boardGame.getId() + " for user ID: " + userId);
 
-            boolean success = dbHelper.removeUserBoardgame(userId, boardGame.getId()); // Usar el userId
+            boolean success = dbHelper.removeUserBoardgame(userId, boardGame.getId());
             if (success) {
                 boardGames.remove(position);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, boardGames.size());
-                Toast.makeText(holder.itemView.getContext(), "Juego eliminado.", Toast.LENGTH_SHORT).show(); // Mensaje de éxito
+                Toast.makeText(holder.itemView.getContext(), "Juego eliminado.", Toast.LENGTH_SHORT).show();
             } else {
-                // Manejo de errores: muestra un mensaje al usuario si la eliminación falla
+
                 Toast.makeText(holder.itemView.getContext(), "Error al eliminar el juego.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -67,7 +67,7 @@ public class BoardGameAdapter extends RecyclerView.Adapter<BoardGameAdapter.Boar
         return boardGames.size();
     }
 
-    // ViewHolder interno para representar cada elemento del RecyclerView
+
     public static class BoardGameViewHolder extends RecyclerView.ViewHolder {
         private final ImageView imageView;
         private final TextView titleTextView;
@@ -81,15 +81,15 @@ public class BoardGameAdapter extends RecyclerView.Adapter<BoardGameAdapter.Boar
         }
 
         public void bind(BoardGame boardGame) {
-            titleTextView.setText(boardGame.getName()); // Asegúrate de que `getTitle()` sea correcto
+            titleTextView.setText(boardGame.getName());
 
             // Cargar la imagen
-            byte[] photo = boardGame.getPhoto(); // Asegúrate de que el método getPhoto() exista en tu modelo
+            byte[] photo = boardGame.getPhoto();
             if (photo != null && photo.length > 0) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length);
                 imageView.setImageBitmap(bitmap);
             } else {
-                // Cargar imagen por defecto
+
                 imageView.setImageResource(R.drawable.ic_launcher_foreground);
             }
         }

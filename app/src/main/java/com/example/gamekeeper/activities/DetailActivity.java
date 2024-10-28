@@ -41,15 +41,14 @@ public class DetailActivity extends AppCompatActivity {
 
         dB = new DatabaseHelper(this);
 
-        int boardGameId = getIntent().getIntExtra("BOARDGAME_ID", 1); // Obtén el ID del juego, por defecto 1
+        int boardGameId = getIntent().getIntExtra("BOARDGAME_ID", 1); 
         loadBoardGameDetails(boardGameId);
 
         btnAddBoardgame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Obtener el ID del usuario actual
                 SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-                int userId = sharedPreferences.getInt("user_id", -1); // -1 es el valor por defecto si no se encuentra
+                int userId = sharedPreferences.getInt("user_id", -1);
 
 
                 if (userId != -1) {
@@ -73,13 +72,11 @@ public class DetailActivity extends AppCompatActivity {
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                // Imprime los nombres de las columnas
                 String[] columnNames = cursor.getColumnNames();
                 for (String columnName : columnNames) {
                     Log.d("DetailActivity", "Column: " + columnName);
                 }
 
-                // Verifica que los nombres de las columnas sean correctos
                 int titleIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NAME);
                 int photoIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_PHOTO);
                 int descriptionIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_DESCRIPTION);
@@ -103,7 +100,6 @@ public class DetailActivity extends AppCompatActivity {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length);
                         ivGame.setImageBitmap(bitmap);
                     } else {
-                        // Carga la imagen desde los recursos
                         ivGame.setImageResource(R.drawable.ic_launcher_foreground);
                     }
 
@@ -112,7 +108,6 @@ public class DetailActivity extends AppCompatActivity {
                     tvPlayers.setText(players);
                     tvTime.setText(time);
 
-                    // Asigna el género manualmente si no existe en la base de datos
                     String genre = getBoardGameGenre(id);
                     if (genre == null || genre.isEmpty()) {
                         tvGenre.setText("Estrategia");

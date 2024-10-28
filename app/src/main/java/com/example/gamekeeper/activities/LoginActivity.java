@@ -34,16 +34,15 @@ public class LoginActivity extends AppCompatActivity {
             String email = etEmailInputLogin.getText().toString().trim();
             String password = etPasswordInputLogin.getText().toString().trim();
 
-            // Cambia este método para que devuelva el ID del usuario si es correcto
             int userId = dB.checkUser(email, password);
-            if (userId != -1) { // Verifica si el ID del usuario es válido
-                // Guarda el ID del usuario en SharedPreferences
+            if (userId != -1) {
+
                 SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putInt("user_id", userId);
                 editor.apply();
 
-                // Navega a la siguiente actividad
+
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();

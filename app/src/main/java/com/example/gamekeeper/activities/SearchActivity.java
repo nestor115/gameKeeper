@@ -33,8 +33,8 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        // Inicializa el botón aquí
-        Button btnBack = findViewById(R.id.btn_Back); // Inicializa el botón
+
+        Button btnBack = findViewById(R.id.btn_Back);
 
         dB = new DatabaseHelper(this);
         editTextSearch = findViewById(R.id.et_BoardgamesSearch);
@@ -49,7 +49,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(int position) {
                 Intent intent = new Intent(SearchActivity.this, DetailActivity.class);
-                // Pasa el ID del juego seleccionado
+
                 intent.putExtra("BOARDGAME_ID", searchResults.get(position).getId());
                 startActivity(intent);
             }
@@ -58,7 +58,7 @@ public class SearchActivity extends AppCompatActivity {
         editTextSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // No es necesario implementar
+
             }
 
             @Override
@@ -68,45 +68,43 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                // No es necesario implementar
+
             }
         });
 
-        // Establece el listener para el botón de retroceso
+        performSearch("");
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Llama a HomeActivity
+
                 Intent intent = new Intent(SearchActivity.this, HomeActivity.class);
                 startActivity(intent);
-                finish(); // Opcional: Llama finish() si no deseas volver a esta actividad
+                finish();
             }
         });
     }
 
     private void performSearch(String query) {
-        Cursor cursor = dB.searchBoardgamesByName(query);
+        Cursor cursor;
+
+
+        if (query.isEmpty()) {
+            cursor = dB.getAllBoardgames();
+        } else {
+            cursor = dB.searchBoardgamesByName(query);
+        }
+
         searchResults.clear();
 
         if (cursor != null) {
-            // Imprime los nombres de las columnas
-            String[] columnNames = cursor.getColumnNames();
-            for (String name : columnNames) {
-                Log.d("COLUMN_NAME", name); // Imprimir los nombres de las columnas
-            }
-
             if (cursor.moveToFirst()) {
                 do {
-                    // Obtener los índices de las columnas necesarias
                     int columnIndexName = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NAME);
-                    int columnIndexId = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_ID); // Asume que este es el nombre de la columna del ID
+                    int columnIndexId = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_ID);
 
                     if (columnIndexName != -1 && columnIndexId != -1) {
-                        // Obtener el nombre y el ID del juego
                         String name = cursor.getString(columnIndexName);
                         int id = cursor.getInt(columnIndexId);
-
-                        // Crear un nuevo ListElement con el nombre y el ID
                         ListElement element = new ListElement(name, id);
                         searchResults.add(element);
                     } else {
@@ -116,7 +114,6 @@ public class SearchActivity extends AppCompatActivity {
             }
             cursor.close();
         }
-
         listAdapter.notifyDataSetChanged();
     }
 }
