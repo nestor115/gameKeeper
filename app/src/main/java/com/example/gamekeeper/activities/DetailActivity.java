@@ -102,17 +102,20 @@ public class DetailActivity extends AppCompatActivity {
                     } else {
                         ivGame.setImageResource(R.drawable.ic_launcher_foreground);
                     }
-
+                    String yearStr = "año de publicación " +year;
+                    String playersStr = "numero de jugadores:" + players ;
+                    String timeStr = "duracion: " + time ;
+                    String genreStr = "genero: " + getBoardGameGenre(id);
                     tvDescription.setText(description);
-                    tvYear.setText(String.valueOf(year));
-                    tvPlayers.setText(players);
-                    tvTime.setText(time);
+                    tvYear.setText(yearStr);
+                    tvPlayers.setText(playersStr);
+                    tvTime.setText(timeStr);
 
                     String genre = getBoardGameGenre(id);
                     if (genre == null || genre.isEmpty()) {
-                        tvGenre.setText("Estrategia");
+                        tvGenre.setText("genero: Estrategia");
                     } else {
-                        tvGenre.setText(genre);
+                        tvGenre.setText(genreStr);
                     }
                 }
             }

@@ -21,7 +21,7 @@ import com.example.gamekeeper.helpers.DatabaseHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends BaseActivity {
     private DatabaseHelper dB;
     private EditText editTextSearch;
     private RecyclerView recyclerViewSearchResults;

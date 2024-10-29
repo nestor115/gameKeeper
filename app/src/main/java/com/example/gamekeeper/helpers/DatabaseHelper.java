@@ -120,12 +120,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT id FROM users WHERE email = ? AND password = ?", new String[]{email, password});
         if (cursor.moveToFirst()) {
-            int userId = cursor.getInt(0); // Suponiendo que la primera columna es el ID
+            int userId = cursor.getInt(0);
             cursor.close();
             return userId;
         }
         cursor.close();
-        return -1; // Indica que el usuario no fue encontrado
+        return -1;
     }
     public boolean addGenre(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -138,11 +138,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean addBoardgame(String name, byte[] photo, String description, int yearPublished, String numberOfPlayers, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        // Verificar si el juego ya existe
+
         Cursor cursor = db.query(TABLE_BOARDGAME, new String[]{COLUMN_BOARDGAME_NAME}, COLUMN_BOARDGAME_NAME + "=?", new String[]{name}, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
-            cursor.close(); // Cierra el cursor si el juego ya existe
-            return false; // El juego ya existe, no se inserta
+            cursor.close();
+            return false;
         }
 
         ContentValues values = new ContentValues();
@@ -154,9 +154,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_BOARDGAME_TIME, time);
 
         long result = db.insert(TABLE_BOARDGAME, null, values);
-        cursor.close(); // Asegúrate de cerrar el cursor aquí también
+        cursor.close();
         db.close();
-        return result != -1; // Devuelve true si la inserción fue exitosa
+        return result != -1;
     }
 
     public boolean addBoardgameGenre(int boardgameId, int genreId) {
@@ -192,11 +192,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_UB_USER_ID + " = ? AND " + COLUMN_UB_BOARDGAME_ID + " = ?",
                 new String[]{String.valueOf(userId), String.valueOf(boardgameId)});
         db.close();
-        return rowsAffected > 0; // Retorna true si se eliminó al menos una fila
+        return rowsAffected > 0;
     }
 
 
-    // Método para obtener todos los juegos de mesa de un usuario
     public List<BoardGame> getUserBoardgames(int userId) {
         List<BoardGame> boardgames = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -207,7 +206,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 try {
-                    // Usa getColumnIndexOrThrow para obtener las columnas
                     int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_ID));
                     String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NAME));
                     String description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_DESCRIPTION));
@@ -215,7 +213,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String numberOfPlayers = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NUMBER_OF_PLAYERS));
                     String time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_TIME));
 
-                    // Crea un objeto Boardgame con los datos obtenidos
                     BoardGame boardgame = new BoardGame(id, name, null, description, yearPublished, numberOfPlayers, time, null);
                     boardgames.add(boardgame);
                 } catch (IllegalArgumentException e) {
