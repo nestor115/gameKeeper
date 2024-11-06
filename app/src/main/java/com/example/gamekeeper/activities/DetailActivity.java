@@ -18,11 +18,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DetailActivity extends AppCompatActivity {
     private TextView tvTitle, tvDescription, tvYear, tvPlayers, tvTime, tvGenre;
     private ImageView ivGame;
     private DatabaseHelper dB;
 
+    public static final String BOARDGAME_ID = "BOARDGAME_ID";
+    public static final String NAME_VIEW = "NAME_VIEW";
     private Button btnAddBoardgame;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +45,17 @@ public class DetailActivity extends AppCompatActivity {
 
 
         dB = new DatabaseHelper(this);
-
-        int boardGameId = getIntent().getIntExtra("BOARDGAME_ID", 1); 
+        // se reciben los parametros del id del juego y el nombre de la vista
+        int boardGameId = getIntent().getIntExtra(BOARDGAME_ID, 1);
+        String nameView = getIntent().getStringExtra(NAME_VIEW);
+        //se muestra o se oculta el boton de añadir juego
+        if ("SEARCH".equals(nameView)) {
+            btnAddBoardgame.setVisibility(View.VISIBLE);
+            btnAddBoardgame.setEnabled(true);
+        } else if("HOME".equals(nameView)) {
+            btnAddBoardgame.setVisibility(View.INVISIBLE);
+            btnAddBoardgame.setEnabled(false);
+        }
         loadBoardGameDetails(boardGameId);
 
         btnAddBoardgame.setOnClickListener(new View.OnClickListener() {
@@ -56,7 +70,7 @@ public class DetailActivity extends AppCompatActivity {
                     if (added) {
                         Toast.makeText(DetailActivity.this, "Juego añadido a tu colección", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(DetailActivity.this, "Error al añadir el juego a tu colección", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DetailActivity.this, "Ese juego ya existe en tu colección", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(DetailActivity.this, "Usuario no identificado", Toast.LENGTH_SHORT).show();
@@ -103,19 +117,20 @@ public class DetailActivity extends AppCompatActivity {
                         ivGame.setImageResource(R.drawable.ic_launcher_foreground);
                     }
                     String yearStr = "año de publicación " +year;
-                    String playersStr = "numero de jugadores:" + players ;
+                    String playersStr = "numero de jugadores: " + players ;
                     String timeStr = "duracion: " + time ;
-                    String genreStr = "genero: " + getBoardGameGenre(id);
                     tvDescription.setText(description);
                     tvYear.setText(yearStr);
                     tvPlayers.setText(playersStr);
                     tvTime.setText(timeStr);
 
-                    String genre = getBoardGameGenre(id);
-                    if (genre == null || genre.isEmpty()) {
-                        tvGenre.setText("genero: Estrategia");
-                    } else {
-                        tvGenre.setText(genreStr);
+                    List<String> genres = getBoardGameGenre(id);
+                    if (genres.size() == 2) {
+                        tvGenre.setText("genero:  " + genres.get(0) + "/" + genres.get(1));
+                    } else if(genres.size() == 1) {
+                        tvGenre.setText("genero:  " + genres.get(0));
+                    }else {
+                        tvGenre.setText("genero: ");
                     }
                 }
             }
@@ -123,7 +138,7 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private String getBoardGameGenre(int boardGameId) {
+    private List<String> getBoardGameGenre(int boardGameId) {
         SQLiteDatabase db = dB.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT g." + DatabaseHelper.COLUMN_GENRE_NAME +
                 " FROM " + DatabaseHelper.TABLE_GENRE + " g " +
@@ -131,19 +146,19 @@ public class DetailActivity extends AppCompatActivity {
                 " ON g." + DatabaseHelper.COLUMN_GENRE_ID + " = bg." + DatabaseHelper.COLUMN_G_ID +
                 " WHERE bg." + DatabaseHelper.COLUMN_BG_ID + " = ?", new String[]{String.valueOf(boardGameId)});
 
-        String genre = null;
+        List<String> genres = new ArrayList<>();
         if (cursor != null) {
-            if (cursor.moveToFirst()) {
+            while (cursor.moveToNext()) {
                 int genreIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_GENRE_NAME);
                 if (genreIndex != -1) {
-                    genre = cursor.getString(genreIndex);
+                    genres.add(cursor.getString(genreIndex));
                 } else {
                     Log.e("DetailActivity", "Column index not found for genre");
                 }
             }
             cursor.close();
         }
-        return genre;
+        return genres;
     }
 
 }

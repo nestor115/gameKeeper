@@ -1,5 +1,6 @@
 package com.example.gamekeeper.adapters;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.gamekeeper.R;
+import com.example.gamekeeper.activities.DetailActivity;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.BoardGame;
 import java.util.List;
@@ -42,7 +44,8 @@ public class BoardGameAdapter extends RecyclerView.Adapter<BoardGameAdapter.Boar
     public void onBindViewHolder(@NonNull BoardGameViewHolder holder, int position) {
         BoardGame boardGame = boardGames.get(position);
         holder.bind(boardGame);
-
+        // Log para verificar el ID del juego cuando se hace clic
+        Log.d("BoardGameAdapter", "ID del juego seleccionado: " + boardGame.getId());
         holder.deleteButton.setOnClickListener(v -> {
             Log.d("BoardGameAdapter", "Removing boardgame with ID: " + boardGame.getId() + " for user ID: " + userId);
 
@@ -56,6 +59,14 @@ public class BoardGameAdapter extends RecyclerView.Adapter<BoardGameAdapter.Boar
 
                 Toast.makeText(holder.itemView.getContext(), "Error al eliminar el juego.", Toast.LENGTH_SHORT).show();
             }
+        });
+        holder.itemView.setOnClickListener(v -> {
+            Log.d("BoardGameAdapter", "Clic en el juego con ID: " + boardGame.getId());
+            Intent intent = new Intent(holder.itemView.getContext(), DetailActivity.class);
+            intent.putExtra(DetailActivity.BOARDGAME_ID, boardGame.getId());
+            intent.putExtra(DetailActivity.NAME_VIEW, "HOME");
+
+            holder.itemView.getContext().startActivity(intent);
         });
     }
 

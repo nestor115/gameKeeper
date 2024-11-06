@@ -50,7 +50,8 @@ public class SearchActivity extends BaseActivity {
             public void onItemClick(int position) {
                 Intent intent = new Intent(SearchActivity.this, DetailActivity.class);
 
-                intent.putExtra("BOARDGAME_ID", searchResults.get(position).getId());
+                intent.putExtra(DetailActivity.BOARDGAME_ID, searchResults.get(position).getId());
+                intent.putExtra(DetailActivity.NAME_VIEW, "SEARCH");
                 startActivity(intent);
             }
         });

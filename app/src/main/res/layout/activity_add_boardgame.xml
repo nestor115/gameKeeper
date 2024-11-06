@@ -36,6 +36,18 @@
         android:layout_height="wrap_content"
         android:hint="Tiempo de juego" />
 
+    <!-- Spinner para el primer género -->
+    <Spinner
+        android:id="@+id/spinner_genre1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <!-- Spinner para el segundo género -->
+    <Spinner
+        android:id="@+id/spinner_genre2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
     <Button
         android:id="@+id/btn_add_game"
         android:layout_width="match_parent"

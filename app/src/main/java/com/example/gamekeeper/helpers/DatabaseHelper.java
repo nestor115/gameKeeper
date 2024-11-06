@@ -127,22 +127,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return -1;
     }
-    public boolean addGenre(String name) {
+    public void addGenre(String genreName) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_GENRE_NAME, name);
-        long result = db.insert(TABLE_GENRE, null, values);
-        db.close();
-        return result != -1;
+        // Comprobar si el género ya existe
+        Cursor cursor = db.query("genre", new String[]{"name"}, "name = ?", new String[]{genreName}, null, null, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.close(); // Si el género ya existe, cerramos el cursor
+            Log.d("Database", "Género ya existe: " + genreName);
+        } else {
+            ContentValues values = new ContentValues();
+            values.put("name", genreName);
+            db.insertWithOnConflict("genre", null, values, SQLiteDatabase.CONFLICT_IGNORE); // Usar CONFLICT_IGNORE
+            Log.d("Database", "Género insertado: " + genreName);
+        }
     }
-    public boolean addBoardgame(String name, byte[] photo, String description, int yearPublished, String numberOfPlayers, String time) {
-        SQLiteDatabase db = this.getWritableDatabase();
+    public int getGenreId(String genreName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_GENRE, new String[]{COLUMN_GENRE_ID},
+                COLUMN_GENRE_NAME + "=?", new String[]{genreName}, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int genreIndex = cursor.getColumnIndex(COLUMN_GENRE_ID);
+            int genreId = cursor.getInt(genreIndex);
+            cursor.close();
+            return genreId;
+        }
+        cursor.close();
+        return -1; // Si no se encuentra el género
 
+    }
+    public long addBoardgame(String name, byte[] photo, String description, int yearPublished, String numberOfPlayers, String time) {
+        SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor cursor = db.query(TABLE_BOARDGAME, new String[]{COLUMN_BOARDGAME_NAME}, COLUMN_BOARDGAME_NAME + "=?", new String[]{name}, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.close();
-            return false;
+            return -1; // Retorna -1 si ya existe el juego
         }
 
         ContentValues values = new ContentValues();
@@ -156,18 +175,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result = db.insert(TABLE_BOARDGAME, null, values);
         cursor.close();
         db.close();
-        return result != -1;
+        return result; // Retorna el ID del juego añadido, o -1 si falló
     }
 
-    public boolean addBoardgameGenre(int boardgameId, int genreId) {
+    public void addBoardgameGenre(long gameId, int genreId) {
+        if (genreId == -1) {
+            Log.e("Database", "No se encontró el género para el juego con ID: " + gameId);
+            return;
+        }
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_BG_ID, boardgameId);
+        values.put(COLUMN_BG_ID, gameId);
         values.put(COLUMN_G_ID, genreId);
         long result = db.insert(TABLE_BOARDGAME_GENRE, null, values);
-        db.close();
-        return result != -1;
-    }
+        if (result == -1) {
+            Log.e("Database", "Error al insertar la relación de género para el juego: " + gameId);
+        } else {
+            Log.d("Database", "Relación de género insertada correctamente para el juego: " + gameId);
+        }
+        }
     public Cursor getAllGenres() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_GENRE, null);
