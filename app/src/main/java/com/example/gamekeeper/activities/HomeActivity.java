@@ -10,9 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
-import com.example.gamekeeper.adapters.BoardGameAdapter;
+import com.example.gamekeeper.adapters.ListAdapterHome;
+import com.example.gamekeeper.adapters.ListAdapter;
 import com.example.gamekeeper.helpers.DatabaseHelper;
-import com.example.gamekeeper.models.BoardGame;
+import com.example.gamekeeper.models.Boardgame;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class HomeActivity extends BaseActivity {
     private DatabaseHelper dB;
     private Button buttonGoSearch;
     private RecyclerView recyclerView;
+    private ListAdapter listAdapter;
     private int currentUserId;
 
     @Override
@@ -33,7 +35,7 @@ public class HomeActivity extends BaseActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         int currentUserId = sharedPreferences.getInt("user_id", -1);
         if (currentUserId != -1) {
-            List<BoardGame> userBoardgames = dB.getUserBoardgames(currentUserId);
+            List<ListElement> userBoardgames = dB.getUserBoardgames(currentUserId);
             displayBoardgames(userBoardgames);
         } else {
             Toast.makeText(this, "No se encontró el ID del usuario.", Toast.LENGTH_SHORT).show();
@@ -131,17 +133,22 @@ public class HomeActivity extends BaseActivity {
 
 
 
-    private void displayBoardgames(List<BoardGame> boardgames) {
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        int currentUserId = sharedPreferences.getInt("user_id", -1);
-
+    private void displayBoardgames(List<ListElement> listElements) {
         recyclerView = findViewById(R.id.recyclerViewBoardgames);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        BoardGameAdapter adapter = new BoardGameAdapter(boardgames, dB, currentUserId);
+        ListAdapterHome adapter = new ListAdapterHome(listElements, this, currentUserId);
         recyclerView.setAdapter(adapter);
-    }
-}
 
+        adapter.setOnItemClickListener(position -> {
+            ListElement listElement = listElements.get(position);
+            Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
+            intent.putExtra(DetailActivity.BOARDGAME_ID, listElement.getId());
+            intent.putExtra(DetailActivity.NAME_VIEW, "HOME");
+            startActivity(intent);
+        });
+    }
+
+}
 
 

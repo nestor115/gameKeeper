@@ -1,6 +1,6 @@
 package com.example.gamekeeper.models;
 
-public class BoardGame {
+public class Boardgame {
     private int id;
     private String name;
     private byte[] photo;
@@ -10,8 +10,9 @@ public class BoardGame {
     private String time;
     private String genre;
 
+
     // Constructor
-    public BoardGame(int id, String name, byte[] photo, String description, int yearPublished, String numberOfPlayers, String time, String genre) {
+    public Boardgame(int id, String name, byte[] photo, String description, int yearPublished, String numberOfPlayers, String time, String genre) {
         this.id = id;
         this.name = name;
         this.photo = photo;

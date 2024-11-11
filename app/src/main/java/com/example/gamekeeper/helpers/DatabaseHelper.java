@@ -6,7 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.gamekeeper.models.BoardGame;
+import com.example.gamekeeper.activities.ListElement;
+import com.example.gamekeeper.models.Boardgame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -222,33 +223,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<BoardGame> getUserBoardgames(int userId) {
-        List<BoardGame> boardgames = new ArrayList<>();
+    public List<ListElement> getUserBoardgames(int userId) {
+        List<ListElement> listElements = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT b.* FROM " + TABLE_BOARDGAME + " b " +
+        Cursor cursor = db.rawQuery("SELECT b.id, b.name FROM " + TABLE_BOARDGAME + " b " +
                 "INNER JOIN " + TABLE_USER_BOARDGAME + " ub ON b.id = ub.boardgame_id " +
                 "WHERE ub.user_id = ?", new String[]{String.valueOf(userId)});
 
         if (cursor.moveToFirst()) {
             do {
-                try {
-                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_ID));
-                    String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NAME));
-                    String description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_DESCRIPTION));
-                    int yearPublished = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_YEAR_PUBLISHED));
-                    String numberOfPlayers = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NUMBER_OF_PLAYERS));
-                    String time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_TIME));
-
-                    BoardGame boardgame = new BoardGame(id, name, null, description, yearPublished, numberOfPlayers, time, null);
-                    boardgames.add(boardgame);
-                } catch (IllegalArgumentException e) {
-                    Log.e("DBError", "Una de las columnas no existe: " + e.getMessage());
-                }
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_ID));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NAME));
+                ListElement listElement = new ListElement(name, id);
+                listElements.add(listElement);
             } while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
-        return boardgames;
+        return listElements;
     }
     public Cursor searchBoardgamesByName(String query) {
         SQLiteDatabase db = this.getReadableDatabase();
