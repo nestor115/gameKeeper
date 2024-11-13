@@ -1,6 +1,8 @@
 package com.example.gamekeeper.adapters;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.content.Context;
 import android.view.View;
@@ -14,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
+import com.example.gamekeeper.Types.ListType;
 import com.example.gamekeeper.activities.DetailActivity;
 import com.example.gamekeeper.activities.ListElement;
 
@@ -21,6 +24,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private List<ListElement> listElements;
     private Context context;
     private OnItemClickListener onItemClickListener;
+    private ListType listType;
 
     public interface OnItemClickListener {
         void onItemClick(int position);
@@ -30,9 +34,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         this.onItemClickListener = listener;
     }
 
-    public ListAdapter(List<ListElement> listElements, Context context) {
+    public ListAdapter(List<ListElement> listElements, Context context, ListType listType) {
         this.listElements = listElements;
         this.context = context;
+        this.listType = listType;
     }
 
     @NonNull
@@ -46,6 +51,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ListElement element = listElements.get(position);
         holder.textViewName.setText(element.getName());
+
+        // Convert byte array to Bitmap and set to ImageView
+        if (element.getImage() != null) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(element.getImage(), 0, element.getImage().length);
+            holder.imageView.setImageBitmap(bitmap);
+        } else {
+            holder.imageView.setImageResource(R.drawable.ic_launcher_foreground); // Placeholder image if no image is available
+        }
     }
 
     @Override
@@ -55,10 +68,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textViewName;
-
+        public ImageView imageView;
         public ViewHolder(View itemView, final OnItemClickListener listener) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.tv_BoardgameName);
+            imageView = itemView.findViewById(R.id.iv_Boardgame);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

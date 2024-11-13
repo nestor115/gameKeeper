@@ -1,19 +1,25 @@
 package com.example.gamekeeper.helpers;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.example.gamekeeper.activities.ListElement;
 import com.example.gamekeeper.models.Boardgame;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-
+    private Context context;
     private static final String DATABASE_NAME = "gamekeeper.db";
     private static final int DATABASE_VERSION = 1;
     // Tabla de usuarios
@@ -29,7 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_BOARDGAME = "boardgame";
     public static final String COLUMN_BOARDGAME_ID = "id";
     public static final String COLUMN_BOARDGAME_NAME = "name";
-    public static final String COLUMN_BOARDGAME_PHOTO = "photo";
+    public static final String COLUMN_BOARDGAME_PHOTO = "image";
     public static final String COLUMN_BOARDGAME_DESCRIPTION = "description";
     public static final String COLUMN_BOARDGAME_YEAR_PUBLISHED = "year_published";
     public static final String COLUMN_BOARDGAME_NUMBER_OF_PLAYERS = "number_of_players";
@@ -85,6 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -226,7 +233,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<ListElement> getUserBoardgames(int userId) {
         List<ListElement> listElements = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT b.id, b.name FROM " + TABLE_BOARDGAME + " b " +
+
+        Cursor cursor = db.rawQuery("SELECT b.id, b.name, b.image FROM " + TABLE_BOARDGAME + " b " +
                 "INNER JOIN " + TABLE_USER_BOARDGAME + " ub ON b.id = ub.boardgame_id " +
                 "WHERE ub.user_id = ?", new String[]{String.valueOf(userId)});
 
@@ -234,7 +242,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_ID));
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NAME));
-                ListElement listElement = new ListElement(name, id);
+                byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_PHOTO));
+                ListElement listElement = new ListElement(name, id, image);
                 listElements.add(listElement);
             } while (cursor.moveToNext());
         }
@@ -248,14 +257,140 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] selectionArgs = new String[]{"%" + query + "%"};
         return db.rawQuery(sql, selectionArgs);
     }
+    public Cursor getAllBoardgamesForUser(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT * FROM " + TABLE_BOARDGAME + " bg " +
+                "INNER JOIN " + TABLE_USER_BOARDGAME + " ub " +
+                "ON bg." + COLUMN_BOARDGAME_ID + " = ub." + COLUMN_UB_BOARDGAME_ID +
+                " WHERE ub." + COLUMN_UB_USER_ID + " = ?";
+        String[] selectionArgs = new String[]{String.valueOf(userId)};
+        return db.rawQuery(sql, selectionArgs);
+    }
+    public Cursor searchBoardgamesForUserByName(int userId, String query) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT * FROM " + TABLE_BOARDGAME + " bg " +
+                "INNER JOIN " + TABLE_USER_BOARDGAME + " ub " +
+                "ON bg." + COLUMN_BOARDGAME_ID + " = ub." + COLUMN_UB_BOARDGAME_ID +
+                " WHERE ub." + COLUMN_UB_USER_ID + " = ? AND bg." + COLUMN_BOARDGAME_NAME + " LIKE ?";
+        String[] selectionArgs = new String[]{String.valueOf(userId), "%" + query + "%"};
+        return db.rawQuery(sql, selectionArgs);
+    }
+
+
     public Cursor getBoardgameDetailsById(int boardgameId) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.query(TABLE_BOARDGAME, null, COLUMN_ID + "=?", new String[]{String.valueOf(boardgameId)}, null, null, null);
     }
-    public Cursor getBoardgameById(int id) {
+    /*public Cursor getBoardgameById(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_BOARDGAME + " WHERE " + COLUMN_BOARDGAME_ID + " = ?", new String[]{String.valueOf(id)});
+    }*/
+
+    public byte[] getBytesFromBitmap(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.WEBP, 100, stream);
+        return stream.toByteArray();
     }
+    public Bitmap getBitmapFromAssets(String filename) {
+        AssetManager assetManager = context.getAssets(); // Obtiene el gestor de activos de la aplicación
+        InputStream inputStream = null;
+        Bitmap bitmap = null;
+
+        try {
+            // Abre el archivo en assets
+            inputStream = assetManager.open(filename);
+            // Decodifica el InputStream en un Bitmap
+            bitmap = BitmapFactory.decodeStream(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace(); // Si ocurre un error, lo imprime
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close(); // Cierra el InputStream
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return bitmap; // Retorna el Bitmap cargado desde assets
+    }
+
+
+
+
+    public Bitmap getBitmapFromBytes(byte[] image) {
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
+    }
+
+    public Boardgame getBoardgameById(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BOARDGAME + " WHERE " + COLUMN_BOARDGAME_ID + " = ?", new String[]{String.valueOf(id)});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int nameIndex = cursor.getColumnIndex(COLUMN_BOARDGAME_NAME);
+            int photoIndex = cursor.getColumnIndex(COLUMN_BOARDGAME_PHOTO);
+            int descriptionIndex = cursor.getColumnIndex(COLUMN_BOARDGAME_DESCRIPTION);
+            int yearPublishedIndex = cursor.getColumnIndex(COLUMN_BOARDGAME_YEAR_PUBLISHED);
+            int numberOfPlayersIndex = cursor.getColumnIndex(COLUMN_BOARDGAME_NUMBER_OF_PLAYERS);
+            int timeIndex = cursor.getColumnIndex(COLUMN_BOARDGAME_TIME);
+
+            String name = cursor.getString(nameIndex);
+            byte[] photo = cursor.getBlob(photoIndex);
+            String description = cursor.getString(descriptionIndex);
+            int yearPublished = cursor.getInt(yearPublishedIndex);
+            String numberOfPlayers = cursor.getString(numberOfPlayersIndex);
+            String time = cursor.getString(timeIndex);
+
+
+
+            cursor.close();
+            return new Boardgame(id, name, photo, description, yearPublished, numberOfPlayers, time);
+        }
+        cursor.close();
+        return null;
+    }
+
+
+    /*public List<ListElement> searchUserBoardgamesHome(int userId, String query) {
+        List<ListElement> filteredGames = new ArrayList<>();
+        String queryLower = query.toLowerCase();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Realizamos una consulta para filtrar por el nombre del juego y asegurarnos de que está asociado al usuario
+        String sql = "SELECT b.id, b.name FROM " + TABLE_BOARDGAME + " b " +
+                "INNER JOIN " + TABLE_USER_BOARDGAME + " ub ON b.id = ub.boardgame_id " +
+                "WHERE ub.user_id = ? AND LOWER(b.name) LIKE ?";
+
+        String[] selectionArgs = new String[] {String.valueOf(userId), "%" + queryLower + "%"};
+
+        Cursor cursor = db.rawQuery(sql, selectionArgs);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_ID));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NAME));
+                    ListElement game = new ListElement(name, id);
+                    filteredGames.add(game);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        db.close();
+        return filteredGames;
+    }
+    public Cursor searchBoardgamesByNameHome(String query) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Filtrar los resultados con LIKE en la columna de nombre
+        String selection = "name LIKE ?";
+        String[] selectionArgs = new String[]{"%" + query.toLowerCase() + "%"};  // Insensible a mayúsculas
+
+        return db.query("boardgames", new String[]{"id", "name"}, selection, selectionArgs, null, null, null);
+    }*/
+
 
 
 

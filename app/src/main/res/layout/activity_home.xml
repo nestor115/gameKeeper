@@ -19,17 +19,12 @@
             android:layout_height="wrap_content"
             android:text="Aplicacion"
             android:textSize="24sp" />
+        <!-- FrameLayout para cargar el fragmento de búsqueda -->
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp" />
-
-        <Button
-            android:id="@+id/buttonGoSearch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Search" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewBoardgames"

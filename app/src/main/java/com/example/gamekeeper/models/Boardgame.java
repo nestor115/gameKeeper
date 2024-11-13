@@ -8,11 +8,11 @@ public class Boardgame {
     private int yearPublished;
     private String numberOfPlayers;
     private String time;
-    private String genre;
+
 
 
     // Constructor
-    public Boardgame(int id, String name, byte[] photo, String description, int yearPublished, String numberOfPlayers, String time, String genre) {
+    public Boardgame(int id, String name, byte[] photo, String description, int yearPublished, String numberOfPlayers, String time) {
         this.id = id;
         this.name = name;
         this.photo = photo;
@@ -20,7 +20,7 @@ public class Boardgame {
         this.yearPublished = yearPublished;
         this.numberOfPlayers = numberOfPlayers;
         this.time = time;
-        this.genre = genre;
+
     }
 
     // Getters and setters
@@ -80,12 +80,6 @@ public class Boardgame {
         this.time = time;
     }
 
-    public String getGenre() {
-        return genre;
-    }
 
-    public void setGenre(String genre) {
-        this.genre = genre;
-    }
 }
 

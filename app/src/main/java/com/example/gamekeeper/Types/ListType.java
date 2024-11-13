@@ -1,4 +1,4 @@
-package com.example.gamekeeper.TestList;
+package com.example.gamekeeper.Types;
 
 public enum ListType {
     HOME,
