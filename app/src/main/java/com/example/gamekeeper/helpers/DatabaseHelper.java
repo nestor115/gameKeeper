@@ -9,7 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.example.gamekeeper.activities.ListElement;
+import com.example.gamekeeper.models.ListElement;
 import com.example.gamekeeper.models.Boardgame;
 
 import java.io.ByteArrayOutputStream;
@@ -27,6 +27,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_EMAIL = "email";
     public static final String COLUMN_PASSWORD = "password";
+    //Tabla jugadores
+    public static final String TABLE_PLAYERS = "players";
+    public static final String COLUMN_PLAYER_ID = "id";
+    public static final String COLUMN_PLAYER_USER_ID = "user_id";
+    public static final String COLUMN_PLAYER_NAME = "player_name";
     // Tabla de géneros
     public static final String TABLE_GENRE = "genre";
     public static final String COLUMN_GENRE_ID = "id";
@@ -55,6 +60,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_EMAIL + " TEXT UNIQUE, " +
                     COLUMN_PASSWORD + " TEXT);";
+
+    private static final String TABLE_CREATE_PLAYERS =
+            "CREATE TABLE " + TABLE_PLAYERS + " (" +
+                    COLUMN_PLAYER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_PLAYER_USER_ID + " INTEGER, " +
+                    COLUMN_PLAYER_NAME + " TEXT NOT NULL, " +
+                    "FOREIGN KEY (" + COLUMN_PLAYER_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "));";
 
 
     private static final String TABLE_CREATE_GENRE =
@@ -97,6 +109,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(TABLE_CREATE_USERS);
+        db.execSQL(TABLE_CREATE_PLAYERS);
         db.execSQL(TABLE_CREATE_GENRE);
         db.execSQL(TABLE_CREATE_BOARDGAME);
         db.execSQL(TABLE_CREATE_BOARDGAME_GENRE);
@@ -107,6 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GENRE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOARDGAME);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOARDGAME_GENRE);
@@ -350,6 +364,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return null;
     }
+    public boolean addPlayer(int userId, String playerName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PLAYER_USER_ID, userId);
+        values.put(COLUMN_PLAYER_NAME, playerName);
+        long result = db.insert(TABLE_PLAYERS, null, values);
+        db.close();
+        return result != -1;
+    }
+
+    public Cursor getPlayersByUserId(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_PLAYERS + " WHERE " + COLUMN_PLAYER_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+    }
+    public Cursor getAllPlayerNames(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Filtramos los jugadores por user_id
+        return db.rawQuery("SELECT " + COLUMN_PLAYER_NAME + " FROM " + TABLE_PLAYERS + " WHERE " + COLUMN_PLAYER_USER_ID + " = ?",
+                new String[]{String.valueOf(userId)});
+    }
+    public boolean isPlayerExists(String playerName, int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Consultar si existe un jugador con este nombre y el userId dado
+        String query = "SELECT COUNT(*) FROM players WHERE player_name = ? AND user_id = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{playerName, String.valueOf(userId)});
+
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+
+        return count > 0; // Retorna true si el jugador ya existe
+    }
+
 
 
     /*public List<ListElement> searchUserBoardgamesHome(int userId, String query) {

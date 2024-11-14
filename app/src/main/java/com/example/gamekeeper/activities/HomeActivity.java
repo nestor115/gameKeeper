@@ -3,21 +3,16 @@ package com.example.gamekeeper.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
-import com.example.gamekeeper.Types.ListType;
-import com.example.gamekeeper.adapters.ListAdapter;
 import com.example.gamekeeper.adapters.ListAdapterHome;
-import com.example.gamekeeper.fragments.SearchBarFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
+import com.example.gamekeeper.models.ListElement;
 
 import java.util.ArrayList;
 import java.util.List;

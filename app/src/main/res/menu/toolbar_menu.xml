@@ -11,6 +11,7 @@
         android:title="Add Game" />
     <item
         android:id="@+id/opcion4"
-        android:title="Opción 4" />
+        android:title="Players" />
+
 </menu>
 

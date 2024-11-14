@@ -13,6 +13,9 @@
         android:theme="@style/Theme.GameKeeper"
         tools:targetApi="31">
         <activity
+            android:name=".activities.PlayerActivity"
+            android:exported="false" />
+        <activity
             android:name=".itemBoardgame"
             android:exported="false" />
         <activity
@@ -21,8 +24,7 @@
         <activity
             android:name=".activities.SearchActivity"
             android:exported="false" />
-        <activity android:name=".activities.AddBoardgameActivity"></activity>
-
+        <activity android:name=".activities.AddBoardgameActivity" />
         <activity
             android:name=".activities.HomeActivity"
             android:exported="false" />

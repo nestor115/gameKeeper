@@ -11,6 +11,7 @@ import com.example.gamekeeper.R;
 import com.example.gamekeeper.Types.ListType;
 import com.example.gamekeeper.adapters.ListAdapter;
 import com.example.gamekeeper.fragments.SearchBarFragment;
+import com.example.gamekeeper.models.ListElement;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.Types.ListType;
-import com.example.gamekeeper.activities.ListElement;
+import com.example.gamekeeper.models.ListElement;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 
 import java.util.ArrayList;

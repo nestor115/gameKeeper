@@ -1,0 +1,47 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+    <!-- ChipGroup para mostrar las sugerencias de autocompletado (chipsAutocompletar) -->
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/auto_complete_chip_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:chipSpacingHorizontal="8dp"
+        app:chipSpacingVertical="8dp"/>
+
+    <!-- AutoCompleteTextView para ingresar el nombre del jugador -->
+    <AutoCompleteTextView
+        android:id="@+id/player_name_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Escribe un nombre del jugador"
+        android:completionThreshold="1"
+        android:inputType="text"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Botón para añadir jugador a los jugadores finales -->
+    <Button
+        android:id="@+id/add_player_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Añadir Jugador"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- ChipGroup para mostrar los jugadores finales añadidos (máximo 4 chips) -->
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/player_chip_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:chipSpacingHorizontal="8dp"
+        app:chipSpacingVertical="8dp"
+        android:maxLines="4"
+    android:singleLine="false"
+    android:orientation="horizontal"
+    />
+
+</LinearLayout>

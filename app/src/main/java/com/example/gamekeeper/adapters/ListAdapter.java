@@ -1,6 +1,5 @@
 package com.example.gamekeeper.adapters;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
@@ -17,8 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.Types.ListType;
-import com.example.gamekeeper.activities.DetailActivity;
-import com.example.gamekeeper.activities.ListElement;
+import com.example.gamekeeper.models.ListElement;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private List<ListElement> listElements;

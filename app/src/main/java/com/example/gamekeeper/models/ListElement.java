@@ -1,4 +1,4 @@
-package com.example.gamekeeper.activities;
+package com.example.gamekeeper.models;
 
 public class ListElement {
     private String name;

@@ -53,8 +53,9 @@ public class BaseActivity extends AppCompatActivity {
                 startActivity(new Intent(this, AddBoardgameActivity.class));
                 return true;
             case R.id.opcion4:
-                startActivity(new Intent(this, SearchActivity.class));
+                startActivity(new Intent(this, PlayerActivity.class));
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

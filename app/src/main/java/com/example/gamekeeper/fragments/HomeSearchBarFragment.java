@@ -1,31 +1,17 @@
 package com.example.gamekeeper.fragments;
 
-import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.gamekeeper.R;
-import com.example.gamekeeper.Types.ListType;
-import com.example.gamekeeper.activities.ListElement;
-import com.example.gamekeeper.adapters.ListAdapterHome;
-import com.example.gamekeeper.helpers.DatabaseHelper;
-import com.example.gamekeeper.models.Boardgame;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class HomeSearchBarFragment extends Fragment {
     private EditText etSearch;
