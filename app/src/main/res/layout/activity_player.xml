@@ -18,10 +18,11 @@
         android:id="@+id/player_name_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Escribe un nombre del jugador"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="16dp"
         android:completionThreshold="1"
-        android:inputType="text"
-        android:layout_marginBottom="16dp"/>
+        android:hint="Escribe un nombre del jugador"
+        android:inputType="text" />
 
     <!-- Botón para añadir jugador a los jugadores finales -->
     <Button
@@ -32,6 +33,15 @@
         android:layout_marginBottom="16dp"/>
 
     <!-- ChipGroup para mostrar los jugadores finales añadidos (máximo 4 chips) -->
+    <TextView
+        android:id="@+id/tv_Jugadores"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="Jugadores:"
+        android:textAlignment="textStart"
+        android:textSize="20dp" />
+
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/player_chip_group"
         android:layout_width="match_parent"
@@ -43,5 +53,14 @@
     android:singleLine="false"
     android:orientation="horizontal"
     />
+    <Button
+        android:id="@+id/play_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Jugar"
+        android:layout_marginTop="20dp"
+        android:enabled="false"
+    android:textColor="@android:color/white" />
+
 
 </LinearLayout>

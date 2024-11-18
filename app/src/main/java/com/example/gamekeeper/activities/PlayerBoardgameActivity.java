@@ -1,13 +1,18 @@
 package com.example.gamekeeper.activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.adapters.ListAdapterPlayers;
+import com.example.gamekeeper.fragments.PlayerFragment;
+import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
 
 import java.util.ArrayList;
@@ -17,11 +22,20 @@ public class PlayerBoardgameActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
     private ListAdapterPlayers adapter;
+    private DatabaseHelper dB;
+    private int currentUserId;  // Almacenar el ID del usuario actual
+    private List<ListElement> fullList = new ArrayList<>(); // Lista completa de elementos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_boardgame);
+
+        // Inicializar DatabaseHelper
+        dB = new DatabaseHelper(this);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        currentUserId = sharedPreferences.getInt("user_id", -1);
 
         // Obtener el RecyclerView del layout
         recyclerView = findViewById(R.id.recyclerView);
@@ -29,30 +43,44 @@ public class PlayerBoardgameActivity extends BaseActivity {
         // Crear el adaptador
         adapter = new ListAdapterPlayers();
 
-        // Asignar un listener para los clics de los elementos (opcional)
-        adapter.setOnItemClickListener(listElement -> {
-            // Aquí puedes manejar el clic en un elemento
-            Toast.makeText(PlayerBoardgameActivity.this, "Clic en: " + listElement.getName(), Toast.LENGTH_SHORT).show();
-        });
-
         // Configurar el RecyclerView con el adaptador
         recyclerView.setLayoutManager(new LinearLayoutManager(this));  // Para que se muestre como lista vertical
         recyclerView.setAdapter(adapter);
 
-        // Llamar al método para enviar la lista de elementos al adaptador
-        loadData();  // Este es el método donde obtendrás la lista de ListElement
+        // Llamar al método para cargar los datos del usuario
+        loadData();
+
+        // Cargar el PlayerFragment (que contiene el SearchView)
+        loadSearchFragment();
     }
 
-    // Método para cargar los datos de ejemplo (puedes reemplazar esto por datos reales)
+    private void loadSearchFragment() {
+        // Cargar el fragmento de búsqueda
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, new PlayerFragment());
+        transaction.commit();
+    }
+
     private void loadData() {
-        List<ListElement> elements = new ArrayList<>();
+        // Llamamos al método de la base de datos para obtener los juegos del usuario
+        List<ListElement> elements = dB.getUserBoardgames(currentUserId);
 
-        // Crear algunos elementos de ejemplo
-        elements.add(new ListElement("Monopoly", 1, new byte[0]));  // En este caso, la imagen es un array vacío, pero puedes poner una imagen real
-        elements.add(new ListElement("Risk", 2, new byte[0]));
-        elements.add(new ListElement("Catan", 3, new byte[0]));
+        if (elements != null && !elements.isEmpty()) {
+            fullList = elements;  // Guardamos la lista completa
+            adapter.submitList(fullList);
+        } else {
+            Toast.makeText(this, "No se encontraron juegos.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        // Enviar la lista al adaptador
-        adapter.submitList(elements);
+    // Método para filtrar la lista de elementos
+    public void filterList(String query) {
+        List<ListElement> filteredList = new ArrayList<>();
+        for (ListElement element : fullList) {
+            if (element.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(element);
+            }
+        }
+        adapter.submitList(filteredList); // Actualizar el RecyclerView con los elementos filtrados
     }
 }

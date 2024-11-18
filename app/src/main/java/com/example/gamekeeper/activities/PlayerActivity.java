@@ -1,9 +1,11 @@
 package com.example.gamekeeper.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -31,15 +33,24 @@ public class PlayerActivity extends BaseActivity {
     private ChipGroup playerChipGroup;
     private ChipGroup autoCompleteChipGroup;
     private Button addPlayerButton;
+    private Button playButton;
     private ArrayList<String> playerNames; // Lista de nombres de jugadores para el autocompletado
     private ArrayList<String> addedPlayers; // Lista de jugadores seleccionados
     private int currentUserId; // Almacenará el ID del usuario actual
-
+    private static final int MAX_AUTOCOMPLETE_CHIPS = 8;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-
+        playButton = findViewById(R.id.play_button);
+        playButton.setEnabled(false);
+        playButton.setAlpha(0.5f);
+        // Configurar el botón para ir a la siguiente actividad cuando sea habilitado
+        playButton.setOnClickListener(v -> {
+            // Aquí puedes hacer que el botón lleve a la actividad correspondiente
+            Intent intent = new Intent(PlayerActivity.this, PlayerBoardgameActivity.class);
+            startActivity(intent);
+        });
         // Obtener el currentUserId desde SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         currentUserId = sharedPreferences.getInt("user_id", -1); // Obtener el ID del usuario actual
@@ -60,6 +71,7 @@ public class PlayerActivity extends BaseActivity {
         // Cargar los nombres de jugadores desde la base de datos
         loadPlayerNames();
 
+
         // Configurar el adaptador para el autocompletado
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, playerNames);
         playerNameInput.setAdapter(adapter);
@@ -69,6 +81,7 @@ public class PlayerActivity extends BaseActivity {
         playerNameInput.setDropDownWidth(0);  // Esto también asegura que no se muestre
 
         // Mostrar los chips de autocompletado según lo que se escribe
+        playerNameInput.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
         playerNameInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
@@ -80,9 +93,12 @@ public class PlayerActivity extends BaseActivity {
 
                 // Mostrar chips de sugerencias de autocompletado si hay texto
                 if (charSequence.length() > 0) {
+                    int chipsAdded = 0;
                     for (String playerName : playerNames) {
                         if (playerName.toLowerCase().startsWith(charSequence.toString().toLowerCase())) {
+                            if (chipsAdded >= MAX_AUTOCOMPLETE_CHIPS) break;
                             addAutoCompleteChip(playerName);  // Añadir chips
+                            chipsAdded++;
                         }
                     }
                 }
@@ -153,7 +169,7 @@ public class PlayerActivity extends BaseActivity {
         autoCompleteChipGroup.addView(chip);
     }
 
-    // Añadir jugador a los chips finales
+    // Función que añade el jugador a los chips finales
     private void addPlayerToFinalChips(String playerName) {
         // Añadir el jugador a la lista de jugadores finales si no está ya añadido y si no se han añadido 4 jugadores
         if (!addedPlayers.contains(playerName) && addedPlayers.size() < 4) {
@@ -163,16 +179,30 @@ public class PlayerActivity extends BaseActivity {
             Chip chip = new Chip(this);
             chip.setText(playerName);
             chip.setCloseIconVisible(true);
-            chip.setOnCloseIconClickListener(v -> removePlayerFromFinalChips(playerName));
+            chip.setOnCloseIconClickListener(v -> {
+                // Aquí eliminamos el jugador y el chip de la vista
+                addedPlayers.remove(playerName);
+                playerChipGroup.removeView(chip);
+
+                // Verificar si hay jugadores
+                updatePlayButtonState(); // Actualizamos el estado del botón después de eliminar un jugador
+            });
 
             // Añadir el chip al grupo de chips finales
             playerChipGroup.addView(chip);
         }
+
+        // Verificar si hay jugadores
+        updatePlayButtonState(); // Actualizamos el estado del botón después de añadir un jugador
+    }
+    private void updatePlayButtonState() {
+        if (addedPlayers.size() > 0) {
+            playButton.setEnabled(true);  // Habilitar el botón
+            playButton.setAlpha(1.0f);    // Asegurarse de que el botón luzca habilitado
+        } else {
+            playButton.setEnabled(false); // Deshabilitar el botón
+            playButton.setAlpha(0.5f);    // Hacer que el botón luzca deshabilitado
+        }
     }
 
-    // Eliminar jugador de los chips finales
-    private void removePlayerFromFinalChips(String playerName) {
-        addedPlayers.remove(playerName);
-        playerChipGroup.removeViewAt(addedPlayers.indexOf(playerName));
-    }
 }

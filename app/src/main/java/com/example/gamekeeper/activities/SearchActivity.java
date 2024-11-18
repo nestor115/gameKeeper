@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.Types.ListType;
-import com.example.gamekeeper.adapters.ListAdapter;
+import com.example.gamekeeper.adapters.ListAdapterSearch;
 import com.example.gamekeeper.fragments.SearchBarFragment;
 import com.example.gamekeeper.models.ListElement;
 
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class SearchActivity extends BaseActivity implements SearchBarFragment.OnSearchListener {
     private RecyclerView recyclerViewSearchResults;
-    private ListAdapter listAdapter;
+    private ListAdapterSearch listAdapterSearch;
     private List<ListElement> searchResults;
 
     @Override
@@ -27,13 +27,13 @@ public class SearchActivity extends BaseActivity implements SearchBarFragment.On
         setContentView(R.layout.activity_search);
 
         searchResults = new ArrayList<>();
-        listAdapter = new ListAdapter(searchResults, this,ListType.SEARCH);
+        listAdapterSearch = new ListAdapterSearch(searchResults, this,ListType.SEARCH);
 
         recyclerViewSearchResults = findViewById(R.id.listRecyclerView);
         recyclerViewSearchResults.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewSearchResults.setAdapter(listAdapter);
+        recyclerViewSearchResults.setAdapter(listAdapterSearch);
 
-        listAdapter.setOnItemClickListener(new ListAdapter.OnItemClickListener() {
+        listAdapterSearch.setOnItemClickListener(new ListAdapterSearch.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 Intent intent = new Intent(SearchActivity.this, DetailActivity.class);
@@ -58,6 +58,6 @@ public class SearchActivity extends BaseActivity implements SearchBarFragment.On
             searchResults.clear();
             searchResults.addAll(results); // Aquí es donde se hace la búsqueda en la tabla boardgames
 
-        listAdapter.notifyDataSetChanged();
+        listAdapterSearch.notifyDataSetChanged();
     }
 }

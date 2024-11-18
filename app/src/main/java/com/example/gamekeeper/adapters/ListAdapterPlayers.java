@@ -17,13 +17,13 @@ import com.example.gamekeeper.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListAdapterFriends extends RecyclerView.Adapter<ListAdapterFriends.ListElementViewHolder> {
+public class ListAdapterPlayers extends RecyclerView.Adapter<ListAdapterPlayers.ListElementViewHolder> {
 
     private List<ListElement> listElements = new ArrayList<>(); // Lista de ListElement
     private OnItemClickListener listener;
 
     // Constructor vacío
-    public ListAdapterFriends() {
+    public ListAdapterPlayers() {
     }
 
     // Método para actualizar la lista
@@ -38,7 +38,7 @@ public class ListAdapterFriends extends RecyclerView.Adapter<ListAdapterFriends.
     @NonNull
     @Override
     public ListElementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_friend_boardgame, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_player_boardgame, parent, false);
         return new ListElementViewHolder(view);
     }
 
