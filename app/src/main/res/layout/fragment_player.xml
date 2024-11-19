@@ -1,32 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <LinearLayout
+    <!-- SearchView -->
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:queryHint="Buscar por nombre"
+        android:iconifiedByDefault="false"
+    android:background="@android:color/white"
+    android:textColorHint="@android:color/darker_gray"
+    android:queryBackground="@android:color/white" />
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:queryHint="Buscar por nombre"
-            android:iconifiedByDefault="false"
-            android:background="@android:color/white"
-            android:textColorHint="@android:color/darker_gray"
-            android:queryBackground="@android:color/white" />
-
-        <Spinner
-            android:id="@+id/genreSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
-    </LinearLayout>
-
+    <!-- Spinner -->
+    <Spinner
+        android:id="@+id/genreSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
 </LinearLayout>

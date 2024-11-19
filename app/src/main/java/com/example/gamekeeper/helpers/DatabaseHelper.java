@@ -494,6 +494,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return genreId;
     }
+    public List<String> getGenres() {
+        List<String> genres = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + COLUMN_GENRE_NAME + " FROM " + TABLE_GENRE, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                genres.add(cursor.getString(0)); // Obtener el nombre del género
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return genres;
+    }
+    public boolean isBoardgameInGenre(int boardgameId, String genreName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT 1 FROM " + TABLE_BOARDGAME_GENRE + " bg " +
+                "JOIN " + TABLE_GENRE + " g ON bg." + COLUMN_G_ID + " = g." + COLUMN_GENRE_ID + " " +
+                "WHERE bg." + COLUMN_BG_ID + " = ? AND g." + COLUMN_GENRE_NAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(boardgameId), genreName});
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists;
+    }
 }
 
 
