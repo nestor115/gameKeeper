@@ -6,111 +6,109 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.adapters.ListAdapterHome;
+import com.example.gamekeeper.fragments.PlayerFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends BaseActivity{
+public class HomeActivity extends BaseActivity {
 
-    private DatabaseHelper dB;
     private RecyclerView recyclerView;
-    private ListAdapterHome listAdapter;
-    private List<ListElement> listElements;
-    private int currentUserId;
+    private ListAdapterHome adapter;
+    private DatabaseHelper dB;
+    private int currentUserId; // Almacenar el ID del usuario actual
+    private List<ListElement> fullList = new ArrayList<>(); // Lista completa de elementos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_player_boardgame);
 
+        // Inicializar DatabaseHelper
         dB = new DatabaseHelper(this);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        int currentUserId = sharedPreferences.getInt("user_id", -1);
-        if (currentUserId != -1) {
-            listElements = dB.getUserBoardgames(currentUserId);
-            displayBoardgames(listElements);
-        } else {
-            Toast.makeText(this, "No se encontró el ID del usuario.", Toast.LENGTH_SHORT).show();
-        }
+        // Obtener el ID del usuario desde SharedPreferences
+        currentUserId = getSharedPreferences("user_prefs", MODE_PRIVATE).getInt("user_id", -1);
 
         // Verificar si es el primer inicio
         if (isFirstLaunch()) {
             insertData(); // Solo se ejecuta si es el primer inicio
             setFirstLaunchFlag(); // Marca que la app ya se ha lanzado
         }
-      /*  // Cargar el fragmento de búsqueda
+
+        // Configurar el RecyclerView
+        recyclerView = findViewById(R.id.recyclerView);
+        adapter = new ListAdapterHome();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // Para lista vertical
+        recyclerView.setAdapter(adapter);
+
+        // Cargar los datos
+        loadData();
+
+        // Cargar el fragmento con el SearchView y Spinner
+        loadSearchFragment();
+    }
+
+    private void loadSearchFragment() {
+        // Cargar el fragmento de búsqueda
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, SearchBarFragment.newInstance(ListType.HOME));
-        transaction.commit();*/
+        transaction.replace(R.id.fragment_container, new PlayerFragment());
+        transaction.commit();
     }
-    private List<ListElement> getUserBoardgames(int userId) {
-        List<ListElement> listElements = new ArrayList<>();
-        Cursor cursor = dB.getAllBoardgamesForUser(userId);
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    int nameIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NAME);
-                    int idIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_ID);
-                    int photoIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_PHOTO);
-                    String name = cursor.getString(nameIndex);
-                    int id = cursor.getInt(idIndex);
-                    byte[] photo = cursor.getBlob(photoIndex);
-                    listElements.add(new ListElement(name, id, photo));
-                } while (cursor.moveToNext());
-            }
-            cursor.close();
+
+    private void loadData() {
+        // Llamamos al método de la base de datos para obtener los juegos del usuario
+        List<ListElement> elements = dB.getUserBoardgames(currentUserId);
+
+        if (elements != null && !elements.isEmpty()) {
+            fullList = elements; // Guardamos la lista completa
+            adapter.submitList(fullList);
+        } else {
+            Toast.makeText(this, "No se encontraron juegos.", Toast.LENGTH_SHORT).show();
         }
-        return listElements;
-    }
-    private void displayBoardgames(List<ListElement> listElements) {
-        recyclerView = findViewById(R.id.recyclerViewBoardgames);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        listAdapter = new ListAdapterHome(listElements, this,currentUserId);
-        recyclerView.setAdapter(listAdapter);
-
-        // Configurar un listener para los clics en los ítems del RecyclerView
-        listAdapter.setOnItemClickListener(position -> {
-            ListElement listElement = listElements.get(position);
-            Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
-            intent.putExtra(DetailActivity.BOARDGAME_ID, listElement.getId());
-            intent.putExtra(DetailActivity.NAME_VIEW, "HOME");
-            startActivity(intent);
-        });
     }
 
-    // Método para verificar si es la primera vez que se lanza la app
+    public List<String> getGenres() {
+        // Obtener los géneros desde la base de datos
+        return dB.getGenres();
+    }
+
+    // Método para filtrar la lista
+    public void filterList(String query, String selectedGenre) {
+        List<ListElement> filteredList = new ArrayList<>();
+        for (ListElement element : fullList) {
+            boolean matchesQuery = element.getName().toLowerCase().contains(query.toLowerCase());
+            boolean matchesGenre = selectedGenre.equals("Todos") || dB.isBoardgameInGenre(element.getId(), selectedGenre);
+
+            // Añadir a la lista filtrada si cumple con ambos criterios
+            if (matchesQuery && matchesGenre) {
+                filteredList.add(element);
+            }
+        }
+        // Actualizar el RecyclerView con los elementos filtrados
+        adapter.submitList(filteredList);
+    }
+
+    // Métodos para verificar el primer inicio y configurarlo
     private boolean isFirstLaunch() {
         SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         return preferences.getBoolean("first_launch", true);
     }
 
-    // Método para establecer que la app ya fue lanzada
     private void setFirstLaunchFlag() {
         SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("first_launch", false); // Marca que no es el primer inicio
         editor.apply();
     }
-   /* @Override
-    public void onSearchResults(List<ListElement> searchResults) {
-        // Aquí se verifica el tipo de vista, en función de eso, filtramos los resultados.
-
-
-
-        listElements.clear();
-        listElements.addAll(searchResults); // Aquí es donde se hace la búsqueda en la tabla boardgames
-
-        listAdapter.notifyDataSetChanged();
-    }*/
 
 
 

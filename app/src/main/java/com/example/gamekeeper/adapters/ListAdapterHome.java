@@ -1,9 +1,7 @@
 package com.example.gamekeeper.adapters;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,89 +10,84 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.models.ListElement;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ListAdapterHome extends RecyclerView.Adapter<ListAdapterHome.ViewHolder> {
-        private List<ListElement> listElements;
-        private Context context;
-        private int userId;
-        private OnItemClickListener onItemClickListener;
+public class ListAdapterHome extends RecyclerView.Adapter<ListAdapterHome.ListElementViewHolder> {
 
-        public interface OnItemClickListener {
-            void onItemClick(int position);
+    private List<ListElement> listElements = new ArrayList<>(); // Lista de ListElement
+    private OnItemClickListener listener;
+
+    // Constructor vacío
+    public ListAdapterHome() {
+    }
+
+    // Método para actualizar la lista
+    public void submitList(List<ListElement> newListElements) {
+        listElements.clear(); // Limpiamos la lista anterior
+        if (newListElements != null) {
+            listElements.addAll(newListElements); // Añadimos los nuevos items
         }
+        notifyDataSetChanged(); // Notificamos que los datos han cambiado
+    }
 
-        public void setOnItemClickListener(OnItemClickListener listener) {
-            this.onItemClickListener = listener;
+    @NonNull
+    @Override
+    public ListElementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_item_boardgame, parent, false);
+        return new ListElementViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ListElementViewHolder holder, int position) {
+        ListElement listElement = listElements.get(position);
+        holder.textViewName.setText(listElement.getName());
+
+        // Convertir el byte[] a Bitmap
+        byte[] elementImage = listElement.getImage();
+        if (elementImage != null && elementImage.length > 0) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(elementImage, 0, elementImage.length);
+            holder.imageView.setImageBitmap(bitmap);
+        } else {
+            holder.imageView.setImageResource(R.drawable.ic_launcher_foreground); // Imagen por defecto
         }
+    }
 
-        public ListAdapterHome(List<ListElement> listElements, Context context, int userId) {
-            this.listElements = listElements;
-            this.context = context;
-            this.userId = userId;
-        }
+    @Override
+    public int getItemCount() {
+        return listElements.size();
+    }
 
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_item_boardgame, parent, false);
-            return new ViewHolder(view, onItemClickListener);
-        }
+    // ViewHolder: maneja la vista individual de cada elemento de la lista
+    public class ListElementViewHolder extends RecyclerView.ViewHolder {
+        TextView textViewName;
+        ImageView imageView;
 
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            ListElement listElement = listElements.get(position);
-            holder.textViewName.setText(listElement.getName());
-
-            // Mostrar la imagen
-            if (listElement.getImage() != null) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(listElement.getImage(), 0, listElement.getImage().length);
-                holder.imageView.setImageBitmap(bitmap);
-            }
-            // Si se requiere un clic en el ítem
-            holder.itemView.setOnClickListener(v -> {
-                if (onItemClickListener != null) {
-                    int pos = holder.getBindingAdapterPosition();
-                    if (pos != RecyclerView.NO_POSITION) {
-                        onItemClickListener.onItemClick(pos);
-                    }
-                }
-            });
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return listElements.size();
-        }
-
-
-        public void updateData(List<ListElement> newListElements) {
-            this.listElements = newListElements;
-            Log.d("ListAdapterHome", "Datos actualizados: " + newListElements.size() + " elementos");
-            notifyDataSetChanged(); // Notificar que los datos han cambiado y el RecyclerView debe actualizarse
-        }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textViewName;
-        public ImageView imageView; // Agregar un ImageView para la imagen
-
-        public ViewHolder(View itemView, final OnItemClickListener listener) {
+        public ListElementViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.tv_TittleItemBoardgame);
-            imageView = itemView.findViewById(R.id.iv_ItemBoardgame); // Asegúrate de que este ID exista en tu layout
+            imageView = itemView.findViewById(R.id.iv_ItemBoardgame);
 
+            // Configurar el clic en el elemento
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        listener.onItemClick(position);
-                    }
+                    listener.onItemClick(listElements.get(getAdapterPosition()));
                 }
             });
         }
+    }
+
+    // Interface para manejar los clics
+    public interface OnItemClickListener {
+        void onItemClick(ListElement listElement);
+    }
+
+    // Método para asignar el listener de clic
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }
