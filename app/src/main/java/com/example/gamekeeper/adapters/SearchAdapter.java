@@ -18,7 +18,7 @@ import com.example.gamekeeper.R;
 import com.example.gamekeeper.Types.ListType;
 import com.example.gamekeeper.models.ListElement;
 
-public class ListAdapterSearch extends RecyclerView.Adapter<ListAdapterSearch.ViewHolder> {
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
     private List<ListElement> listElements;
     private Context context;
     private OnItemClickListener onItemClickListener;
@@ -32,7 +32,7 @@ public class ListAdapterSearch extends RecyclerView.Adapter<ListAdapterSearch.Vi
         this.onItemClickListener = listener;
     }
 
-    public ListAdapterSearch(List<ListElement> listElements, Context context, ListType listType) {
+    public SearchAdapter(List<ListElement> listElements, Context context, ListType listType) {
         this.listElements = listElements;
         this.context = context;
         this.listType = listType;

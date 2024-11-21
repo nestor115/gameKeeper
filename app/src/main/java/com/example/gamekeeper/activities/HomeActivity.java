@@ -2,7 +2,6 @@ package com.example.gamekeeper.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -11,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
-import com.example.gamekeeper.adapters.ListAdapterHome;
+import com.example.gamekeeper.adapters.HomeAdapter;
 import com.example.gamekeeper.fragments.PlayerFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
@@ -22,7 +21,7 @@ import java.util.List;
 public class HomeActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
-    private ListAdapterHome adapter;
+    private HomeAdapter adapter;
     private DatabaseHelper dB;
     private int currentUserId; // Almacenar el ID del usuario actual
     private List<ListElement> fullList = new ArrayList<>(); // Lista completa de elementos
@@ -46,10 +45,27 @@ public class HomeActivity extends BaseActivity {
 
         // Configurar el RecyclerView
         recyclerView = findViewById(R.id.recyclerView);
-        adapter = new ListAdapterHome();
+        adapter = new HomeAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this)); // Para lista vertical
         recyclerView.setAdapter(adapter);
 
+        // Establecer el listener para el clic en los ítems
+        adapter.setOnItemClickListener(position -> {
+            Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
+            intent.putExtra(DetailActivity.BOARDGAME_ID, fullList.get(position.getId()).getId());
+            intent.putExtra(DetailActivity.NAME_VIEW, "HOME"); // Nombre de la vista como "HOME"
+            startActivity(intent);
+        });
+        adapter.setOnDeleteClickListener(listElement -> {
+            boolean isDeleted = dB.removeUserBoardgame(currentUserId, listElement.getId());
+            if (isDeleted) {
+                Toast.makeText(this, "Juego borrado exitosamente", Toast.LENGTH_SHORT).show();
+                // Recargar la lista después de borrar
+                loadData();
+            } else {
+                Toast.makeText(this, "Error al borrar el juego", Toast.LENGTH_SHORT).show();
+            }
+        });
         // Cargar los datos
         loadData();
 

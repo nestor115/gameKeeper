@@ -17,13 +17,13 @@ import com.example.gamekeeper.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListAdapterPlayers extends RecyclerView.Adapter<ListAdapterPlayers.ListElementViewHolder> {
+public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElementViewHolder> {
 
     private List<ListElement> listElements = new ArrayList<>(); // Lista de ListElement
     private OnItemClickListener listener;
 
     // Constructor vacío
-    public ListAdapterPlayers() {
+    public PlayerAdapter() {
     }
 
     // Método para actualizar la lista

@@ -55,9 +55,9 @@ public class PlayerFragment extends Fragment {
 
     private void setupSpinner() {
         if (getActivity() instanceof PlayerBoardgameActivity) {
-            setupSpinnerForActivity((PlayerBoardgameActivity) getActivity());
+            setupSpinnerForActivity(getActivity());
         } else if (getActivity() instanceof HomeActivity) {
-            setupSpinnerForActivity((HomeActivity) getActivity());
+            setupSpinnerForActivity(getActivity());
         }
     }
 
@@ -73,7 +73,7 @@ public class PlayerFragment extends Fragment {
         if (genres != null) {
             genres.add(0, "Todos"); // Opción por defecto
 
-            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, genres);
+            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, genres);
             spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             genreSpinner.setAdapter(spinnerAdapter);
 

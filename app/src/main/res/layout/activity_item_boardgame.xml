@@ -14,25 +14,28 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="16dp">
 
+        <!-- Imagen del juego de mesa (a la izquierda) -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_ItemBoardgame"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:scaleType="fitCenter"
+            android:background="@color/gray"
             android:contentDescription="@string/boardgame_image"
-            app:layout_constraintTop_toTopOf="parent"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/RoundedImage" />
 
+        <!-- Título del juego de mesa a la derecha, encima del botón de borrar -->
         <TextView
             android:id="@+id/tv_TittleItemBoardgame"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:text="Título"
+            android:padding="8dp"
+            android:text="@string/t_tulo"
             android:textSize="16sp"
             android:textColor="@android:color/black"
             android:textStyle="bold"
@@ -44,22 +47,23 @@
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintVertical_bias="0.3" />
 
-        <!-- Botón para borrar -->
+        <!-- Botón para borrar debajo del título, con estilo similar -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_delete"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Borrar"
+            android:layout_marginLeft="8dp"
+            android:text="@string/borrar"
             android:textColor="@android:color/white"
-            app:backgroundTint="@color/colorPrimary"
+            app:backgroundTint="#FF5722"
             app:cornerRadius="12dp"
             app:icon="@drawable/ic_delete"
-            app:iconPadding="4dp"
+            app:iconPadding="8dp"
             app:iconTint="@android:color/white"
-            app:layout_constraintTop_toBottomOf="@id/tv_TittleItemBoardgame"
-            app:layout_constraintStart_toEndOf="@id/iv_ItemBoardgame"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_ItemBoardgame"
+            app:layout_constraintTop_toBottomOf="@id/tv_TittleItemBoardgame"
             app:layout_constraintVertical_bias="0.7" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

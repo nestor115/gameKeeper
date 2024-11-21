@@ -17,22 +17,23 @@ import com.example.gamekeeper.models.ListElement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListAdapterHome extends RecyclerView.Adapter<ListAdapterHome.ListElementViewHolder> {
+public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementViewHolder> {
 
-    private List<ListElement> listElements = new ArrayList<>(); // Lista de ListElement
-    private OnItemClickListener listener;
+    private List<ListElement> listElements = new ArrayList<>();
+    private OnItemClickListener itemClickListener;
+    private OnDeleteClickListener deleteClickListener;
 
     // Constructor vacío
-    public ListAdapterHome() {
+    public HomeAdapter() {
     }
 
     // Método para actualizar la lista
     public void submitList(List<ListElement> newListElements) {
-        listElements.clear(); // Limpiamos la lista anterior
+        listElements.clear();
         if (newListElements != null) {
-            listElements.addAll(newListElements); // Añadimos los nuevos items
+            listElements.addAll(newListElements);
         }
-        notifyDataSetChanged(); // Notificamos que los datos han cambiado
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -66,28 +67,46 @@ public class ListAdapterHome extends RecyclerView.Adapter<ListAdapterHome.ListEl
     public class ListElementViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName;
         ImageView imageView;
+        View deleteButton;
 
         public ListElementViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.tv_TittleItemBoardgame);
             imageView = itemView.findViewById(R.id.iv_ItemBoardgame);
+            deleteButton = itemView.findViewById(R.id.btn_delete);
 
             // Configurar el clic en el elemento
             itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onItemClick(listElements.get(getAdapterPosition()));
+                if (itemClickListener != null && v != deleteButton) {
+                    itemClickListener.onItemClick(listElements.get(getAdapterPosition()));
+                }
+            });
+
+            // Configurar el clic en el botón de borrar
+            deleteButton.setOnClickListener(v -> {
+                if (deleteClickListener != null) {
+                    deleteClickListener.onDeleteClick(listElements.get(getAdapterPosition()));
                 }
             });
         }
     }
 
-    // Interface para manejar los clics
+    // Interface para manejar los clics en los elementos
     public interface OnItemClickListener {
         void onItemClick(ListElement listElement);
     }
 
-    // Método para asignar el listener de clic
+    // Interface para manejar los clics en el botón de borrar
+    public interface OnDeleteClickListener {
+        void onDeleteClick(ListElement listElement);
+    }
+
+    // Métodos para asignar los listeners de clic
     public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
+        this.itemClickListener = listener;
+    }
+
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.deleteClickListener = listener;
     }
 }

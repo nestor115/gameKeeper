@@ -43,12 +43,7 @@ public class AddBoardgameActivity extends AppCompatActivity {
         buttonAddGame = findViewById(R.id.btn_add_game);
 
         setupGenreSpinners();
-        buttonAddGame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addBoardGame();
-            }
-        });
+        buttonAddGame.setOnClickListener(v -> addBoardGame());
     }
 
     private void setupGenreSpinners(){

@@ -1,5 +1,6 @@
 package com.example.gamekeeper.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +59,23 @@ public class DetailActivity extends AppCompatActivity {
             btnAddBoardgame.setEnabled(false);
         }
         loadBoardGameDetails(boardGameId);
-
+        FloatingActionButton fabBack = findViewById(R.id.fab_back);
+        fabBack.setOnClickListener(new View.OnClickListener() {
+                                       @Override
+                                       public void onClick(View v) {
+                                           Intent intent;
+                                           if ("SEARCH".equals(nameView)) {
+                                               intent = new Intent(DetailActivity.this, SearchActivity.class);
+                                           } else if ("HOME".equals(nameView)) {
+                                               intent = new Intent(DetailActivity.this, HomeActivity.class);
+                                           } else {
+                                               // Si no se encuentra el valor esperado, por defecto se regresa a la HomeActivity
+                                               intent = new Intent(DetailActivity.this, HomeActivity.class);
+                                           }
+                                           startActivity(intent);
+                                           finish(); // Para cerrar esta actividad y evitar que el usuario regrese al detalle
+                                       }
+                                   });
         btnAddBoardgame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,6 +87,8 @@ public class DetailActivity extends AppCompatActivity {
                     boolean added = dB.addUserBoardgame(userId, boardGameId);
                     if (added) {
                         Toast.makeText(DetailActivity.this, "Juego añadido a tu colección", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(DetailActivity.this, HomeActivity.class);
+                        startActivity(intent);
                     } else {
                         Toast.makeText(DetailActivity.this, "Ese juego ya existe en tu colección", Toast.LENGTH_SHORT).show();
                     }

@@ -1,8 +1,6 @@
 package com.example.gamekeeper.activities;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentTransaction;
@@ -10,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
-import com.example.gamekeeper.adapters.ListAdapterPlayers;
+import com.example.gamekeeper.adapters.PlayerAdapter;
 import com.example.gamekeeper.fragments.PlayerFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
@@ -21,7 +19,7 @@ import java.util.List;
 public class PlayerBoardgameActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
-    private ListAdapterPlayers adapter;
+    private PlayerAdapter adapter;
     private DatabaseHelper dB;
     private int currentUserId; // Almacenar el ID del usuario actual
     private List<ListElement> fullList = new ArrayList<>(); // Lista completa de elementos
@@ -39,7 +37,7 @@ public class PlayerBoardgameActivity extends BaseActivity {
 
         // Configurar el RecyclerView
         recyclerView = findViewById(R.id.recyclerView);
-        adapter = new ListAdapterPlayers();
+        adapter = new PlayerAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this)); // Para lista vertical
         recyclerView.setAdapter(adapter);
 

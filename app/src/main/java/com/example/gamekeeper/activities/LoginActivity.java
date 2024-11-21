@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -27,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         etEmailInputLogin = findViewById(R.id.et_EmailInputLogin);
         etPasswordInputLogin = findViewById(R.id.et_PasswordInputLogin);
         buttonLogin= findViewById(R.id.btn_Login);
+        FloatingActionButton fabBack = findViewById(R.id.fab_back);
         dB = new DatabaseHelper(this);
 
         buttonLogin.setOnClickListener(v-> {
@@ -50,6 +52,11 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Email o contraseña incorrectos", Toast.LENGTH_SHORT).show();
             }
         });
-
+        // Acción del botón flotante de volver atrás
+        fabBack.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        });
     }
 }

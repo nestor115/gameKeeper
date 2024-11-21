@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -28,6 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
         etEmailInput =findViewById(R.id.etEmailInputRegister);
         etPasswordIput =findViewById(R.id.etPasswordInputRegister);
         buttonRegister =findViewById(R.id.buttonRegister);
+        FloatingActionButton fabBack = findViewById(R.id.fab_back);
         buttonRegister.setOnClickListener(v -> {
 
 
@@ -50,6 +52,11 @@ public class RegisterActivity extends AppCompatActivity {
 
                 }
 
+        });
+        fabBack.setOnClickListener(v -> {
+            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
         });
     }
 }

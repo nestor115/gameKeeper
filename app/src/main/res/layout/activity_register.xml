@@ -1,55 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F5F5"
     tools:context=".activities.RegisterActivity">
 
-    <LinearLayout
-        android:layout_width="409dp"
-        android:layout_height="729dp"
-        android:orientation="vertical"
-        android:padding="30dp"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp">
+    <!-- Título centrado -->
+    <TextView
+        android:id="@+id/tv_Register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/register"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp" />
 
+    <!-- Contenedor de campos -->
+    <LinearLayout
+        android:id="@+id/ll_Container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/rounded_background"
+        app:layout_constraintTop_toBottomOf="@id/tv_Register"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="24dp">
+
+        <!-- Campo Email -->
         <TextView
-            android:id="@+id/tvEmailLabel"
+            android:id="@+id/tv_EmailLabelRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Email"
-            android:textSize="20sp" />
+            android:text="@string/email"
+            android:textSize="16sp"
+            android:textColor="#555555"
+            android:layout_marginTop="16dp" />
 
         <EditText
             android:id="@+id/etEmailInputRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Email"
-            android:inputType="textEmailAddress" />
+            android:layout_marginTop="8dp"
+            android:background="@drawable/input_background"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:padding="12dp" />
 
+        <!-- Campo Contraseña -->
         <TextView
-            android:id="@+id/tvPasswordLabel"
+            android:id="@+id/tv_PasswordLabelRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Contraseña"
-            android:textSize="20sp" />
+            android:text="@string/contrase_a"
+            android:textSize="16sp"
+            android:textColor="#555555"
+            android:layout_marginTop="16dp" />
 
         <EditText
             android:id="@+id/etPasswordInputRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Contraseña"
-            android:inputType="textPassword" />
+            android:layout_marginTop="8dp"
+            android:background="@drawable/input_background"
+            android:hint="@string/contrase_a"
+            android:inputType="textPassword"
+            android:padding="12dp" />
 
+        <!-- Botón Registrar -->
         <Button
             android:id="@+id/buttonRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Button" />
-
+            android:text="@string/register"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF5722"
+            android:layout_marginTop="24dp"
+            android:elevation="4dp" />
     </LinearLayout>
+
+    <!-- Botón flotante para ir atrás -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_arrow_back"
+        android:contentDescription="@string/back_button_description"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:backgroundTint="#FF5722" />
 </androidx.constraintlayout.widget.ConstraintLayout>

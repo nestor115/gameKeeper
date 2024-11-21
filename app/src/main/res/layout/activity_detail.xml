@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F5F5"
     tools:context=".activities.DetailActivity">
 
     <LinearLayout
@@ -17,65 +17,101 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Título del juego -->
         <TextView
             android:id="@+id/tv_TittleDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Título del Juego"
-            android:textSize="30dp" />
+            android:textColor="#333333"
+            android:textStyle="bold"
+            android:textSize="24sp" />
 
+        <!-- Imagen del juego -->
         <ImageView
             android:id="@+id/iv_Game"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:layout_gravity="center" />
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center"
+            android:background="@drawable/image_background" />
 
+        <!-- Descripción -->
         <TextView
             android:id="@+id/tv_TittleDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="Descripción"
-            android:textSize="20dp" />
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="#555555" />
 
         <TextView
             android:id="@+id/tv_Description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
+            android:layout_marginTop="8dp"
             android:text="Descripción del juego"
-            android:textSize="20dp" />
+            android:textSize="16sp"
+            android:textColor="#666666" />
 
+        <!-- Año, jugadores y duración -->
         <TextView
             android:id="@+id/tv_Year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp" />
+            android:layout_marginTop="16dp"
+            android:textSize="16sp"
+            android:textColor="#333333" />
 
         <TextView
             android:id="@+id/tv_Players"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp" />
+            android:textSize="16sp"
+            android:textColor="#333333" />
 
         <TextView
             android:id="@+id/tv_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp" />
+            android:textSize="16sp"
+            android:textColor="#333333" />
 
+        <!-- Género -->
         <TextView
             android:id="@+id/tv_genre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp" />
+            android:layout_marginTop="8dp"
+            android:textSize="16sp"
+            android:textColor="#333333" />
 
+        <!-- Botón -->
         <Button
             android:id="@+id/btn_AddBoardgame"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="#FF5722"
+            android:textColor="#FFFFFF"
             android:text="Añadir a mi colección" />
 
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_arrow_back"
+        android:contentDescription="@string/back_button_description"
+        app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:backgroundTint="@color/primaryColor"
+    />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
