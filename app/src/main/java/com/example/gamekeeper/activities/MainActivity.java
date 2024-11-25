@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gamekeeper.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private Button buttonGoRegister, buttonGoLogin;
 
@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        useToolbar = false;
         buttonGoRegister =findViewById(R.id.buttonGoRegister);
         buttonGoLogin =findViewById(R.id.buttonGoLogin);
 

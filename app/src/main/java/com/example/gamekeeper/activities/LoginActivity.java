@@ -13,7 +13,7 @@ import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     private DatabaseHelper dB;
 
@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        useToolbar = false;
         etEmailInputLogin = findViewById(R.id.et_EmailInputLogin);
         etPasswordInputLogin = findViewById(R.id.et_PasswordInputLogin);
         buttonLogin= findViewById(R.id.btn_Login);

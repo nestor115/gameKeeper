@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
-    <!-- ChipGroup para mostrar las sugerencias de autocompletado (chipsAutocompletar) -->
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/auto_complete_chip_group"
         android:layout_width="match_parent"
@@ -13,7 +12,6 @@
         app:chipSpacingHorizontal="8dp"
         app:chipSpacingVertical="8dp"/>
 
-    <!-- AutoCompleteTextView para ingresar el nombre del jugador -->
     <AutoCompleteTextView
         android:id="@+id/player_name_input"
         android:layout_width="match_parent"
@@ -21,26 +19,24 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="16dp"
         android:completionThreshold="1"
-        android:hint="Escribe un nombre del jugador"
+        android:hint="@string/escribe_un_nombre_del_jugador"
         android:inputType="text" />
 
-    <!-- Botón para añadir jugador a los jugadores finales -->
     <Button
         android:id="@+id/add_player_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Añadir Jugador"
+        android:text="@string/a_adir_jugador"
         android:layout_marginBottom="16dp"/>
 
-    <!-- ChipGroup para mostrar los jugadores finales añadidos (máximo 4 chips) -->
     <TextView
         android:id="@+id/tv_Jugadores"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:text="Jugadores:"
+        android:text="@string/jugadores"
         android:textAlignment="textStart"
-        android:textSize="20dp" />
+        android:textSize="20sp" />
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/player_chip_group"
@@ -57,7 +53,7 @@
         android:id="@+id/play_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Jugar"
+        android:text="@string/jugar"
         android:layout_marginTop="20dp"
         android:enabled="false"
     android:textColor="@android:color/white" />

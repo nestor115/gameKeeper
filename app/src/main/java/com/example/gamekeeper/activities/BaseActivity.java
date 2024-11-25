@@ -12,7 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.gamekeeper.R;
 
 public class BaseActivity extends AppCompatActivity {
-
+    protected boolean useToolbar = true;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

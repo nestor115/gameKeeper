@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.example.gamekeeper.models.ListElement;
-import com.example.gamekeeper.models.Boardgame;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -47,8 +46,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_BOARDGAME_TIME = "time";
     // Tabla relación de juegos de mesa y géneros
     public static final String TABLE_BOARDGAME_GENRE = "boardgame_genre";
-    public static final String COLUMN_BG_ID = "boardgame_id";
-    public static final String COLUMN_G_ID = "genre_id";
+    public static final String COLUMN_BOARDGAME_GENRE_BOARDGAME_ID = "boardgame_id";
+    public static final String COLUMN_BOARDGAME_GENRE_GENRE_ID = "genre_id";
     // Tabla relación  entre usuarios y juegos de mesa
     public static final String TABLE_USER_BOARDGAME = "user_boardgame";
     public static final String COLUMN_UB_USER_ID = "user_id";
@@ -86,11 +85,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_CREATE_BOARDGAME_GENRE =
             "CREATE TABLE " + TABLE_BOARDGAME_GENRE + " (" +
-                    COLUMN_BG_ID + " INTEGER, " +
-                    COLUMN_G_ID + " INTEGER, " +
-                    "PRIMARY KEY (" + COLUMN_BG_ID + ", " + COLUMN_G_ID + "), " +
-                    "FOREIGN KEY (" + COLUMN_BG_ID + ") REFERENCES " + TABLE_BOARDGAME + "(" + COLUMN_BOARDGAME_ID + "), " +
-                    "FOREIGN KEY (" + COLUMN_G_ID + ") REFERENCES " + TABLE_GENRE + "(" + COLUMN_GENRE_ID + "));";
+                    COLUMN_BOARDGAME_GENRE_BOARDGAME_ID + " INTEGER, " +
+                    COLUMN_BOARDGAME_GENRE_GENRE_ID + " INTEGER, " +
+                    "PRIMARY KEY (" + COLUMN_BOARDGAME_GENRE_BOARDGAME_ID + ", " + COLUMN_BOARDGAME_GENRE_GENRE_ID + "), " +
+                    "FOREIGN KEY (" + COLUMN_BOARDGAME_GENRE_BOARDGAME_ID + ") REFERENCES " + TABLE_BOARDGAME + "(" + COLUMN_BOARDGAME_ID + "), " +
+                    "FOREIGN KEY (" + COLUMN_BOARDGAME_GENRE_GENRE_ID + ") REFERENCES " + TABLE_GENRE + "(" + COLUMN_GENRE_ID + "));";
 
     private static final String TABLE_CREATE_USER_BOARDGAME =
             "CREATE TABLE " + TABLE_USER_BOARDGAME + " (" +
@@ -154,12 +153,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Comprobar si el género ya existe
         Cursor cursor = db.query("genre", new String[]{"name"}, "name = ?", new String[]{genreName}, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
-            cursor.close(); // Si el género ya existe, cerramos el cursor
+            cursor.close();
             Log.d("Database", "Género ya existe: " + genreName);
         } else {
             ContentValues values = new ContentValues();
             values.put("name", genreName);
-            db.insertWithOnConflict("genre", null, values, SQLiteDatabase.CONFLICT_IGNORE); // Usar CONFLICT_IGNORE
+            db.insertWithOnConflict("genre", null, values, SQLiteDatabase.CONFLICT_IGNORE);
             Log.d("Database", "Género insertado: " + genreName);
         }
     }
@@ -174,7 +173,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return genreId;
         }
         cursor.close();
-        return -1; // Si no se encuentra el género
+        return -1;
 
     }
     public long addBoardgame(String name, byte[] photo, String description, int yearPublished, String numberOfPlayers, String time) {
@@ -183,7 +182,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_BOARDGAME, new String[]{COLUMN_BOARDGAME_NAME}, COLUMN_BOARDGAME_NAME + "=?", new String[]{name}, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.close();
-            return -1; // Retorna -1 si ya existe el juego
+            return -1;
         }
 
         ContentValues values = new ContentValues();
@@ -197,7 +196,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result = db.insert(TABLE_BOARDGAME, null, values);
         cursor.close();
         db.close();
-        return result; // Retorna el ID del juego añadido, o -1 si falló
+        return result;
     }
 
     public void addBoardgameGenre(long gameId, int genreId) {
@@ -207,8 +206,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_BG_ID, gameId);
-        values.put(COLUMN_G_ID, genreId);
+        values.put(COLUMN_BOARDGAME_GENRE_BOARDGAME_ID, gameId);
+        values.put(COLUMN_BOARDGAME_GENRE_GENRE_ID, genreId);
         long result = db.insert(TABLE_BOARDGAME_GENRE, null, values);
         if (result == -1) {
             Log.e("Database", "Error al insertar la relación de género para el juego: " + gameId);
@@ -248,9 +247,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<ListElement> listElements = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT b.id, b.name, b.image FROM " + TABLE_BOARDGAME + " b " +
-                "INNER JOIN " + TABLE_USER_BOARDGAME + " ub ON b.id = ub.boardgame_id " +
-                "WHERE ub.user_id = ?", new String[]{String.valueOf(userId)});
+        String query = "SELECT boardgame.id, boardgame.name, boardgame.image FROM " + TABLE_BOARDGAME + " boardgame " +
+                "INNER JOIN " + TABLE_USER_BOARDGAME + " user_boardgame ON boardgame.id = user_boardgame.boardgame_id " +
+                "WHERE user_boardgame.user_id = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
 
         if (cursor.moveToFirst()) {
             do {
@@ -273,32 +274,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     public Cursor getAllBoardgamesForUser(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_BOARDGAME + " bg " +
-                "INNER JOIN " + TABLE_USER_BOARDGAME + " ub " +
-                "ON bg." + COLUMN_BOARDGAME_ID + " = ub." + COLUMN_UB_BOARDGAME_ID +
-                " WHERE ub." + COLUMN_UB_USER_ID + " = ?";
+        String sql = "SELECT * FROM " + TABLE_BOARDGAME + " boardgame " +
+                "INNER JOIN " + TABLE_USER_BOARDGAME + " user_boardgame " +
+                "ON boardgame." + COLUMN_BOARDGAME_ID + " = user_boardgame." + COLUMN_UB_BOARDGAME_ID +
+                " WHERE user_boardgame." + COLUMN_UB_USER_ID + " = ?";
         String[] selectionArgs = new String[]{String.valueOf(userId)};
         return db.rawQuery(sql, selectionArgs);
     }
     public Cursor searchBoardgamesForUserByName(int userId, String query) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_BOARDGAME + " bg " +
-                "INNER JOIN " + TABLE_USER_BOARDGAME + " ub " +
-                "ON bg." + COLUMN_BOARDGAME_ID + " = ub." + COLUMN_UB_BOARDGAME_ID +
-                " WHERE ub." + COLUMN_UB_USER_ID + " = ? AND bg." + COLUMN_BOARDGAME_NAME + " LIKE ?";
+        String sql = "SELECT * FROM " + TABLE_BOARDGAME + " boardgame " +
+                "INNER JOIN " + TABLE_USER_BOARDGAME + " user_boardgame " +
+                "ON boardgame." + COLUMN_BOARDGAME_ID + " = user_boardgame." + COLUMN_UB_BOARDGAME_ID +
+                " WHERE user_boardgame." + COLUMN_UB_USER_ID + " = ? AND boardgame." + COLUMN_BOARDGAME_NAME + " LIKE ?";
         String[] selectionArgs = new String[]{String.valueOf(userId), "%" + query + "%"};
         return db.rawQuery(sql, selectionArgs);
     }
 
-
-    public Cursor getBoardgameDetailsById(int boardgameId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        return db.query(TABLE_BOARDGAME, null, COLUMN_ID + "=?", new String[]{String.valueOf(boardgameId)}, null, null, null);
-    }
-    /*public Cursor getBoardgameById(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM " + TABLE_BOARDGAME + " WHERE " + COLUMN_BOARDGAME_ID + " = ?", new String[]{String.valueOf(id)});
-    }*/
 
     public byte[] getBytesFromBitmap(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -306,37 +298,81 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return stream.toByteArray();
     }
     public Bitmap getBitmapFromAssets(String filename) {
-        AssetManager assetManager = context.getAssets(); // Obtiene el gestor de activos de la aplicación
+        AssetManager assetManager = context.getAssets();
         InputStream inputStream = null;
         Bitmap bitmap = null;
 
         try {
-            // Abre el archivo en assets
             inputStream = assetManager.open(filename);
-            // Decodifica el InputStream en un Bitmap
             bitmap = BitmapFactory.decodeStream(inputStream);
         } catch (IOException e) {
-            e.printStackTrace(); // Si ocurre un error, lo imprime
+            e.printStackTrace();
         } finally {
             try {
                 if (inputStream != null) {
-                    inputStream.close(); // Cierra el InputStream
+                    inputStream.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        return bitmap; // Retorna el Bitmap cargado desde assets
+        return bitmap;
     }
-
-
-
-
     public Bitmap getBitmapFromBytes(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
+    public boolean addPlayer(int userId, String playerName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PLAYER_USER_ID, userId);
+        values.put(COLUMN_PLAYER_NAME, playerName);
+        long result = db.insert(TABLE_PLAYERS, null, values);
+        db.close();
+        return result != -1;
+    }
+
+    public Cursor getPlayersByUserId(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_PLAYERS + " WHERE " + COLUMN_PLAYER_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+    }
+
+    public List<String> getGenres() {
+        List<String> genres = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + COLUMN_GENRE_NAME + " FROM " + TABLE_GENRE, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                genres.add(cursor.getString(0)); // Obtener el nombre del género
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return genres;
+    }
+    public boolean isBoardgameInGenre(int boardgameId, String genreName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT 1 FROM " + TABLE_BOARDGAME_GENRE + " boardgame_genre " +
+                "JOIN " + TABLE_GENRE + " genre ON boardgame_genre." + COLUMN_BOARDGAME_GENRE_GENRE_ID + " = genre." + COLUMN_GENRE_ID + " " +
+                "WHERE boardgame_genre." + COLUMN_BOARDGAME_GENRE_BOARDGAME_ID + " = ? AND genre." + COLUMN_GENRE_NAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(boardgameId), genreName});
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists;
+    }
+}
+
+   /* public Cursor getBoardgameDetailsById(int boardgameId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.query(TABLE_BOARDGAME, null, COLUMN_ID + "=?", new String[]{String.valueOf(boardgameId)}, null, null, null);
+    }
+    *//*public Cursor getBoardgameById(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_BOARDGAME + " WHERE " + COLUMN_BOARDGAME_ID + " = ?", new String[]{String.valueOf(id)});
+    }*/
+
+/*
     public Boardgame getBoardgameById(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BOARDGAME + " WHERE " + COLUMN_BOARDGAME_ID + " = ?", new String[]{String.valueOf(id)});
@@ -363,163 +399,124 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return null;
-    }
-    public boolean addPlayer(int userId, String playerName) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_PLAYER_USER_ID, userId);
-        values.put(COLUMN_PLAYER_NAME, playerName);
-        long result = db.insert(TABLE_PLAYERS, null, values);
-        db.close();
-        return result != -1;
-    }
+    }*/
 
-    public Cursor getPlayersByUserId(int userId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM " + TABLE_PLAYERS + " WHERE " + COLUMN_PLAYER_USER_ID + " = ?", new String[]{String.valueOf(userId)});
-    }
-    public Cursor getAllPlayerNames(int userId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        // Filtramos los jugadores por user_id
-        return db.rawQuery("SELECT " + COLUMN_PLAYER_NAME + " FROM " + TABLE_PLAYERS + " WHERE " + COLUMN_PLAYER_USER_ID + " = ?",
-                new String[]{String.valueOf(userId)});
-    }
-    public boolean isPlayerExists(String playerName, int userId) {
-        SQLiteDatabase db = this.getReadableDatabase();
+/*public Cursor getAllPlayerNames(int userId) {
+    SQLiteDatabase db = this.getReadableDatabase();
+    // Filtramos los jugadores por user_id
+    return db.rawQuery("SELECT " + COLUMN_PLAYER_NAME + " FROM " + TABLE_PLAYERS + " WHERE " + COLUMN_PLAYER_USER_ID + " = ?",
+            new String[]{String.valueOf(userId)});
+}
+public boolean isPlayerExists(String playerName, int userId) {
+    SQLiteDatabase db = this.getReadableDatabase();
 
-        // Consultar si existe un jugador con este nombre y el userId dado
-        String query = "SELECT COUNT(*) FROM players WHERE player_name = ? AND user_id = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{playerName, String.valueOf(userId)});
+    // Consultar si existe un jugador con este nombre y el userId dado
+    String query = "SELECT COUNT(*) FROM players WHERE player_name = ? AND user_id = ?";
+    Cursor cursor = db.rawQuery(query, new String[]{playerName, String.valueOf(userId)});
 
-        cursor.moveToFirst();
-        int count = cursor.getInt(0);
-        cursor.close();
+    cursor.moveToFirst();
+    int count = cursor.getInt(0);
+    cursor.close();
 
-        return count > 0; // Retorna true si el jugador ya existe
-    }
-    public Cursor searchBoardgamesByGenre(String genreName) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT bg.* FROM " + TABLE_BOARDGAME + " bg " +
-                "INNER JOIN " + TABLE_BOARDGAME_GENRE + " bg_g " +
-                "ON bg." + COLUMN_BOARDGAME_ID + " = bg_g." + COLUMN_BG_ID + " " +
-                "INNER JOIN " + TABLE_GENRE + " g " +
-                "ON bg_g." + COLUMN_G_ID + " = g." + COLUMN_GENRE_ID + " " +
-                "WHERE g." + COLUMN_GENRE_NAME + " = ?";
-        return db.rawQuery(sql, new String[]{genreName});
-    }
-
-    public List<ListElement> getBoardgamesByGenre(int genreId, int userId) {
-        List<ListElement> boardgamesList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        // Consulta SQL para obtener los juegos por género
-        String sql = "SELECT bg.id, bg.name, bg.image " +
-                "FROM " + TABLE_BOARDGAME + " bg " +
-                "INNER JOIN " + TABLE_BOARDGAME_GENRE + " bg_genre ON bg.id = bg_genre.boardgame_id " +
-                "WHERE bg_genre.genre_id = ?";
-
-        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(genreId)});
-
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_ID));
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NAME));
-                byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_PHOTO));  // Asumiendo que tienes una columna de tipo BLOB para la imagen
-
-                // Crea un ListElement con los datos obtenidos
-                ListElement listElement = new ListElement(name, id, image);
-                boardgamesList.add(listElement);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        db.close();
-
-        return boardgamesList;
-    }
-    public List<String> getAllGenresList() {
-        List<String> genres = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        String query = "SELECT DISTINCT g.name FROM genre g " +
-                "JOIN boardgame_genre bg ON g.id = bg.genre_id " +
-                "JOIN boardgame b ON bg.boardgame_id = b.id";
-
-        Cursor cursor = db.rawQuery(query, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                int indexName = cursor.getColumnIndex("name");
-                String genreName = cursor.getString(indexName);
-                genres.add(genreName);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        db.close();
-        return genres;
-    }
-    public List<ListElement> getAllBoardgamesList() {
-        List<ListElement> genreList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        // Aquí asumimos que tienes una tabla o columna específica para los géneros
-        Cursor cursor = db.rawQuery("SELECT DISTINCT genre FROM " + TABLE_BOARDGAME, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                int indexGenre = cursor.getColumnIndex("genre");
-                String genre = cursor.getString(indexGenre);
-                genreList.add(new ListElement(genre, 0, null)); // Usamos el nombre del género
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        db.close();
-
-        return genreList;
-    }
-    public int getGenreIdByName(String genreName) {
-        int genreId = -1;
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        // Supón que tienes una tabla para los géneros o un campo de género en la tabla de juegos
-        Cursor cursor = db.rawQuery("SELECT id FROM " + TABLE_GENRE + " WHERE name = ?", new String[]{genreName});
-
-        if (cursor.moveToFirst()) {
-            int indexId = cursor.getColumnIndex("id");
-            genreId = cursor.getInt(indexId);
-        }
-        cursor.close();
-        db.close();
-
-        return genreId;
-    }
-    public List<String> getGenres() {
-        List<String> genres = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT " + COLUMN_GENRE_NAME + " FROM " + TABLE_GENRE, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                genres.add(cursor.getString(0)); // Obtener el nombre del género
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return genres;
-    }
-    public boolean isBoardgameInGenre(int boardgameId, String genreName) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT 1 FROM " + TABLE_BOARDGAME_GENRE + " bg " +
-                "JOIN " + TABLE_GENRE + " g ON bg." + COLUMN_G_ID + " = g." + COLUMN_GENRE_ID + " " +
-                "WHERE bg." + COLUMN_BG_ID + " = ? AND g." + COLUMN_GENRE_NAME + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(boardgameId), genreName});
-        boolean exists = cursor.getCount() > 0;
-        cursor.close();
-        return exists;
-    }
+    return count > 0; // Retorna true si el jugador ya existe
+}
+public Cursor searchBoardgamesByGenre(String genreName) {
+    SQLiteDatabase db = this.getReadableDatabase();
+    String sql = "SELECT bg.* FROM " + TABLE_BOARDGAME + " bg " +
+            "INNER JOIN " + TABLE_BOARDGAME_GENRE + " bg_g " +
+            "ON bg." + COLUMN_BOARDGAME_ID + " = bg_g." + COLUMN_BG_ID + " " +
+            "INNER JOIN " + TABLE_GENRE + " g " +
+            "ON bg_g." + COLUMN_G_ID + " = g." + COLUMN_GENRE_ID + " " +
+            "WHERE g." + COLUMN_GENRE_NAME + " = ?";
+    return db.rawQuery(sql, new String[]{genreName});
 }
 
+public List<ListElement> getBoardgamesByGenre(int genreId, int userId) {
+    List<ListElement> boardgamesList = new ArrayList<>();
+    SQLiteDatabase db = this.getReadableDatabase();
 
+    // Consulta SQL para obtener los juegos por género
+    String sql = "SELECT bg.id, bg.name, bg.image " +
+            "FROM " + TABLE_BOARDGAME + " bg " +
+            "INNER JOIN " + TABLE_BOARDGAME_GENRE + " bg_genre ON bg.id = bg_genre.boardgame_id " +
+            "WHERE bg_genre.genre_id = ?";
+
+    Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(genreId)});
+
+    if (cursor != null && cursor.moveToFirst()) {
+        do {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_ID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NAME));
+            byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_PHOTO));  // Asumiendo que tienes una columna de tipo BLOB para la imagen
+
+            // Crea un ListElement con los datos obtenidos
+            ListElement listElement = new ListElement(name, id, image);
+            boardgamesList.add(listElement);
+        } while (cursor.moveToNext());
+    }
+
+    cursor.close();
+    db.close();
+
+    return boardgamesList;
+}
+public List<String> getAllGenresList() {
+    List<String> genres = new ArrayList<>();
+    SQLiteDatabase db = this.getReadableDatabase();
+
+    String query = "SELECT DISTINCT g.name FROM genre g " +
+            "JOIN boardgame_genre bg ON g.id = bg.genre_id " +
+            "JOIN boardgame b ON bg.boardgame_id = b.id";
+
+    Cursor cursor = db.rawQuery(query, null);
+
+    if (cursor.moveToFirst()) {
+        do {
+            int indexName = cursor.getColumnIndex("name");
+            String genreName = cursor.getString(indexName);
+            genres.add(genreName);
+        } while (cursor.moveToNext());
+    }
+
+    cursor.close();
+    db.close();
+    return genres;
+}
+public List<ListElement> getAllBoardgamesList() {
+    List<ListElement> genreList = new ArrayList<>();
+    SQLiteDatabase db = this.getReadableDatabase();
+
+    // Aquí asumimos que tienes una tabla o columna específica para los géneros
+    Cursor cursor = db.rawQuery("SELECT DISTINCT genre FROM " + TABLE_BOARDGAME, null);
+
+    if (cursor.moveToFirst()) {
+        do {
+            int indexGenre = cursor.getColumnIndex("genre");
+            String genre = cursor.getString(indexGenre);
+            genreList.add(new ListElement(genre, 0, null)); // Usamos el nombre del género
+        } while (cursor.moveToNext());
+    }
+    cursor.close();
+    db.close();
+
+    return genreList;
+}
+public int getGenreIdByName(String genreName) {
+    int genreId = -1;
+    SQLiteDatabase db = this.getReadableDatabase();
+
+    // Supón que tienes una tabla para los géneros o un campo de género en la tabla de juegos
+    Cursor cursor = db.rawQuery("SELECT id FROM " + TABLE_GENRE + " WHERE name = ?", new String[]{genreName});
+
+    if (cursor.moveToFirst()) {
+        int indexId = cursor.getColumnIndex("id");
+        genreId = cursor.getInt(indexId);
+    }
+    cursor.close();
+    db.close();
+
+    return genreId;
+}*/
 
 
 

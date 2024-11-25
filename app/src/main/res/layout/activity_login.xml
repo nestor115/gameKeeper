@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
     tools:context=".activities.LoginActivity">
 
     <!-- Título centrado -->
@@ -14,38 +12,38 @@
         android:id="@+id/tv_Login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:text="@string/login"
+        android:textColor="#333333"
         android:textSize="34sp"
         android:textStyle="bold"
-        android:textColor="#333333"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Contenedor de campos -->
     <LinearLayout
         android:id="@+id/ll_Container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/rounded_background"
         android:orientation="vertical"
         android:padding="16dp"
-        android:background="@drawable/rounded_background"
-        app:layout_constraintTop_toBottomOf="@id/tv_Login"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="24dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_Login">
 
         <!-- Campo Email -->
         <TextView
             android:id="@+id/tv_EmailLabelLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="@string/email"
-            android:textSize="16sp"
             android:textColor="#555555"
-            android:layout_marginTop="16dp" />
+            android:textSize="16sp" />
 
         <EditText
             android:id="@+id/et_EmailInputLogin"
@@ -62,10 +60,10 @@
             android:id="@+id/tv_PasswordLabelLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="@string/contrase_a"
-            android:textSize="16sp"
             android:textColor="#555555"
-            android:layout_marginTop="16dp" />
+            android:textSize="16sp" />
 
         <EditText
             android:id="@+id/et_PasswordInputLogin"
@@ -82,12 +80,12 @@
             android:id="@+id/btn_Login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/enviar"
-            android:textSize="18sp"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#FF5722"
             android:layout_marginTop="24dp"
-            android:elevation="4dp" />
+            android:backgroundTint="#FF5722"
+            android:elevation="4dp"
+            android:text="@string/enviar"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
     </LinearLayout>
 
     <!-- Botón flotante para ir atrás -->
@@ -96,9 +94,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_arrow_back"
         android:contentDescription="@string/back_button_description"
-        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_arrow_back"
+        app:backgroundTint="#FF5722"
         app:layout_constraintStart_toStartOf="parent"
-        app:backgroundTint="#FF5722" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

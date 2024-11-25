@@ -14,7 +14,7 @@ import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BaseActivity {
 
     private DatabaseHelper dB;
     private EditText etEmailInput,etPasswordIput;
@@ -24,7 +24,7 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
+        useToolbar = false;
         dB = new DatabaseHelper(this);
         etEmailInput =findViewById(R.id.etEmailInputRegister);
         etPasswordIput =findViewById(R.id.etPasswordInputRegister);

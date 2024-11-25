@@ -17,4 +17,8 @@
     <string name="register">Registrarse</string>
     <string name="borrar">Borrar</string>
     <string name="t_tulo">Título</string>
+    <string name="jugar">Jugar</string>
+    <string name="jugadores">Jugadores:</string>
+    <string name="a_adir_jugador">Añadir Jugador</string>
+    <string name="escribe_un_nombre_del_jugador">Escribe un nombre del jugador</string>
 </resources>

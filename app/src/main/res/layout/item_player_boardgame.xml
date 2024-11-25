@@ -20,11 +20,10 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_marginEnd="8dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_foreground"
-            android:background="#8C1E1E"
             android:paddingLeft="14dp"
-            android:paddingRight="14dp"/>
+            android:paddingRight="14dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher_foreground" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -37,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="Exploding kittens"
+                android:text=""
                 android:textSize="18sp"
                 android:textStyle="bold"/>
 
@@ -72,8 +71,7 @@
                         android:id="@+id/item_name1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Santiago"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -97,8 +95,7 @@
                         android:id="@+id/item_name2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nombre 2"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -122,8 +119,7 @@
                         android:id="@+id/item_name3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nombre 3"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -147,8 +143,7 @@
                         android:id="@+id/item_name4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nombre 4"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
             </GridLayout>

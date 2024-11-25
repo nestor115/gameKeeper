@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#F5F5F5"
     tools:context=".activities.MainActivity">
 
     <!-- Título GameKeeper centrado -->
@@ -12,51 +11,51 @@
         android:id="@+id/tv_GameKeeperTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:text="GameKeeper"
+        android:textColor="#333333"
         android:textSize="48sp"
         android:textStyle="bold"
-        android:textColor="#333333"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Contenedor de botones -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/rounded_background"
         android:orientation="vertical"
         android:padding="16dp"
-        android:background="@drawable/rounded_background"
-        app:layout_constraintTop_toBottomOf="@id/tv_GameKeeperTitle"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="24dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_GameKeeperTitle">
 
         <!-- Botón Registro -->
         <Button
             android:id="@+id/buttonGoRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Registrarse"
-            android:textSize="18sp"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#FF5722"
             android:layout_marginTop="24dp"
-            android:elevation="4dp" />
+            android:backgroundTint="#FF5722"
+            android:elevation="4dp"
+            android:text="Registrarse"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
 
         <!-- Botón Login -->
         <Button
             android:id="@+id/buttonGoLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Iniciar sesión"
-            android:textSize="18sp"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#FF5722"
             android:layout_marginTop="16dp"
-            android:elevation="4dp" />
+            android:backgroundTint="#FF5722"
+            android:elevation="4dp"
+            android:text="Iniciar sesión"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

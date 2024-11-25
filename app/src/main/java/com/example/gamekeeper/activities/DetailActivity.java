@@ -163,8 +163,8 @@ public class DetailActivity extends AppCompatActivity {
         Cursor cursor = db.rawQuery("SELECT g." + DatabaseHelper.COLUMN_GENRE_NAME +
                 " FROM " + DatabaseHelper.TABLE_GENRE + " g " +
                 " JOIN " + DatabaseHelper.TABLE_BOARDGAME_GENRE + " bg " +
-                " ON g." + DatabaseHelper.COLUMN_GENRE_ID + " = bg." + DatabaseHelper.COLUMN_G_ID +
-                " WHERE bg." + DatabaseHelper.COLUMN_BG_ID + " = ?", new String[]{String.valueOf(boardGameId)});
+                " ON g." + DatabaseHelper.COLUMN_GENRE_ID + " = bg." + DatabaseHelper.COLUMN_BOARDGAME_GENRE_GENRE_ID +
+                " WHERE bg." + DatabaseHelper.COLUMN_BOARDGAME_GENRE_BOARDGAME_ID + " = ?", new String[]{String.valueOf(boardGameId)});
 
         List<String> genres = new ArrayList<>();
         if (cursor != null) {
