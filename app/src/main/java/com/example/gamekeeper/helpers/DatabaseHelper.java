@@ -148,9 +148,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return -1;
     }
+    public String getStoredPasswordByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT password FROM users WHERE email = ?", new String[]{email});
+        if (cursor.moveToFirst()) {
+            String password = cursor.getString(0);
+            cursor.close();
+            return password;
+        }
+        cursor.close();
+        return null;
+    }
     public void addGenre(String genreName) {
         SQLiteDatabase db = this.getWritableDatabase();
-        // Comprobar si el género ya existe
         Cursor cursor = db.query("genre", new String[]{"name"}, "name = ?", new String[]{genreName}, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.close();

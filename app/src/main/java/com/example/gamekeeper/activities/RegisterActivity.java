@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
+import org.mindrot.jbcrypt.BCrypt;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gamekeeper.R;
@@ -40,7 +40,8 @@ public class RegisterActivity extends BaseActivity {
                 if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
                     Toast.makeText(RegisterActivity.this,"todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
                 }else{
-                    boolean isAdded = dB.addUser(email,password);
+                    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+                    boolean isAdded = dB.addUser(email,hashedPassword);
                     if(isAdded){
                         Toast.makeText(RegisterActivity.this, "Registro exitoso",Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(RegisterActivity.this, MainActivity.class);

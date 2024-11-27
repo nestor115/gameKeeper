@@ -50,7 +50,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         ListElement listElement = listElements.get(position);
         holder.itemTitle.setText(listElement.getName());
 
-        // Convertir el byte[] a Bitmap
+
         byte[] elementImage = listElement.getImage();
         if (elementImage != null && elementImage.length > 0) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(elementImage, 0, elementImage.length);

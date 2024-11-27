@@ -13,6 +13,8 @@ import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 public class LoginActivity extends BaseActivity {
 
     private DatabaseHelper dB;
@@ -36,18 +38,22 @@ public class LoginActivity extends BaseActivity {
             String email = etEmailInputLogin.getText().toString().trim();
             String password = etPasswordInputLogin.getText().toString().trim();
 
-            int userId = dB.checkUser(email, password);
-            if (userId != -1) {
+            String storedHashedPassword = dB.getStoredPasswordByEmail(email);
+            if (storedHashedPassword != null && BCrypt.checkpw(password, storedHashedPassword)) {
+                // Si la contraseña coincide, iniciar sesión
+                int userId = dB.checkUser(email, storedHashedPassword);
+                if (userId != -1) {
+                    SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("user_id", userId);
+                    editor.apply();
 
-                SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("user_id", userId);
-                editor.apply();
-
-
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                startActivity(intent);
-                finish();
+                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Email o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(LoginActivity.this, "Email o contraseña incorrectos", Toast.LENGTH_SHORT).show();
             }
