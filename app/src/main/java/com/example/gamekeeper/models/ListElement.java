@@ -3,9 +3,9 @@ package com.example.gamekeeper.models;
 public class ListElement {
     private String name;
     private int id;
-    private byte[] image;
+    private String image;
 
-    public ListElement(String name, int id, byte[] image) {
+    public ListElement(String name, int id, String image) {
         this.name = name;
         this.id = id;
         this.image = image;
@@ -19,7 +19,7 @@ public class ListElement {
         return id;
     }
 
-    public byte[] getImage() {
+    public String getImage() {
         return image;
     }
 }

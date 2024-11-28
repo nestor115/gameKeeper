@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.models.ListElement;
 
@@ -48,13 +49,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
         ListElement listElement = listElements.get(position);
         holder.textViewName.setText(listElement.getName());
 
-        // Convertir el byte[] a Bitmap
-        byte[] elementImage = listElement.getImage();
-        if (elementImage != null && elementImage.length > 0) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(elementImage, 0, elementImage.length);
-            holder.imageView.setImageBitmap(bitmap);
+        String imageUrl = listElement.getImage();
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(imageUrl)
+                    .into(holder.imageView);
         } else {
-            holder.imageView.setImageResource(R.drawable.ic_launcher_foreground); // Imagen por defecto
+            holder.imageView.setImageResource(R.drawable.ic_launcher_foreground);
         }
     }
 

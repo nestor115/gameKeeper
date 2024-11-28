@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -122,7 +123,7 @@ public class DetailActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error: One or more columns not found in the database", Toast.LENGTH_LONG).show();
                 } else {
                     String title = cursor.getString(titleIndex);
-                    byte[] photo = cursor.getBlob(photoIndex);
+                    String photo = cursor.getString(photoIndex);
                     String description = cursor.getString(descriptionIndex);
                     int year = cursor.getInt(yearIndex);
                     String players = cursor.getString(playersIndex);
@@ -130,11 +131,14 @@ public class DetailActivity extends AppCompatActivity {
 
                     tvTitle.setText(title);
 
-                    if (photo != null && photo.length > 0) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length);
-                        ivGame.setImageBitmap(bitmap);
+                    if (photo != null && !photo.isEmpty()) {
+                        // Usamos Glide para cargar la imagen desde la URL
+                        Glide.with(this)
+                                .load(photo)
+                                .placeholder(R.drawable.ic_launcher_foreground)  // Imagen predeterminada mientras se carga
+                                .into(ivGame);
                     } else {
-                        ivGame.setImageResource(R.drawable.ic_launcher_foreground);
+                        ivGame.setImageResource(R.drawable.ic_launcher_foreground);  // Imagen predeterminada si no hay URL
                     }
                     String yearStr = "año de publicación " +year;
                     String playersStr = "numero de jugadores: " + players ;

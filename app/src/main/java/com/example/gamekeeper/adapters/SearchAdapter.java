@@ -14,6 +14,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.Types.ListType;
 import com.example.gamekeeper.models.ListElement;
@@ -50,12 +51,15 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         ListElement element = listElements.get(position);
         holder.textViewName.setText(element.getName());
 
-        // Convert byte array to Bitmap and set to ImageView
-        if (element.getImage() != null) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(element.getImage(), 0, element.getImage().length);
-            holder.imageView.setImageBitmap(bitmap);
+        String imageUrl = element.getImage();
+
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(imageUrl)
+                    .into(holder.imageView);
         } else {
-            holder.imageView.setImageResource(R.drawable.ic_launcher_foreground); // Placeholder image if no image is available
+            holder.imageView.setImageResource(R.drawable.ic_launcher_foreground);
         }
     }
 

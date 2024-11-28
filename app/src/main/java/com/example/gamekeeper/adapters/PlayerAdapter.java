@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.gamekeeper.models.ListElement;
 import com.example.gamekeeper.R;
 
@@ -51,10 +52,12 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         holder.itemTitle.setText(listElement.getName());
 
 
-        byte[] elementImage = listElement.getImage();
-        if (elementImage != null && elementImage.length > 0) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(elementImage, 0, elementImage.length);
-            holder.itemIcon.setImageBitmap(bitmap);
+        String imageUrl = listElement.getImage();
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(imageUrl)
+                    .into(holder.itemIcon);
         } else {
             holder.itemIcon.setImageResource(R.drawable.ic_launcher_foreground);
         }

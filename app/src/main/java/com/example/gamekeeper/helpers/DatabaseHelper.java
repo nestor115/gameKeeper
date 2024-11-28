@@ -9,13 +9,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.gamekeeper.models.ListElement;
+import com.example.gamekeeper.sampledata.CloudinaryConfig;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private Context context;
@@ -77,7 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + TABLE_BOARDGAME + " (" +
                     COLUMN_BOARDGAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_BOARDGAME_NAME + " TEXT NOT NULL, " +
-                    COLUMN_BOARDGAME_PHOTO + " BLOB, " +
+                    COLUMN_BOARDGAME_PHOTO + " TEXT, " +
                     COLUMN_BOARDGAME_DESCRIPTION + " TEXT, " +
                     COLUMN_BOARDGAME_YEAR_PUBLISHED + " INTEGER, " +
                     COLUMN_BOARDGAME_NUMBER_OF_PLAYERS + " TEXT, " +
@@ -186,7 +192,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return -1;
 
     }
-    public long addBoardgame(String name, byte[] photo, String description, int yearPublished, String numberOfPlayers, String time) {
+    public long addBoardgame(String name, String photoURl, String description, int yearPublished, String numberOfPlayers, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor cursor = db.query(TABLE_BOARDGAME, new String[]{COLUMN_BOARDGAME_NAME}, COLUMN_BOARDGAME_NAME + "=?", new String[]{name}, null, null, null);
@@ -197,7 +203,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(COLUMN_BOARDGAME_NAME, name);
-        values.put(COLUMN_BOARDGAME_PHOTO, photo);
+        values.put(COLUMN_BOARDGAME_PHOTO, photoURl);
         values.put(COLUMN_BOARDGAME_DESCRIPTION, description);
         values.put(COLUMN_BOARDGAME_YEAR_PUBLISHED, yearPublished);
         values.put(COLUMN_BOARDGAME_NUMBER_OF_PLAYERS, numberOfPlayers);
@@ -267,7 +273,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_ID));
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NAME));
-                byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_PHOTO));
+                String image = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_PHOTO));
                 ListElement listElement = new ListElement(name, id, image);
                 listElements.add(listElement);
             } while (cursor.moveToNext());
@@ -300,14 +306,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] selectionArgs = new String[]{String.valueOf(userId), "%" + query + "%"};
         return db.rawQuery(sql, selectionArgs);
     }
+    public String uploadImageToCloudinary(Bitmap bitmap) {
+        File tempFile;
+        try {
+            // Convierte el Bitmap a un archivo temporal
+            tempFile = File.createTempFile("temp_image", ".jpg");
+            FileOutputStream fos = new FileOutputStream(tempFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.close();
+
+            // Sube el archivo a Cloudinary
+            Cloudinary cloudinary = CloudinaryConfig.getInstance();
+            Map uploadResult = cloudinary.uploader().upload(tempFile, ObjectUtils.emptyMap());
+
+            // Devuelve la URL de la imagen
+            return (String) uploadResult.get("url");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Manejo de errores
+        }
+    }
 
 
-    public byte[] getBytesFromBitmap(Bitmap bitmap) {
+    public byte[] getBytesFromBitmap2(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.WEBP, 100, stream);
         return stream.toByteArray();
     }
-    public Bitmap getBitmapFromAssets(String filename) {
+    public Bitmap getBitmapFromAssets2(String filename) {
         AssetManager assetManager = context.getAssets();
         InputStream inputStream = null;
         Bitmap bitmap = null;
@@ -329,7 +356,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return bitmap;
     }
-    public Bitmap getBitmapFromBytes(byte[] image) {
+    public Bitmap getBitmapFromBytes2(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 

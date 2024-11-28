@@ -122,8 +122,8 @@ public class SearchBarFragment extends Fragment {
                     if (columnIndexName != -1 && columnIndexId != -1 && columnIndexImage != -1) {
                         String name = cursor.getString(columnIndexName);
                         int id = cursor.getInt(columnIndexId);
-                        byte[] image = cursor.getBlob(columnIndexImage); // Obtener la imagen en formato byte[]
-                        ListElement element = new ListElement(name, id, image); // Crear ListElement con la imagen
+                        String image = cursor.getString(columnIndexImage);
+                        ListElement element = new ListElement(name, id, image); 
                         searchResults.add(element);
                     } else {
                         Log.e("SEARCH_BAR_FRAGMENT", "Columnas no encontradas");
