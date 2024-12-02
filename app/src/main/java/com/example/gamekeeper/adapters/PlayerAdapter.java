@@ -24,19 +24,25 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
     private List<ListElement> listElements = new ArrayList<>(); // Lista de ListElement
     private OnItemClickListener listener;
     private List<String> playerNames;
+    private RecyclerView recyclerView;
+    private boolean[][] checkBoxStates;
 
+    public void setRecyclerView(RecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
+    }
 
     public PlayerAdapter(List<String> playerNames) {
         this.playerNames = playerNames;
     }
 
-    // Método para actualizar la lista
+
     public void submitList(List<ListElement> newListElements) {
-        listElements.clear(); // Limpiamos la lista anterior
+        listElements.clear();
         if (newListElements != null) {
-            listElements.addAll(newListElements); // Añadimos los nuevos items
+            listElements.addAll(newListElements);
         }
-        notifyDataSetChanged(); // Notificamos que los datos han cambiado
+        checkBoxStates = new boolean[listElements.size()][playerNames.size()];
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -61,11 +67,22 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         } else {
             holder.itemIcon.setImageResource(R.drawable.ic_launcher_foreground);
         }
-        if (playerNames != null && !playerNames.isEmpty()) {
-            updatePlayerInfo(holder.itemName1, holder.checkBox1, 0);
-            updatePlayerInfo(holder.itemName2, holder.checkBox2, 1);
-            updatePlayerInfo(holder.itemName3, holder.checkBox3, 2);
-            updatePlayerInfo(holder.itemName4, holder.checkBox4, 3);
+        for (int i = 0; i < playerNames.size(); i++) {
+            updatePlayerInfo(holder, i, position);
+        }
+    }
+    private void updatePlayerInfo(ListElementViewHolder holder, int playerIndex, int position) {
+        if (playerNames.size() > playerIndex) {
+            holder.getPlayerName(playerIndex).setText(playerNames.get(playerIndex));
+            holder.getCheckBox(playerIndex).setVisibility(View.VISIBLE);
+            // Configurar el estado del CheckBox
+            holder.getCheckBox(playerIndex).setChecked(checkBoxStates[position][playerIndex]);
+            holder.getCheckBox(playerIndex).setOnCheckedChangeListener((buttonView, isChecked) -> {
+                checkBoxStates[position][playerIndex] = isChecked;  // Actualizar el estado cuando se cambia
+            });
+        } else {
+            holder.getPlayerName(playerIndex).setText("");
+            holder.getCheckBox(playerIndex).setVisibility(View.GONE);
         }
     }
     private void updatePlayerInfo(TextView itemName, CheckBox checkBox, int playerIndex) {
@@ -76,6 +93,25 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
             itemName.setText("");
             checkBox.setVisibility(View.GONE);
         }
+    }
+    public CheckBox getCheckBoxByIndex(int itemIndex, int playerIndex) {
+        if (recyclerView == null) return null;
+
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(itemIndex);
+        if (holder instanceof PlayerAdapter.ListElementViewHolder) {
+            PlayerAdapter.ListElementViewHolder viewHolder = (PlayerAdapter.ListElementViewHolder) holder;
+
+            switch (playerIndex) {
+                case 0: return viewHolder.checkBox1;
+                case 1: return viewHolder.checkBox2;
+                case 2: return viewHolder.checkBox3;
+                case 3: return viewHolder.checkBox4;
+            }
+        }
+        return null;
+    }
+    public boolean getCheckBoxState(int itemIndex, int playerIndex) {
+        return checkBoxStates[itemIndex][playerIndex];  // Obtener el estado del CheckBox
     }
 
     @Override
@@ -91,11 +127,8 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         public ListElementViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            // Referencias a las vistas
             itemTitle = itemView.findViewById(R.id.item_title);
             itemIcon = itemView.findViewById(R.id.item_icon);
-
-            // Referencias a los CheckBoxes y TextViews para los nombres
             checkBox1 = itemView.findViewById(R.id.checkBox1);
             checkBox2 = itemView.findViewById(R.id.checkBox2);
             checkBox3 = itemView.findViewById(R.id.checkBox3);
@@ -105,21 +138,36 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
             itemName2 = itemView.findViewById(R.id.item_name2);
             itemName3 = itemView.findViewById(R.id.item_name3);
             itemName4 = itemView.findViewById(R.id.item_name4);
+        }
 
-            // Configurar el clic en el elemento (este es el comportamiento original que tenías)
-            itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onItemClick(listElements.get(getAbsoluteAdapterPosition()));
-                }
-            });
+        // Método para obtener el nombre del jugador
+        public TextView getPlayerName(int index) {
+            switch (index) {
+                case 0: return itemName1;
+                case 1: return itemName2;
+                case 2: return itemName3;
+                case 3: return itemName4;
+                default: return null;
+            }
+        }
+
+        // Método para obtener el CheckBox
+        public CheckBox getCheckBox(int index) {
+            switch (index) {
+                case 0: return checkBox1;
+                case 1: return checkBox2;
+                case 2: return checkBox3;
+                case 3: return checkBox4;
+                default: return null;
+            }
         }
     }
 
 
-    // Interface para manejar los clics
     public interface OnItemClickListener {
         void onItemClick(ListElement listElement);
     }
+
 
 
     public void setOnItemClickListener(OnItemClickListener listener) {

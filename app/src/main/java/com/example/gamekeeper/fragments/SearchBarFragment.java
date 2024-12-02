@@ -31,11 +31,10 @@ public class SearchBarFragment extends Fragment {
     private ListType listType;
 
     public interface OnSearchListener {
-        void onSearchResults(List<ListElement> results); // Añadir este método
+        void onSearchResults(List<ListElement> results);
     }
 
     public SearchBarFragment() {
-        // Constructor vacío requerido
     }
 
     public static SearchBarFragment newInstance(ListType listType) {
@@ -99,15 +98,15 @@ public class SearchBarFragment extends Fragment {
 
         if (listType == ListType.HOME) {
             if (query.isEmpty()) {
-                cursor = dB.getAllBoardgamesForUser(currentUserId);  // Cambiar a la tabla correcta
+                cursor = dB.getAllBoardgamesForUser(currentUserId);
             } else {
-                cursor = dB.searchBoardgamesForUserByName(currentUserId, query);  // Cambiar a la tabla correcta
+                cursor = dB.searchBoardgamesForUserByName(currentUserId, query);
             }
         } else if (listType == ListType.SEARCH) {
             if (query.isEmpty()) {
-                cursor = dB.getAllBoardgames();  // Cambiar a la tabla correcta
+                cursor = dB.getAllBoardgames();
             } else {
-                cursor = dB.searchBoardgamesByName(query);  // Cambiar a la tabla correcta
+                cursor = dB.searchBoardgamesByName(query);
             }
         }
 
@@ -117,7 +116,7 @@ public class SearchBarFragment extends Fragment {
                 do {
                     int columnIndexName = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NAME);
                     int columnIndexId = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_ID);
-                    int columnIndexImage = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_PHOTO); // Asegúrate de incluir la columna de la imagen
+                    int columnIndexImage = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_PHOTO);
 
                     if (columnIndexName != -1 && columnIndexId != -1 && columnIndexImage != -1) {
                         String name = cursor.getString(columnIndexName);
@@ -133,9 +132,8 @@ public class SearchBarFragment extends Fragment {
             cursor.close();
         }
 
-        // Notificar a la actividad con los resultados
         if (searchListener != null) {
-            searchListener.onSearchResults(searchResults);  // Llamar al método correcto
+            searchListener.onSearchResults(searchResults);
         }
     }
     private int getCurrentUserId() {

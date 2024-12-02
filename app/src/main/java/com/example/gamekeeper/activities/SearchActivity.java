@@ -51,12 +51,11 @@ public class SearchActivity extends BaseActivity implements SearchBarFragment.On
 
     @Override
     public void onSearchResults(List<ListElement> results) {
-        // Aquí se verifica el tipo de vista, en función de eso, filtramos los resultados.
 
 
 
             searchResults.clear();
-            searchResults.addAll(results); // Aquí es donde se hace la búsqueda en la tabla boardgames
+            searchResults.addAll(results);
 
         searchAdapter.notifyDataSetChanged();
     }

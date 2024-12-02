@@ -16,7 +16,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Imagen del juego de mesa (a la izquierda) -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_ItemBoardgame"
             android:layout_width="100dp"
@@ -29,7 +28,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/RoundedImage" />
 
-        <!-- Título del juego de mesa a la derecha, encima del botón de borrar -->
         <TextView
             android:id="@+id/tv_TittleItemBoardgame"
             android:layout_width="0dp"
@@ -47,7 +45,6 @@
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintVertical_bias="0.3" />
 
-        <!-- Botón para borrar debajo del título, con estilo similar -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_delete"
             android:layout_width="0dp"

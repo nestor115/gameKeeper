@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@id/iv_Boardgame"
-                android:text="Nombre"
+                android:text="@string/nombre"
                 android:textColor="@android:color/black"
                 android:textSize="24sp"
                 android:textStyle="bold"

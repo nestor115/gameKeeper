@@ -12,6 +12,7 @@ import android.util.Log;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.gamekeeper.models.ListElement;
+import com.example.gamekeeper.models.ListElementTimesPlayed;
 import com.example.gamekeeper.sampledata.CloudinaryConfig;
 
 import java.io.ByteArrayOutputStream;
@@ -58,6 +59,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_USER_BOARDGAME = "user_boardgame";
     public static final String COLUMN_UB_USER_ID = "user_id";
     public static final String COLUMN_UB_BOARDGAME_ID = "boardgame_id";
+    // Tabla relación entre jugadores y juegos con veces jugados
+    public static final String TABLE_PLAYER_BOARDGAME = "player_boardgame";
+    public static final String COLUMN_PLAYER_BOARDGAME_PLAYER_ID = "player_id";
+    public static final String COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID = "boardgame_id";
+    public static final String COLUMN_PLAYER_BOARDGAME_TIMES_PLAYED = "times_played";
 
 
     private static final String TABLE_CREATE_USERS =
@@ -65,15 +71,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_EMAIL + " TEXT UNIQUE, " +
                     COLUMN_PASSWORD + " TEXT);";
-
     private static final String TABLE_CREATE_PLAYERS =
             "CREATE TABLE " + TABLE_PLAYERS + " (" +
                     COLUMN_PLAYER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_PLAYER_USER_ID + " INTEGER, " +
                     COLUMN_PLAYER_NAME + " TEXT NOT NULL, " +
                     "FOREIGN KEY (" + COLUMN_PLAYER_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "));";
-
-
     private static final String TABLE_CREATE_GENRE =
             "CREATE TABLE " + TABLE_GENRE + " (" +
                     COLUMN_GENRE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -105,12 +108,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "FOREIGN KEY (" + COLUMN_UB_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "), " +
                     "FOREIGN KEY (" + COLUMN_UB_BOARDGAME_ID + ") REFERENCES " + TABLE_BOARDGAME + "(" + COLUMN_BOARDGAME_ID + "));";
 
+    private static final String TABLE_CREATE_PLAYER_BOARDGAME =
+            "CREATE TABLE " + TABLE_PLAYER_BOARDGAME + " (" +
+                    COLUMN_PLAYER_BOARDGAME_PLAYER_ID + " INTEGER, " +
+                    COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + " INTEGER, " +
+                    COLUMN_PLAYER_BOARDGAME_TIMES_PLAYED + " INTEGER DEFAULT 0, " +
+                    "PRIMARY KEY (" + COLUMN_PLAYER_BOARDGAME_PLAYER_ID + ", " + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + "), " +
+                    "FOREIGN KEY (" + COLUMN_PLAYER_BOARDGAME_PLAYER_ID + ") REFERENCES " + TABLE_PLAYERS + "(" + COLUMN_PLAYER_ID + "), " +
+                    "FOREIGN KEY (" + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + ") REFERENCES " + TABLE_BOARDGAME + "(" + COLUMN_BOARDGAME_ID + "));";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
     }
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(TABLE_CREATE_USERS);
@@ -119,9 +129,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(TABLE_CREATE_BOARDGAME);
         db.execSQL(TABLE_CREATE_BOARDGAME_GENRE);
         db.execSQL(TABLE_CREATE_USER_BOARDGAME);
-
+        db.execSQL(TABLE_CREATE_PLAYER_BOARDGAME);
     }
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
@@ -130,9 +139,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOARDGAME);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOARDGAME_GENRE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_BOARDGAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYER_BOARDGAME);
         onCreate(db);
     }
-
     public boolean addUser(String email, String password){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -142,7 +151,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return result != -1;
     }
-
     public int checkUser(String email, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT id FROM users WHERE email = ? AND password = ?", new String[]{email, password});
@@ -190,7 +198,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return -1;
-
     }
     public long addBoardgame(String name, String photoURl, String description, int yearPublished, String numberOfPlayers, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -200,7 +207,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
             return -1;
         }
-
         ContentValues values = new ContentValues();
         values.put(COLUMN_BOARDGAME_NAME, name);
         values.put(COLUMN_BOARDGAME_PHOTO, photoURl);
@@ -214,7 +220,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return result;
     }
-
     public void addBoardgameGenre(long gameId, int genreId) {
         if (genreId == -1) {
             Log.e("Database", "No se encontró el género para el juego con ID: " + gameId);
@@ -258,7 +263,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rowsAffected > 0;
     }
 
-
     public List<ListElement> getUserBoardgames(int userId) {
         List<ListElement> listElements = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -267,7 +271,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "INNER JOIN " + TABLE_USER_BOARDGAME + " user_boardgame ON boardgame.id = user_boardgame.boardgame_id " +
                 "WHERE user_boardgame.user_id = ?";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
-
 
         if (cursor.moveToFirst()) {
             do {
@@ -309,57 +312,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public String uploadImageToCloudinary(Bitmap bitmap) {
         File tempFile;
         try {
-            // Convierte el Bitmap a un archivo temporal
             tempFile = File.createTempFile("temp_image", ".jpg");
             FileOutputStream fos = new FileOutputStream(tempFile);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.close();
 
-            // Sube el archivo a Cloudinary
             Cloudinary cloudinary = CloudinaryConfig.getInstance();
             Map uploadResult = cloudinary.uploader().upload(tempFile, ObjectUtils.emptyMap());
 
-            // Devuelve la URL de la imagen
             return (String) uploadResult.get("url");
 
         } catch (Exception e) {
             e.printStackTrace();
-            return null; // Manejo de errores
+            return null;
         }
     }
-
-
-    public byte[] getBytesFromBitmap2(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.WEBP, 100, stream);
-        return stream.toByteArray();
-    }
-    public Bitmap getBitmapFromAssets2(String filename) {
-        AssetManager assetManager = context.getAssets();
-        InputStream inputStream = null;
-        Bitmap bitmap = null;
-
-        try {
-            inputStream = assetManager.open(filename);
-            bitmap = BitmapFactory.decodeStream(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return bitmap;
-    }
-    public Bitmap getBitmapFromBytes2(byte[] image) {
-        return BitmapFactory.decodeByteArray(image, 0, image.length);
-    }
-
     public boolean addPlayer(int userId, String playerName) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -382,7 +349,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                genres.add(cursor.getString(0)); // Obtener el nombre del género
+                genres.add(cursor.getString(0));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -398,7 +365,146 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
+    public boolean addOrIncrementPlayerBoardgame(int playerId, int boardgameId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        boolean success;
+
+        // Verifica si ya existe un registro con playerId y boardgameId
+        Cursor cursor = db.query(
+                TABLE_PLAYER_BOARDGAME,
+                new String[]{COLUMN_PLAYER_BOARDGAME_TIMES_PLAYED},
+                COLUMN_PLAYER_BOARDGAME_PLAYER_ID + " = ? AND " + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + " = ?",
+                new String[]{String.valueOf(playerId), String.valueOf(boardgameId)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null && cursor.moveToFirst()) {
+            // Si existe, incrementa el campo times_played
+            int currentTimesPlayed = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PLAYER_BOARDGAME_TIMES_PLAYED));
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_PLAYER_BOARDGAME_TIMES_PLAYED, currentTimesPlayed + 1);
+
+            // Actualiza el registro existente
+            int rowsAffected = db.update(
+                    TABLE_PLAYER_BOARDGAME,
+                    values,
+                    COLUMN_PLAYER_BOARDGAME_PLAYER_ID + " = ? AND " + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + " = ?",
+                    new String[]{String.valueOf(playerId), String.valueOf(boardgameId)}
+            );
+            success = rowsAffected > 0;
+        } else {
+            // Si no existe, inserta un nuevo registro
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_PLAYER_BOARDGAME_PLAYER_ID, playerId);
+            values.put(COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID, boardgameId);
+            values.put(COLUMN_PLAYER_BOARDGAME_TIMES_PLAYED, 1);
+
+            long result = db.insert(TABLE_PLAYER_BOARDGAME, null, values);
+            success = result != -1;
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        db.close();
+        return success;
+    }
+
+
+    public Cursor getBoardgamesForPlayer(int playerId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT boardgame.*, player_boardgame.times_played FROM " + TABLE_BOARDGAME + " boardgame " +
+                "INNER JOIN " + TABLE_PLAYER_BOARDGAME + " player_boardgame " +
+                "ON boardgame." + COLUMN_BOARDGAME_ID + " = player_boardgame." + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID +
+                " WHERE player_boardgame." + COLUMN_PLAYER_BOARDGAME_PLAYER_ID + " = ?";
+        return db.rawQuery(query, new String[]{String.valueOf(playerId)});
+    }
+    //Devuelve una lista de elementos con el nombre del juego, el id  la imagen y las veces jugadas
+    public List<ListElementTimesPlayed> getListElementTimesPlayed(int playerId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<ListElementTimesPlayed> rankingList = new ArrayList<>();
+
+        // TODO: Falta el nombre del jugador en la consulta
+        String query = "SELECT boardgame." + COLUMN_BOARDGAME_NAME + ", boardgame." + COLUMN_BOARDGAME_ID +
+                ", boardgame." + COLUMN_BOARDGAME_PHOTO + ", player_boardgame." + COLUMN_PLAYER_BOARDGAME_TIMES_PLAYED +
+                " FROM " + TABLE_PLAYER_BOARDGAME + " AS player_boardgame" +
+                " JOIN " + TABLE_BOARDGAME + " AS boardgame" +
+                " ON player_boardgame." + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + " = boardgame." + COLUMN_BOARDGAME_ID +
+                " WHERE player_boardgame." + COLUMN_PLAYER_BOARDGAME_PLAYER_ID + " = ?" +
+                " ORDER BY player_boardgame." + COLUMN_PLAYER_BOARDGAME_TIMES_PLAYED + " DESC";
+
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(playerId)});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String gameTitle = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_NAME));
+                int gameId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_ID));
+                String gameImage = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BOARDGAME_PHOTO));
+                int timesPlayed = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PLAYER_BOARDGAME_TIMES_PLAYED));
+
+                ListElementTimesPlayed element = new ListElementTimesPlayed(gameTitle, gameId, gameImage, timesPlayed);
+                rankingList.add(element);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        return rankingList;
+    }
+
+    public int getPlayerIdByName(String playerName, int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(
+                TABLE_PLAYERS,
+                new String[]{COLUMN_PLAYER_ID},
+                COLUMN_PLAYER_NAME + " = ? AND " + COLUMN_PLAYER_USER_ID + " = ?",
+                new String[]{playerName, String.valueOf(userId)},
+                null, null, null
+        );
+
+        int playerId = -1;
+        if (cursor != null && cursor.moveToFirst()) {
+            playerId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PLAYER_ID));
+            cursor.close();
+        }
+        db.close();
+        return playerId;
+    }
+
 }
+/*public byte[] getBytesFromBitmap2(Bitmap bitmap) {
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    bitmap.compress(Bitmap.CompressFormat.WEBP, 100, stream);
+    return stream.toByteArray();
+}
+public Bitmap getBitmapFromAssets2(String filename) {
+    AssetManager assetManager = context.getAssets();
+    InputStream inputStream = null;
+    Bitmap bitmap = null;
+
+    try {
+        inputStream = assetManager.open(filename);
+        bitmap = BitmapFactory.decodeStream(inputStream);
+    } catch (IOException e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    return bitmap;
+}
+public Bitmap getBitmapFromBytes2(byte[] image) {
+    return BitmapFactory.decodeByteArray(image, 0, image.length);
+}*/
 
    /* public Cursor getBoardgameDetailsById(int boardgameId) {
         SQLiteDatabase db = this.getReadableDatabase();

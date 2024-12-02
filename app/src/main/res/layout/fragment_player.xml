@@ -6,7 +6,6 @@
     android:paddingTop="16dp"
     android:paddingRight="16dp">
 
-    <!-- SearchView -->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
         android:layout_width="match_parent"
@@ -17,7 +16,6 @@
         android:queryHint="Buscar por nombre"
         android:textColorHint="@android:color/darker_gray" />
 
-    <!-- Spinner -->
     <Spinner
         android:id="@+id/genreSpinner"
         android:layout_width="wrap_content"

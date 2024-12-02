@@ -13,6 +13,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.adapters.HomeAdapter;
+import com.example.gamekeeper.adapters.SearchAdapter;
 import com.example.gamekeeper.fragments.PlayerFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
@@ -55,11 +56,17 @@ public class HomeActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this)); // Para lista vertical
         recyclerView.setAdapter(adapter);
 
-        adapter.setOnItemClickListener(position -> {
-            Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
-            intent.putExtra(DetailActivity.BOARDGAME_ID, fullList.get(position.getId()).getId());
-            intent.putExtra(DetailActivity.NAME_VIEW, "HOME"); // Nombre de la vista como "HOME"
-            startActivity(intent);
+        adapter.setOnItemClickListener(new HomeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(ListElement listElement) {
+
+
+                Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
+                intent.putExtra(DetailActivity.BOARDGAME_ID, listElement.getId());
+
+                intent.putExtra(DetailActivity.NAME_VIEW, "HOME");
+                startActivity(intent);
+            }
         });
         adapter.setOnDeleteClickListener(listElement -> {
             boolean isDeleted = dB.removeUserBoardgame(currentUserId, listElement.getId());

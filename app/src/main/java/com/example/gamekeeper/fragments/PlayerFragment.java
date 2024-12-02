@@ -29,25 +29,21 @@ public class PlayerFragment extends Fragment {
         searchView = view.findViewById(R.id.searchView);
         genreSpinner = view.findViewById(R.id.genreSpinner);
 
-        // Configurar el Spinner
         setupSpinner();
 
-        // Configurar el SearchView
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false; // No hacemos nada al enviar la búsqueda
+                return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // Llamar al método en la actividad para filtrar
                 handleSearchChange(newText);
                 return true;
             }
         });
 
-        // Hacer que el SearchView sea clickeable en todo el área
         searchView.setOnClickListener(v -> searchView.setIconified(false));
 
         return view;
@@ -71,13 +67,12 @@ public class PlayerFragment extends Fragment {
         }
 
         if (genres != null) {
-            genres.add(0, "Todos"); // Opción por defecto
+            genres.add(0, "Todos");
 
             ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, genres);
             spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             genreSpinner.setAdapter(spinnerAdapter);
 
-            // Listener del Spinner
             genreSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

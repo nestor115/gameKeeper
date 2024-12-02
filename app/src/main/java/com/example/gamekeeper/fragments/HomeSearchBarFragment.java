@@ -28,29 +28,24 @@ public class HomeSearchBarFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflar el layout del fragmento
         View rootView = inflater.inflate(R.layout.fragment_search_bar, container, false);
 
-        // Inicializar el EditText
         etSearch = rootView.findViewById(R.id.et_Search);
 
-        // Agregar el TextWatcher para escuchar los cambios en el texto
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-                // No se necesita para este caso
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 if (onSearchListener != null) {
-                    onSearchListener.onSearch(charSequence.toString()); // Pasar el texto de búsqueda
+                    onSearchListener.onSearch(charSequence.toString());
                 }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                // No se necesita para este caso
             }
         });
 

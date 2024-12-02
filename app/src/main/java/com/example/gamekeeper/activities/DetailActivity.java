@@ -48,10 +48,8 @@ public class DetailActivity extends AppCompatActivity {
 
 
         dB = new DatabaseHelper(this);
-        // se reciben los parametros del id del juego y el nombre de la vista
         int boardGameId = getIntent().getIntExtra(BOARDGAME_ID, 1);
         String nameView = getIntent().getStringExtra(NAME_VIEW);
-        //se muestra o se oculta el boton de añadir juego
         if ("SEARCH".equals(nameView)) {
             btnAddBoardgame.setVisibility(View.VISIBLE);
             btnAddBoardgame.setEnabled(true);
@@ -70,11 +68,10 @@ public class DetailActivity extends AppCompatActivity {
                                            } else if ("HOME".equals(nameView)) {
                                                intent = new Intent(DetailActivity.this, HomeActivity.class);
                                            } else {
-                                               // Si no se encuentra el valor esperado, por defecto se regresa a la HomeActivity
                                                intent = new Intent(DetailActivity.this, HomeActivity.class);
                                            }
                                            startActivity(intent);
-                                           finish(); // Para cerrar esta actividad y evitar que el usuario regrese al detalle
+                                           finish();
                                        }
                                    });
         btnAddBoardgame.setOnClickListener(new View.OnClickListener() {
@@ -132,13 +129,12 @@ public class DetailActivity extends AppCompatActivity {
                     tvTitle.setText(title);
 
                     if (photo != null && !photo.isEmpty()) {
-                        // Usamos Glide para cargar la imagen desde la URL
                         Glide.with(this)
                                 .load(photo)
-                                .placeholder(R.drawable.ic_launcher_foreground)  // Imagen predeterminada mientras se carga
+                                .placeholder(R.drawable.ic_launcher_foreground)
                                 .into(ivGame);
                     } else {
-                        ivGame.setImageResource(R.drawable.ic_launcher_foreground);  // Imagen predeterminada si no hay URL
+                        ivGame.setImageResource(R.drawable.ic_launcher_foreground);
                     }
                     String yearStr = "año de publicación " +year;
                     String playersStr = "numero de jugadores: " + players ;

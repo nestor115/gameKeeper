@@ -24,11 +24,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
     private OnItemClickListener itemClickListener;
     private OnDeleteClickListener deleteClickListener;
 
-    // Constructor vacío
     public HomeAdapter() {
     }
 
-    // Método para actualizar la lista
     public void submitList(List<ListElement> newListElements) {
         listElements.clear();
         if (newListElements != null) {
@@ -65,7 +63,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
         return listElements.size();
     }
 
-    // ViewHolder: maneja la vista individual de cada elemento de la lista
     public class ListElementViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName;
         ImageView imageView;
@@ -77,14 +74,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
             imageView = itemView.findViewById(R.id.iv_ItemBoardgame);
             deleteButton = itemView.findViewById(R.id.btn_delete);
 
-            // Configurar el clic en el elemento
             itemView.setOnClickListener(v -> {
                 if (itemClickListener != null && v != deleteButton) {
                     itemClickListener.onItemClick(listElements.get(getAdapterPosition()));
                 }
             });
 
-            // Configurar el clic en el botón de borrar
             deleteButton.setOnClickListener(v -> {
                 if (deleteClickListener != null) {
                     deleteClickListener.onDeleteClick(listElements.get(getAdapterPosition()));
@@ -93,17 +88,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
         }
     }
 
-    // Interface para manejar los clics en los elementos
     public interface OnItemClickListener {
         void onItemClick(ListElement listElement);
     }
 
-    // Interface para manejar los clics en el botón de borrar
     public interface OnDeleteClickListener {
         void onDeleteClick(ListElement listElement);
     }
 
-    // Métodos para asignar los listeners de clic
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.itemClickListener = listener;
     }

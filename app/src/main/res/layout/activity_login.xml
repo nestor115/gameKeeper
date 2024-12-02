@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".activities.LoginActivity">
 
-    <!-- Título centrado -->
     <TextView
         android:id="@+id/tv_Login"
         android:layout_width="wrap_content"
@@ -21,7 +20,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Contenedor de campos -->
     <LinearLayout
         android:id="@+id/ll_Container"
         android:layout_width="0dp"
@@ -35,7 +33,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_Login">
 
-        <!-- Campo Email -->
         <TextView
             android:id="@+id/tv_EmailLabelLogin"
             android:layout_width="match_parent"
@@ -55,7 +52,6 @@
             android:inputType="textEmailAddress"
             android:padding="12dp" />
 
-        <!-- Campo Contraseña -->
         <TextView
             android:id="@+id/tv_PasswordLabelLogin"
             android:layout_width="match_parent"
@@ -75,7 +71,6 @@
             android:inputType="textPassword"
             android:padding="12dp" />
 
-        <!-- Botón Enviar -->
         <Button
             android:id="@+id/btn_Login"
             android:layout_width="match_parent"
@@ -88,7 +83,6 @@
             android:textSize="18sp" />
     </LinearLayout>
 
-    <!-- Botón flotante para ir atrás -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_back"
         android:layout_width="wrap_content"

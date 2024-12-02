@@ -40,7 +40,6 @@ public class LoginActivity extends BaseActivity {
 
             String storedHashedPassword = dB.getStoredPasswordByEmail(email);
             if (storedHashedPassword != null && BCrypt.checkpw(password, storedHashedPassword)) {
-                // Si la contraseña coincide, iniciar sesión
                 int userId = dB.checkUser(email, storedHashedPassword);
                 if (userId != -1) {
                     SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
@@ -58,7 +57,6 @@ public class LoginActivity extends BaseActivity {
                 Toast.makeText(LoginActivity.this, "Email o contraseña incorrectos", Toast.LENGTH_SHORT).show();
             }
         });
-        // Acción del botón flotante de volver atrás
         fabBack.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);

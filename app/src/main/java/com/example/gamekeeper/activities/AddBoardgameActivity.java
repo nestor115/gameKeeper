@@ -52,17 +52,16 @@ public class AddBoardgameActivity extends AppCompatActivity {
         genreList.add("Selecciona un género");
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                // Obtener el nombre del género
                 int columnIndexName = cursor.getColumnIndex(DatabaseHelper.COLUMN_GENRE_NAME);
                 String genreName = cursor.getString(columnIndexName);
-                if (genreName != null) { // Verificar que el género no sea nulo
+                if (genreName != null) {
                     genreList.add(genreName);
                 } else {
                     Log.e("SETUP_GENRE_SPINNERS", "Género nulo encontrado");
                 }
             } while (cursor.moveToNext());
 
-            cursor.close(); // Cerrar el cursor
+            cursor.close();
         } else {
             Log.e("SETUP_GENRE_SPINNERS", "El cursor es nulo o no contiene datos");
         }
@@ -87,7 +86,6 @@ public class AddBoardgameActivity extends AppCompatActivity {
             Toast.makeText(this, "Debes llenar todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
-        // Conversión y validación del año
         int yearPublished;
         try {
             yearPublished = Integer.parseInt(yearString);
