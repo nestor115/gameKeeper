@@ -32,7 +32,7 @@ public class HomeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_player_boardgame);
+        setContentView(R.layout.activity_home);
 
         // Inicializar DatabaseHelper
         dB = new DatabaseHelper(this);
@@ -53,7 +53,7 @@ public class HomeActivity extends BaseActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         adapter = new HomeAdapter();
-        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // Para lista vertical
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new HomeAdapter.OnItemClickListener() {

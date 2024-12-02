@@ -26,7 +26,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
 
     public HomeAdapter() {
     }
-
+    // Método para actualizar la lista de elementos
     public void submitList(List<ListElement> newListElements) {
         listElements.clear();
         if (newListElements != null) {
@@ -34,14 +34,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
         }
         notifyDataSetChanged();
     }
-
+    //Crea nuevas vistas de los elementos
     @NonNull
     @Override
     public ListElementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_item_boardgame, parent, false);
         return new ListElementViewHolder(view);
     }
-
+    //Vincula los datos a las vistas
     @Override
     public void onBindViewHolder(@NonNull ListElementViewHolder holder, int position) {
         ListElement listElement = listElements.get(position);
@@ -57,23 +57,23 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
             holder.imageView.setImageResource(R.drawable.ic_launcher_foreground);
         }
     }
-
+//Devuelve el número de elementos en la lista
     @Override
     public int getItemCount() {
         return listElements.size();
     }
-
+    //Define el comportamiento de los elementos de la lista
     public class ListElementViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName;
         ImageView imageView;
         View deleteButton;
-
+        //Constructor de la clase
         public ListElementViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.tv_TittleItemBoardgame);
             imageView = itemView.findViewById(R.id.iv_ItemBoardgame);
             deleteButton = itemView.findViewById(R.id.btn_delete);
-
+            //Listener para los clics en los elementos de la lista
             itemView.setOnClickListener(v -> {
                 if (itemClickListener != null && v != deleteButton) {
                     itemClickListener.onItemClick(listElements.get(getAdapterPosition()));

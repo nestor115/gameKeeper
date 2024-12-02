@@ -24,7 +24,6 @@ public class RegisterActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        useToolbar = false;
         dB = new DatabaseHelper(this);
         etEmailInput =findViewById(R.id.etEmailInputRegister);
         etPasswordIput =findViewById(R.id.etPasswordInputRegister);

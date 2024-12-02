@@ -4,13 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
+
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/auto_complete_chip_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:chipSpacingHorizontal="8dp"
-        app:chipSpacingVertical="8dp"/>
+        app:chipSpacingVertical="8dp" />
 
     <AutoCompleteTextView
         android:id="@+id/player_name_input"
@@ -26,8 +27,9 @@
         android:id="@+id/add_player_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/a_adir_jugador"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#FF5722"
+        android:text="@string/a_adir_jugador" />
 
     <TextView
         android:id="@+id/tv_Jugadores"
@@ -43,20 +45,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:chipSpacingHorizontal="8dp"
-        app:chipSpacingVertical="8dp"
         android:maxLines="4"
-    android:singleLine="false"
-    android:orientation="horizontal"
-    />
+        android:orientation="horizontal"
+        android:singleLine="false"
+        app:chipSpacingHorizontal="8dp"
+        app:chipSpacingVertical="8dp" />
+
     <Button
         android:id="@+id/play_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/jugar"
         android:layout_marginTop="20dp"
+        android:backgroundTint="#FF5722"
         android:enabled="false"
-    android:textColor="@android:color/white" />
+        android:text="@string/jugar"
+        android:textColor="@android:color/white" />
 
 
 </LinearLayout>

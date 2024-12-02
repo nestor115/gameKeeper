@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="@string/inicio"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/buscar"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/nav_add"
+        android:icon="@drawable/ic_add"
+        android:title="@string/a_adir"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/nav_players"
+        android:icon="@drawable/ic_players"
+        android:title="@string/jugadores"
+        app:showAsAction="ifRoom" />
+</menu>

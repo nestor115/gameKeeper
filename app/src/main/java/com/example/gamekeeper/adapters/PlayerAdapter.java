@@ -70,19 +70,19 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         for (int i = 0; i < playerNames.size(); i++) {
             updatePlayerInfo(holder, i, position);
         }
+        for (int i = playerNames.size(); i < 4; i++) {
+            holder.getCheckBox(i).setVisibility(View.GONE);
+            holder.getPlayerName(i).setVisibility(View.GONE);
+        }
     }
     private void updatePlayerInfo(ListElementViewHolder holder, int playerIndex, int position) {
-        if (playerNames.size() > playerIndex) {
+        if (playerIndex < playerNames.size()) {
             holder.getPlayerName(playerIndex).setText(playerNames.get(playerIndex));
             holder.getCheckBox(playerIndex).setVisibility(View.VISIBLE);
-            // Configurar el estado del CheckBox
             holder.getCheckBox(playerIndex).setChecked(checkBoxStates[position][playerIndex]);
             holder.getCheckBox(playerIndex).setOnCheckedChangeListener((buttonView, isChecked) -> {
-                checkBoxStates[position][playerIndex] = isChecked;  // Actualizar el estado cuando se cambia
+                checkBoxStates[position][playerIndex] = isChecked;
             });
-        } else {
-            holder.getPlayerName(playerIndex).setText("");
-            holder.getCheckBox(playerIndex).setVisibility(View.GONE);
         }
     }
     private void updatePlayerInfo(TextView itemName, CheckBox checkBox, int playerIndex) {

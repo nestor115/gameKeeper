@@ -82,7 +82,6 @@ public class PlayerFragment extends Fragment {
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
-                    // No hacer nada
                 }
             });
         }

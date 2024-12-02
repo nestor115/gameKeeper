@@ -365,6 +365,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
+    public List<String> getGenresForUser(int userId) {
+        List<String> genres = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT DISTINCT g.name FROM genre g " +
+                "JOIN boardgame b ON b.id = g.id " +
+                "JOIN user_boardgame ub ON ub.boardgame_id = b.id " +
+                "WHERE ub.user_id = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int indexName = cursor.getColumnIndex("name");
+                genres.add(cursor.getString(indexName));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        return genres;
+    }
+
     public boolean addOrIncrementPlayerBoardgame(int playerId, int boardgameId) {
         SQLiteDatabase db = this.getWritableDatabase();
         boolean success;
