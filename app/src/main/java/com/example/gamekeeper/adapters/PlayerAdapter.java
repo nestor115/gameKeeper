@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
 import com.example.gamekeeper.R;
 
@@ -20,8 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElementViewHolder> {
-
-    private List<ListElement> listElements = new ArrayList<>(); // Lista de ListElement
+    private DatabaseHelper db;
+    private int currentUserId;
+    private List<ListElement> listElements = new ArrayList<>();
     private OnItemClickListener listener;
     private List<String> playerNames;
     private RecyclerView recyclerView;
@@ -34,7 +36,11 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
     public PlayerAdapter(List<String> playerNames) {
         this.playerNames = playerNames;
     }
-
+    public PlayerAdapter(List<String> playerNames, DatabaseHelper db, int currentUserId) {
+        this.playerNames = playerNames;
+        this.db = db;
+        this.currentUserId = currentUserId;
+    }
 
     public void submitList(List<ListElement> newListElements) {
         listElements.clear();
@@ -57,7 +63,6 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         ListElement listElement = listElements.get(position);
         holder.itemTitle.setText(listElement.getName());
 
-
         String imageUrl = listElement.getImage();
 
         if (imageUrl != null && !imageUrl.isEmpty()) {
@@ -67,33 +72,35 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         } else {
             holder.itemIcon.setImageResource(R.drawable.ic_launcher_foreground);
         }
+
         for (int i = 0; i < playerNames.size(); i++) {
-            updatePlayerInfo(holder, i, position);
+            int playerId = db.getPlayerIdByName(playerNames.get(i), currentUserId);
+            boolean alreadyPlayed = db.hasPlayerAlreadyPlayed(playerId, listElement.getId());
+            updatePlayerInfo(holder, i, position, alreadyPlayed);
         }
+
         for (int i = playerNames.size(); i < 4; i++) {
             holder.getCheckBox(i).setVisibility(View.GONE);
             holder.getPlayerName(i).setVisibility(View.GONE);
         }
     }
-    private void updatePlayerInfo(ListElementViewHolder holder, int playerIndex, int position) {
+    private void updatePlayerInfo(ListElementViewHolder holder, int playerIndex, int position, boolean alreadyPlayed) {
         if (playerIndex < playerNames.size()) {
             holder.getPlayerName(playerIndex).setText(playerNames.get(playerIndex));
             holder.getCheckBox(playerIndex).setVisibility(View.VISIBLE);
-            holder.getCheckBox(playerIndex).setChecked(checkBoxStates[position][playerIndex]);
-            holder.getCheckBox(playerIndex).setOnCheckedChangeListener((buttonView, isChecked) -> {
-                checkBoxStates[position][playerIndex] = isChecked;
-            });
+            holder.getCheckBox(playerIndex).setChecked(alreadyPlayed);
+            holder.getCheckBox(playerIndex).setEnabled(!alreadyPlayed); // Deshabilita el CheckBox si ya ha jugado
+
+            if (!alreadyPlayed) {
+                holder.getCheckBox(playerIndex).setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    checkBoxStates[position][playerIndex] = isChecked;
+                });
+            } else {
+                holder.getCheckBox(playerIndex).setOnCheckedChangeListener(null); // Elimina el listener para evitar conflictos
+            }
         }
     }
-    private void updatePlayerInfo(TextView itemName, CheckBox checkBox, int playerIndex) {
-        if (playerNames.size() > playerIndex) {
-            itemName.setText(playerNames.get(playerIndex));
-            checkBox.setVisibility(View.VISIBLE);
-        } else {
-            itemName.setText("");
-            checkBox.setVisibility(View.GONE);
-        }
-    }
+
     public CheckBox getCheckBoxByIndex(int itemIndex, int playerIndex) {
         if (recyclerView == null) return null;
 

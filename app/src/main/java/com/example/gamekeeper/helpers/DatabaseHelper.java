@@ -63,7 +63,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_PLAYER_BOARDGAME = "player_boardgame";
     public static final String COLUMN_PLAYER_BOARDGAME_PLAYER_ID = "player_id";
     public static final String COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID = "boardgame_id";
-    public static final String COLUMN_PLAYER_BOARDGAME_TIMES_PLAYED = "times_played";
+    public static final String COLUMN_PLAYER_BOARDGAME_HAS_PLAYED = "has_played";
 
 
     private static final String TABLE_CREATE_USERS =
@@ -112,7 +112,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + TABLE_PLAYER_BOARDGAME + " (" +
                     COLUMN_PLAYER_BOARDGAME_PLAYER_ID + " INTEGER, " +
                     COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + " INTEGER, " +
-                    COLUMN_PLAYER_BOARDGAME_TIMES_PLAYED + " INTEGER DEFAULT 0, " +
+                    COLUMN_PLAYER_BOARDGAME_HAS_PLAYED + " INTEGER DEFAULT 0, " + // Campo binario: 0 o 1
                     "PRIMARY KEY (" + COLUMN_PLAYER_BOARDGAME_PLAYER_ID + ", " + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + "), " +
                     "FOREIGN KEY (" + COLUMN_PLAYER_BOARDGAME_PLAYER_ID + ") REFERENCES " + TABLE_PLAYERS + "(" + COLUMN_PLAYER_ID + "), " +
                     "FOREIGN KEY (" + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + ") REFERENCES " + TABLE_BOARDGAME + "(" + COLUMN_BOARDGAME_ID + "));";
@@ -387,8 +387,72 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return genres;
     }
+    public boolean addPlayerBoardgameOnce(int playerId, int boardgameId) {
+        SQLiteDatabase db = this.getWritableDatabase();
 
-    public boolean addOrIncrementPlayerBoardgame(int playerId, int boardgameId) {
+        Cursor cursor = db.query(
+                TABLE_PLAYER_BOARDGAME,
+                null,
+                COLUMN_PLAYER_BOARDGAME_PLAYER_ID + " = ? AND " + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + " = ?",
+                new String[]{String.valueOf(playerId), String.valueOf(boardgameId)},
+                null,
+                null,
+                null
+        );
+
+        boolean exists = (cursor != null && cursor.moveToFirst());
+        if (cursor != null) cursor.close();
+
+        if (exists) {
+            Log.d("DEBUGPlayers", "Relación ya existente para Jugador " + playerId + " y Juego " + boardgameId);
+            db.close();
+            return false;
+        }
+
+        Log.d("DEBUGPlayers", "Insertando relación: Jugador " + playerId + " - Juego " + boardgameId);
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PLAYER_BOARDGAME_PLAYER_ID, playerId);
+        values.put(COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID, boardgameId);
+        values.put(COLUMN_PLAYER_BOARDGAME_HAS_PLAYED, 1); // Suponiendo que '1' indica que el jugador ya jugó el juego
+
+        long result = db.insert(TABLE_PLAYER_BOARDGAME, null, values);
+
+        if (result == -1) {
+            Log.e("DEBUGPlayers", "Error al insertar relación");
+        } else {
+            Log.d("DEBUGPlayers", "Relación insertada correctamente");
+        }
+
+        db.close();
+        return result != -1;
+    }
+
+    public boolean hasPlayerAlreadyPlayed(int playerId, int boardgameId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(
+                TABLE_PLAYER_BOARDGAME,
+                new String[]{COLUMN_PLAYER_BOARDGAME_HAS_PLAYED},
+                COLUMN_PLAYER_BOARDGAME_PLAYER_ID + " = ? AND " + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + " = ?",
+                new String[]{String.valueOf(playerId), String.valueOf(boardgameId)},
+                null,
+                null,
+                null
+        );
+
+        boolean alreadyPlayed = false;
+        if (cursor != null && cursor.moveToFirst()) {
+            int hasPlayed = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PLAYER_BOARDGAME_HAS_PLAYED));
+            alreadyPlayed = hasPlayed == 1;
+            cursor.close();
+        }
+        db.close();
+        return alreadyPlayed;
+    }
+
+
+
+    /*public boolean addOrIncrementPlayerBoardgame(int playerId, int boardgameId) {
         SQLiteDatabase db = this.getWritableDatabase();
         boolean success;
 
@@ -476,7 +540,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.close();
         return rankingList;
-    }
+    }*/
 
     public int getPlayerIdByName(String playerName, int userId) {
         SQLiteDatabase db = this.getReadableDatabase();

@@ -35,5 +35,9 @@
     <string name="a_adir_juego">Añadir juego</string>
     <string name="inicio">Inicio</string>
     <string name="a_adir">Añadir</string>
+    <string name="aleatorio">Aleatorio</string>
+    <string name="juego_jugado">Juego jugado</string>
+    <string name="juego_nuevo">Juego nuevo</string>
+    <string name="game_name">Game Name</string>
 
 </resources>

@@ -2,6 +2,7 @@ package com.example.gamekeeper.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
+import com.example.gamekeeper.activities.SuggesterActivity;
 import com.example.gamekeeper.adapters.PlayerAdapter;
 import com.example.gamekeeper.fragments.PlayerFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
@@ -39,11 +41,16 @@ public class PlayerBoardgameActivity extends BaseActivity {
         recyclerView = findViewById(R.id.recyclerView);
         Intent intent = getIntent();
         playerNames = intent.getStringArrayListExtra("player_names");
-        adapter = new PlayerAdapter(playerNames);
+        adapter = new PlayerAdapter(playerNames, dB, currentUserId);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         FloatingActionButton fabConfirmSelection = findViewById(R.id.fab_confirm_selection);
-        fabConfirmSelection.setOnClickListener(v -> processSelectedPlayers());
+        fabConfirmSelection.setOnClickListener(v -> {
+            processSelectedPlayers();
+            Intent intentSuggester = new Intent(PlayerBoardgameActivity.this, SuggesterActivity.class);
+            startActivity(intentSuggester);
+
+        });
 
         loadData();
         loadSearchFragment();
@@ -79,35 +86,35 @@ public class PlayerBoardgameActivity extends BaseActivity {
         transaction.commit();
     }
     private void processSelectedPlayers() {
-        boolean success = true;
-
-        android.util.Log.d("processSelectedPlayers", "Inicio del proceso de guardado");
+        Log.d("DEBUGPlayers", "processSelectedPlayers: Iniciado");
 
         for (int i = 0; i < adapter.getItemCount(); i++) {
             ListElement boardgame = fullList.get(i);
-            android.util.Log.d("processSelectedPlayers", "Juego: " + boardgame.getName() + " (ID: " + boardgame.getId() + ")");
+            Log.d("DEBUGPlayers", "Juego: " + boardgame.getName() + " (ID: " + boardgame.getId() + ")");
 
             for (int j = 0; j < playerNames.size(); j++) {
-                boolean isChecked = adapter.getCheckBoxState(i, j);  // Obtener el estado del CheckBox
+                boolean isChecked = adapter.getCheckBoxState(i, j);
 
-                android.util.Log.d("processSelectedPlayers", "Checkbox para jugador " + playerNames.get(j) + " está " + (isChecked ? "marcado" : "desmarcado"));
+                Log.d("DEBUGPlayers", "Jugador: " + playerNames.get(j) + " | CheckBox seleccionado: " + isChecked);
 
                 if (isChecked) {
                     int playerId = dB.getPlayerIdByName(playerNames.get(j), currentUserId);
-                    android.util.Log.d("processSelectedPlayers", "Player ID obtenido: " + playerId);
+                    Log.d("DEBUGPlayers", "playerId obtenido para " + playerNames.get(j) + ": " + playerId);
 
-                    boolean result = dB.addOrIncrementPlayerBoardgame(playerId, boardgame.getId());
-                    android.util.Log.d("processSelectedPlayers", "Resultado de addOrIncrementPlayerBoardgame: " + result);
-
-                    success &= result;
+                    boolean canAdd = dB.addPlayerBoardgameOnce(playerId, boardgame.getId());
+                    if (canAdd) {
+                        Log.d("DEBUGPlayers", "Relación añadida: Jugador " + playerId + " - Juego " + boardgame.getId());
+                    } else {
+                        Log.d("DEBUGPlayers", "Relación ya existente para Jugador " + playerId + " y Juego " + boardgame.getId());
+                        Toast.makeText(this, "El jugador ya jugó este juego", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }
 
-        String message = success ? "Datos guardados correctamente" : "Ocurrió un error al guardar los datos";
-        android.util.Log.d("processSelectedPlayers", "Resultado final: " + message);
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Log.d("DEBUGPlayers", "processSelectedPlayers: Finalizado");
     }
+
 
 
 

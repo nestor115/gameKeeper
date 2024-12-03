@@ -1,5 +1,5 @@
 package com.example.gamekeeper.models;
-
+import java.util.Objects;
 public class ListElement {
     private String name;
     private int id;
@@ -21,6 +21,18 @@ public class ListElement {
 
     public String getImage() {
         return image;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+
+        return obj instanceof ListElement && this.id == ((ListElement) obj).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
 
