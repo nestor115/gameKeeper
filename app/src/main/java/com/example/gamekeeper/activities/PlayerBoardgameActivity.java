@@ -48,6 +48,7 @@ public class PlayerBoardgameActivity extends BaseActivity {
         fabConfirmSelection.setOnClickListener(v -> {
             processSelectedPlayers();
             Intent intentSuggester = new Intent(PlayerBoardgameActivity.this, SuggesterActivity.class);
+            intentSuggester.putStringArrayListExtra("selected_players", playerNames);
             startActivity(intentSuggester);
 
         });
@@ -104,9 +105,6 @@ public class PlayerBoardgameActivity extends BaseActivity {
                     boolean canAdd = dB.addPlayerBoardgameOnce(playerId, boardgame.getId());
                     if (canAdd) {
                         Log.d("DEBUGPlayers", "Relación añadida: Jugador " + playerId + " - Juego " + boardgame.getId());
-                    } else {
-                        Log.d("DEBUGPlayers", "Relación ya existente para Jugador " + playerId + " y Juego " + boardgame.getId());
-                        Toast.makeText(this, "El jugador ya jugó este juego", Toast.LENGTH_SHORT).show();
                     }
                 }
             }

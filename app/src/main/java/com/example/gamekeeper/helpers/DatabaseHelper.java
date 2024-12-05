@@ -449,6 +449,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return alreadyPlayed;
     }
+    public boolean hasPlayerPlayedGame(int playerId, int gameId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT " + COLUMN_PLAYER_BOARDGAME_HAS_PLAYED +
+                " FROM " + TABLE_PLAYER_BOARDGAME +
+                " WHERE " + COLUMN_PLAYER_BOARDGAME_PLAYER_ID + " = ? AND " +
+                COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + " = ?";
+        String[] args = {String.valueOf(playerId), String.valueOf(gameId)};
+        Cursor cursor = db.rawQuery(query, args);
+
+        boolean hasPlayed = false;
+        if (cursor.moveToFirst()) {
+            hasPlayed = cursor.getInt(0) == 1;
+        }
+        cursor.close();
+        db.close();
+        return hasPlayed;
+    }
 
 
 
