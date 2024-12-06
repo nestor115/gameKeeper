@@ -16,6 +16,7 @@ import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -26,7 +27,8 @@ public class SuggesterActivity extends AppCompatActivity {
     private ImageView gameImageView;
     private int currentUserId;
     private ArrayList<String> playerNames;
-
+    private List<ListElement> shownNewGames = new ArrayList<>();
+    private List<ListElement> shownPlayedGames = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +67,7 @@ public class SuggesterActivity extends AppCompatActivity {
 
 
     }
-
+//Devuelve un juego al azar
     private void showRandomGame() {
         List<ListElement> userGames = dbHelper.getUserBoardgames(currentUserId);
 
@@ -92,11 +94,11 @@ public class SuggesterActivity extends AppCompatActivity {
             Glide.with(this).load(game.getImage()).into(gameImageView);
         }
     }
+    //Devuelve un juego el cual no ha sido jugado por nadie o por la mayor parte de jugadores
     private void showNewGame() {
         List<ListElement> userGames = dbHelper.getUserBoardgames(currentUserId);
         List<Integer> playerIds = new ArrayList<>();
 
-        // Obtener los IDs de los jugadores seleccionados
         for (String playerName : playerNames) {
             int playerId = dbHelper.getPlayerIdByName(playerName, currentUserId);
             if (playerId != -1) {
@@ -104,18 +106,16 @@ public class SuggesterActivity extends AppCompatActivity {
             }
         }
 
-        // Juego actualmente mostrado
-        ListElement currentGame = getCurrentGame();
 
-        // Listas para juegos filtrados por número de jugadores que no lo han jugado
         List<ListElement> unplayedByAll = new ArrayList<>();
         List<ListElement> unplayedByThree = new ArrayList<>();
         List<ListElement> unplayedByTwo = new ArrayList<>();
         List<ListElement> unplayedByOne = new ArrayList<>();
+        List<ListElement> remainingGames = new ArrayList<>();
 
         for (ListElement game : userGames) {
-            if (currentGame != null && game.getId() == currentGame.getId()) {
-                continue; // Excluir el juego actualmente mostrado
+            if (shownNewGames.contains(game)) {
+                continue; // Excluye juegos ya mostrados
             }
 
             int gameId = game.getId();
@@ -128,7 +128,7 @@ public class SuggesterActivity extends AppCompatActivity {
                 }
             }
 
-            // Clasificación según jugadores que no lo han jugado
+
             switch (unplayedCount) {
                 case 4:
                     unplayedByAll.add(game);
@@ -142,35 +142,43 @@ public class SuggesterActivity extends AppCompatActivity {
                 case 1:
                     unplayedByOne.add(game);
                     break;
+                default:
+                    remainingGames.add(game);
+                    break;
             }
         }
 
-        Random random = new Random();
+
+        Collections.shuffle(unplayedByAll);
+        Collections.shuffle(unplayedByThree);
+        Collections.shuffle(unplayedByTwo);
+        Collections.shuffle(unplayedByOne);
+        Collections.shuffle(remainingGames);
+
+
         ListElement selectedGame = null;
 
-        // Prioridad de selección: más jugadores que no lo han jugado primero
         if (!unplayedByAll.isEmpty()) {
-            selectedGame = unplayedByAll.get(random.nextInt(unplayedByAll.size()));
+            selectedGame = unplayedByAll.remove(0);
             Log.d("NewGameButton", "Seleccionado de 'No jugado por nadie'");
         } else if (!unplayedByThree.isEmpty()) {
-            selectedGame = unplayedByThree.get(random.nextInt(unplayedByThree.size()));
+            selectedGame = unplayedByThree.remove(0);
             Log.d("NewGameButton", "Seleccionado de 'No jugado por tres'");
         } else if (!unplayedByTwo.isEmpty()) {
-            selectedGame = unplayedByTwo.get(random.nextInt(unplayedByTwo.size()));
+            selectedGame = unplayedByTwo.remove(0);
             Log.d("NewGameButton", "Seleccionado de 'No jugado por dos'");
         } else if (!unplayedByOne.isEmpty()) {
-            selectedGame = unplayedByOne.get(random.nextInt(unplayedByOne.size()));
+            selectedGame = unplayedByOne.remove(0);
             Log.d("NewGameButton", "Seleccionado de 'No jugado por uno'");
-        } else if (!userGames.isEmpty()) {
-            // Excluir nuevamente el juego actual en la selección general
-            List<ListElement> filteredGames = new ArrayList<>(userGames);
-            if (currentGame != null) {
-                filteredGames.remove(currentGame);
-            }
-            if (!filteredGames.isEmpty()) {
-                selectedGame = filteredGames.get(random.nextInt(filteredGames.size()));
-            }
-            Log.d("NewGameButton", "Seleccionado de 'Cualquier juego aleatorio'");
+        } else if (!remainingGames.isEmpty()) {
+            selectedGame = remainingGames.remove(0);
+            Log.d("NewGameButton", "Seleccionado de 'Cualquier juego restante'");
+        } else {
+            // Reiniciar la lista si todos los juegos han sido mostrados
+            Log.d("NewGameButton", "Todos los juegos han sido mostrados. Reiniciando lista.");
+            shownNewGames.clear();
+            showNewGame();
+            return;
         }
 
         // Mostrar el juego seleccionado
@@ -178,17 +186,17 @@ public class SuggesterActivity extends AppCompatActivity {
             gameNameTextView.setText(selectedGame.getName());
             Glide.with(this).load(selectedGame.getImage()).into(gameImageView);
 
+            shownNewGames.add(selectedGame);
             Log.d("NewGameButton", "Juego mostrado: " + selectedGame.getName());
         } else {
             Log.d("NewGameButton", "No hay juegos disponibles para mostrar.");
         }
     }
-
+//Devuelve un juego el cual ha sido jugado por todos los jugadores o por la mayor parte de jugadores
     private void showPlayedGame() {
         List<ListElement> userGames = dbHelper.getUserBoardgames(currentUserId);
         List<Integer> playerIds = new ArrayList<>();
 
-        // Obtener los IDs de los jugadores seleccionados
         for (String playerName : playerNames) {
             int playerId = dbHelper.getPlayerIdByName(playerName, currentUserId);
             if (playerId != -1) {
@@ -196,18 +204,17 @@ public class SuggesterActivity extends AppCompatActivity {
             }
         }
 
-        // Juego actualmente mostrado
         ListElement currentGame = getCurrentGame();
 
-        // Listas para juegos filtrados por número de jugadores que lo han jugado
         List<ListElement> playedByAll = new ArrayList<>();
         List<ListElement> playedByThree = new ArrayList<>();
         List<ListElement> playedByTwo = new ArrayList<>();
         List<ListElement> playedByOne = new ArrayList<>();
+        List<ListElement> unplayedByAll = new ArrayList<>();
 
         for (ListElement game : userGames) {
-            if (currentGame != null && game.getId() == currentGame.getId()) {
-                continue; // Excluir el juego actualmente mostrado
+            if (shownPlayedGames.contains(game)) {
+                continue; // Excluye los juegos ya mostrados
             }
 
             int gameId = game.getId();
@@ -234,47 +241,50 @@ public class SuggesterActivity extends AppCompatActivity {
                 case 1:
                     playedByOne.add(game);
                     break;
+                default:
+                    unplayedByAll.add(game);
+                    break;
             }
         }
 
-        Random random = new Random();
+        Collections.shuffle(playedByAll);
+        Collections.shuffle(playedByThree);
+        Collections.shuffle(playedByTwo);
+        Collections.shuffle(playedByOne);
+        Collections.shuffle(unplayedByAll);
+
+        // Más jugadores que lo han jugado primero
         ListElement selectedGame = null;
-
-        // Prioridad de selección: más jugadores que lo han jugado primero
         if (!playedByAll.isEmpty()) {
-            selectedGame = playedByAll.get(random.nextInt(playedByAll.size()));
-            Log.d("PlayedGameButton", "Seleccionado de 'Jugado por todos'");
+            selectedGame = playedByAll.remove(0);
         } else if (!playedByThree.isEmpty()) {
-            selectedGame = playedByThree.get(random.nextInt(playedByThree.size()));
-            Log.d("PlayedGameButton", "Seleccionado de 'Jugado por tres'");
+            selectedGame = playedByThree.remove(0);
         } else if (!playedByTwo.isEmpty()) {
-            selectedGame = playedByTwo.get(random.nextInt(playedByTwo.size()));
-            Log.d("PlayedGameButton", "Seleccionado de 'Jugado por dos'");
+            selectedGame = playedByTwo.remove(0);
         } else if (!playedByOne.isEmpty()) {
-            selectedGame = playedByOne.get(random.nextInt(playedByOne.size()));
-            Log.d("PlayedGameButton", "Seleccionado de 'Jugado por uno'");
-        } else if (!userGames.isEmpty()) {
-            // Excluir nuevamente el juego actual en la selección general
-            List<ListElement> filteredGames = new ArrayList<>(userGames);
-            if (currentGame != null) {
-                filteredGames.remove(currentGame);
-            }
-            if (!filteredGames.isEmpty()) {
-                selectedGame = filteredGames.get(random.nextInt(filteredGames.size()));
-            }
-            Log.d("PlayedGameButton", "Seleccionado de 'Cualquier juego aleatorio'");
+            selectedGame = playedByOne.remove(0);
+        } else if (!unplayedByAll.isEmpty()) {
+            selectedGame = unplayedByAll.remove(0);
         }
 
-        // Mostrar el juego seleccionado
+        // Si se han mostrado todos los juegos, reiniciar la lista
+        if (selectedGame == null && !userGames.isEmpty()) {
+            Log.d("PlayedGameButton", "Reiniciando lista de juegos mostrados.");
+            shownPlayedGames.clear();
+            showPlayedGame();
+            return;
+        }
+
         if (selectedGame != null) {
+            shownPlayedGames.add(selectedGame);
             gameNameTextView.setText(selectedGame.getName());
             Glide.with(this).load(selectedGame.getImage()).into(gameImageView);
-
             Log.d("PlayedGameButton", "Juego mostrado: " + selectedGame.getName());
         } else {
             Log.d("PlayedGameButton", "No hay juegos disponibles para mostrar.");
         }
     }
+
 
 
 
@@ -290,3 +300,5 @@ public class SuggesterActivity extends AppCompatActivity {
         return null;
     }
 }
+// kittens 4 unstable unicorns 3 bang 2 pelusas 1 picnic 1 rebel princes 0 samoa 0
+//samoa 0 rebel princess 1 picnic 1

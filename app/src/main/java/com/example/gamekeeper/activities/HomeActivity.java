@@ -34,7 +34,6 @@ public class HomeActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Inicializar DatabaseHelper
         dB = new DatabaseHelper(this);
 
 
@@ -92,7 +91,7 @@ public class HomeActivity extends BaseActivity {
         List<ListElement> elements = dB.getUserBoardgames(currentUserId);
 
         if (elements != null && !elements.isEmpty()) {
-            fullList = elements; // Guardamos la lista completa
+            fullList = elements;
             adapter.submitList(fullList);
         } else {
             Toast.makeText(this, "No se encontraron juegos.", Toast.LENGTH_SHORT).show();

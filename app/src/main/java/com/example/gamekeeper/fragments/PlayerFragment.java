@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.activities.HomeActivity;
 import com.example.gamekeeper.activities.PlayerBoardgameActivity;
+import com.example.gamekeeper.activities.SearchActivity;
 
 import java.util.List;
 
@@ -54,6 +55,8 @@ public class PlayerFragment extends Fragment {
             setupSpinnerForActivity(getActivity());
         } else if (getActivity() instanceof HomeActivity) {
             setupSpinnerForActivity(getActivity());
+        } else if (getActivity() instanceof SearchActivity) {
+            setupSpinnerForActivity(getActivity());
         }
     }
 
@@ -64,6 +67,8 @@ public class PlayerFragment extends Fragment {
             genres = ((PlayerBoardgameActivity) activity).getGenres();
         } else if (activity instanceof HomeActivity) {
             genres = ((HomeActivity) activity).getGenres();
+        }else if (activity instanceof SearchActivity) {
+            genres = ((SearchActivity) activity).getGenres();
         }
 
         if (genres != null) {
@@ -95,6 +100,9 @@ public class PlayerFragment extends Fragment {
             activity.filterList(query, selectedGenre);
         } else if (getActivity() instanceof HomeActivity) {
             HomeActivity activity = (HomeActivity) getActivity();
+            activity.filterList(query, selectedGenre);
+        } else if (getActivity() instanceof SearchActivity) {
+            SearchActivity activity = (SearchActivity) getActivity();
             activity.filterList(query, selectedGenre);
         }
     }
