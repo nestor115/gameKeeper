@@ -68,10 +68,13 @@ public class HomeActivity extends BaseActivity {
             }
         });
         adapter.setOnDeleteClickListener(listElement -> {
+            int position = fullList.indexOf(listElement);
             boolean isDeleted = dB.removeUserBoardgame(currentUserId, listElement.getId());
+
             if (isDeleted) {
                 Toast.makeText(this, "Juego borrado exitosamente", Toast.LENGTH_SHORT).show();
-                loadData();
+                fullList.remove(position);
+                adapter.submitList(new ArrayList<>(fullList));
             } else {
                 Toast.makeText(this, "Error al borrar el juego", Toast.LENGTH_SHORT).show();
             }
@@ -91,7 +94,7 @@ public class HomeActivity extends BaseActivity {
         List<ListElement> elements = dB.getUserBoardgames(currentUserId);
 
         if (elements != null && !elements.isEmpty()) {
-            fullList = elements;
+            fullList = new ArrayList<>(elements);
             adapter.submitList(fullList);
         } else {
             Toast.makeText(this, "No se encontraron juegos.", Toast.LENGTH_SHORT).show();

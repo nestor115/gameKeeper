@@ -59,8 +59,8 @@ public class PlayerBoardgameActivity extends BaseActivity {
     private void loadData() {
         List<ListElement> elements = dB.getUserBoardgames(currentUserId);
         if (elements != null && !elements.isEmpty()) {
-            fullList = elements;
-            adapter.submitList(fullList);
+            fullList = new ArrayList<>(elements);
+            adapter.submitList(new ArrayList<>(fullList));
             recyclerView.setAdapter(adapter);
         } else {
             Toast.makeText(this, "No se encontraron juegos.", Toast.LENGTH_SHORT).show();
@@ -87,23 +87,15 @@ public class PlayerBoardgameActivity extends BaseActivity {
         transaction.commit();
     }
     private void processSelectedPlayers() {
-        Log.d("DEBUGPlayers", "processSelectedPlayers: Iniciado");
 
         for (int i = 0; i < adapter.getItemCount(); i++) {
             ListElement boardgame = fullList.get(i);
-            Log.d("DEBUGPlayers", "Juego: " + boardgame.getName() + " (ID: " + boardgame.getId() + ")");
 
             for (int j = 0; j < playerNames.size(); j++) {
                 boolean isChecked = adapter.getCheckBoxState(i, j);
-
-                Log.d("DEBUGPlayers", "Jugador: " + playerNames.get(j) + " | CheckBox seleccionado: " + isChecked);
-
                 if (isChecked) {
                     int playerId = dB.getPlayerIdByName(playerNames.get(j), currentUserId);
-                    Log.d("DEBUGPlayers", "playerId obtenido para " + playerNames.get(j) + ": " + playerId);
-
-                    boolean canAdd = dB.addPlayerBoardgameOnce(playerId, boardgame.getId());
-                    if (canAdd) {
+                    if (dB.addPlayerBoardgameOnce(playerId, boardgame.getId())) {
                         Log.d("DEBUGPlayers", "Relación añadida: Jugador " + playerId + " - Juego " + boardgame.getId());
                     }
                 }

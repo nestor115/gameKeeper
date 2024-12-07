@@ -1,7 +1,5 @@
 package com.example.gamekeeper.adapters;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +28,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
     public void submitList(List<ListElement> newListElements) {
         listElements.clear();
         if (newListElements != null) {
-            listElements.addAll(newListElements);
+            listElements.addAll(new ArrayList<>(newListElements));
         }
         notifyDataSetChanged();
     }
@@ -38,7 +36,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
     @NonNull
     @Override
     public ListElementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_item_boardgame, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_activity_home, parent, false);
         return new ListElementViewHolder(view);
     }
     //Vincula los datos a las vistas
@@ -67,15 +65,17 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
         TextView textViewName;
         ImageView imageView;
         View deleteButton;
+        View detailsButton;
         //Constructor de la clase
         public ListElementViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.tv_TittleItemBoardgame);
             imageView = itemView.findViewById(R.id.iv_ItemBoardgame);
             deleteButton = itemView.findViewById(R.id.btn_delete);
+            detailsButton = itemView.findViewById(R.id.btn_details);
             //Listener para los clics en los elementos de la lista
-            itemView.setOnClickListener(v -> {
-                if (itemClickListener != null && v != deleteButton) {
+            detailsButton.setOnClickListener(v -> {
+                if (itemClickListener != null) {
                     itemClickListener.onItemClick(listElements.get(getAdapterPosition()));
                 }
             });
@@ -85,6 +85,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
                     deleteClickListener.onDeleteClick(listElements.get(getAdapterPosition()));
                 }
             });
+            itemView.setOnClickListener(null);
         }
     }
 

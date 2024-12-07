@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cv"
@@ -32,37 +31,63 @@
             android:id="@+id/tv_TittleItemBoardgame"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:gravity="start|center_vertical"
             android:padding="8dp"
             android:text="@string/t_tulo"
-            android:textSize="16sp"
             android:textColor="@android:color/black"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:gravity="start|center_vertical"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_ItemBoardgame"
+            app:layout_constraintBottom_toTopOf="@id/btn_layout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/btn_delete"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintVertical_bias="0.3" />
+            app:layout_constraintStart_toEndOf="@id/iv_ItemBoardgame"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.3"
+            app:layout_constraintVertical_chainStyle="packed" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_delete"
+        <!-- LinearLayout para los botones Detalles y Borrar -->
+        <LinearLayout
+            android:id="@+id/btn_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:text="@string/borrar"
-            android:textColor="@android:color/white"
-            app:backgroundTint="#FF5722"
-            app:cornerRadius="12dp"
-            app:icon="@drawable/ic_delete"
-            app:iconPadding="8dp"
-            app:iconTint="@android:color/white"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_ItemBoardgame"
-            app:layout_constraintTop_toBottomOf="@id/tv_TittleItemBoardgame"
-            app:layout_constraintVertical_bias="0.7" />
+            app:layout_constraintStart_toEndOf="@id/iv_ItemBoardgame">
 
+            <!-- Botón Detalles (verde) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_details"
+                android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
+            android:gravity="center"
+            android:text=""
+            app:backgroundTint="#4CAF50"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_info"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="24dp"
+            app:iconTint="@android:color/white"
+            android:layout_weight="1" />
+
+            <!-- Botón Borrar (rojo) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_delete"
+                android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:text=""
+            app:backgroundTint="#FF5722"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_delete"
+            app:iconPadding="0dp"
+            app:iconSize="24dp"
+            app:iconGravity="textStart"
+            app:iconTint="@android:color/white"
+            android:layout_weight="1" />
+
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

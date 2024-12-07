@@ -56,8 +56,8 @@ public class SearchActivity extends BaseActivity {
         List<ListElement> elements = dB.getAllBoardgames();
 
         if (elements != null && !elements.isEmpty()) {
-            fullList = elements;
-            searchAdapter.submitList(fullList);
+            fullList = new ArrayList<>(elements);
+            searchAdapter.submitList(new ArrayList<>(fullList));
         } else {
             Toast.makeText(this, "No se encontraron juegos.", Toast.LENGTH_SHORT).show();
         }
@@ -75,7 +75,10 @@ public class SearchActivity extends BaseActivity {
                 filteredList.add(element);
             }
         }
-        searchAdapter.submitList(filteredList);
+        if (filteredList.isEmpty()) {
+            Toast.makeText(this, "No se encontraron juegos de ese genero.", Toast.LENGTH_SHORT).show();
+        }
+        searchAdapter.submitList(new ArrayList<>(filteredList));
     }
 
 }

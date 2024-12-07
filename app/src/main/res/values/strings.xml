@@ -38,6 +38,11 @@
     <string name="aleatorio">Aleatorio</string>
     <string name="juego_jugado">Juego jugado</string>
     <string name="juego_nuevo">Juego nuevo</string>
-    <string name="game_name">Game Name</string>
-
+    <string name="game_name">Titulo</string>
+    <string name="detalles">Detalles</string>
+    <string name="titulo_formulario">Nuevo juego</string>
+    <string name="cargar_foto">Cargar Foto</string>
+    <string name="subir_imagen">Subir Imagen</string>
+    <string name="cargar_imagen">Cargar imagen</string>
+    <string name="tomar_foto">Tomar foto</string>
 </resources>

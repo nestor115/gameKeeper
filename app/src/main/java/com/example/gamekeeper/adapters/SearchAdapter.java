@@ -1,9 +1,6 @@
 package com.example.gamekeeper.adapters;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -43,7 +40,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
     @NonNull
     @Override
     public ListElementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_element, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_activity_search, parent, false);
         return new ListElementViewHolder(view);
     }
 
@@ -61,28 +58,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
         } else {
             holder.imageView.setImageResource(R.drawable.ic_launcher_foreground);
         }
+
     }
     @Override
     public int getItemCount() {
         return listElements.size();
-    }
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textViewName;
-        public ImageView imageView;
-        public ViewHolder(View itemView, final OnItemClickListener listener) {
-            super(itemView);
-            textViewName = itemView.findViewById(R.id.tv_BoardgameName);
-            imageView = itemView.findViewById(R.id.iv_Boardgame);
-
-            itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    int position = getAdapterPosition();
-                    if (itemClickListener != null) {
-                        itemClickListener.onItemClick(listElements.get(getAdapterPosition()));
-                    }
-                }
-            });
-        }
     }
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.itemClickListener = listener;
@@ -90,13 +70,15 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
     public class ListElementViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName;
         ImageView imageView;
+        View detailsButton;
         public ListElementViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.tv_BoardgameName);
             imageView = itemView.findViewById(R.id.iv_Boardgame);
+            detailsButton = itemView.findViewById(R.id.btn_details);
             //Listener para los clics en los elementos de la lista
-            itemView.setOnClickListener(v -> {
-                if (itemClickListener != null ) {
+            detailsButton.setOnClickListener(v -> {
+                if (itemClickListener != null) {
                     itemClickListener.onItemClick(listElements.get(getAdapterPosition()));
                 }
             });

@@ -2,6 +2,23 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permiso para usar la cámara -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <!-- Permisos de cámara y almacenamiento -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Permisos de almacenamiento -->
+    <!-- Para Android 12 y versiones anteriores (hasta API 32) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" android:minSdkVersion="33" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" android:minSdkVersion="33" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" android:minSdkVersion="33" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +29,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GameKeeper"
         tools:targetApi="31">
+
         <activity
             android:name=".activities.SuggesterActivity"
             android:exported="false" />
@@ -20,9 +38,6 @@
             android:exported="false" />
         <activity
             android:name=".activities.PlayerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".itemBoardgame"
             android:exported="false" />
         <activity
             android:name=".activities.DetailActivity"
@@ -42,7 +57,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
