@@ -45,4 +45,5 @@
     <string name="subir_imagen">Subir Imagen</string>
     <string name="cargar_imagen">Cargar imagen</string>
     <string name="tomar_foto">Tomar foto</string>
+    <string name="foto_seleccionada">Foto seleccionada</string>
 </resources>

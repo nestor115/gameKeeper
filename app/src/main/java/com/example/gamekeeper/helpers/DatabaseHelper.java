@@ -236,6 +236,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d("Database", "Relación de género insertada correctamente para el juego: " + gameId);
         }
         }
+
+
     public Cursor getAllGenres() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_GENRE, null);
@@ -509,6 +511,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 }
-
 
 

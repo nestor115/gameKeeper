@@ -1,10 +1,12 @@
 package com.example.gamekeeper.activities;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -16,30 +18,39 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
+import com.example.gamekeeper.sampledata.CloudinaryConfig;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AddBoardgameActivity extends AppCompatActivity {
 
-    private static final int PICK_IMAGE_REQUEST = 1;
-    private static final int CAPTURE_IMAGE_REQUEST = 2;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private static final int REQUEST_STORAGE_PERMISSION = 101;
 
     private EditText editTextName, editTextDescription, editTextYear, editTextPlayers, editTextTime;
     private Spinner spinnerGenre1, spinnerGenre2;
     private Button buttonAddGame, buttonUploadImage, buttonTakePhoto;
     private ImageView imageViewBoardgame;
     private DatabaseHelper db;
-    private Uri imageUri; // Variable para almacenar la URI de la imagen seleccionada o tomada
+    private Uri imageUri;
+
+    // ActivityResultLaunchers para galería y cámara
+    private ActivityResultLauncher<Intent> galleryResultLauncher;
+    private ActivityResultLauncher<Uri> cameraResultLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +71,55 @@ public class AddBoardgameActivity extends AppCompatActivity {
         buttonTakePhoto = findViewById(R.id.btn_take_photo);
         FloatingActionButton fabBack = findViewById(R.id.fab_back);
 
-        //imageViewBoardgame = findViewById(R.id.image_view_boardgame);
+        imageViewBoardgame = findViewById(R.id.iv_selected_image);
 
         setupGenreSpinners();
 
-        // Verificar y solicitar permiso para la cámara
+        // Verificar y solicitar permisos
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
         }
+
+
+        // Verificar si los permisos de almacenamiento son necesarios
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
+            }
+        }
+
+
+        // Registrar el launcher para la galería
+        galleryResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        imageUri = result.getData().getData();
+                        try {
+                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                            imageViewBoardgame.setImageBitmap(bitmap); // Muestra la imagen en el ImageView
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        cameraResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                result -> {
+                    if (result) {
+                        try {
+                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                            imageViewBoardgame.setImageBitmap(bitmap); // Muestra la foto tomada en el ImageView
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Toast.makeText(AddBoardgameActivity.this, "Error al mostrar la foto", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(AddBoardgameActivity.this, "Error al tomar la foto", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
         // Configuración de los botones para cargar la imagen o tomar la foto
         buttonUploadImage.setOnClickListener(v -> openGallery());
@@ -80,7 +132,30 @@ public class AddBoardgameActivity extends AppCompatActivity {
             finish();
         });
     }
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_CAMERA_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permiso concedido, puedes continuar con la cámara
+                    openCamera();
+                } else {
+                    // Permiso denegado, muestra un mensaje o deshabilita la funcionalidad
+                    Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case REQUEST_STORAGE_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permiso concedido, puedes acceder al almacenamiento
+                    openGallery();
+                } else {
+                    // Permiso denegado, muestra un mensaje o deshabilita la funcionalidad
+                    Toast.makeText(this, "Permiso de almacenamiento denegado", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
     private void setupGenreSpinners(){
         Cursor cursor = db.getAllGenres();
         List<String> genreList = new ArrayList<>();
@@ -109,36 +184,20 @@ public class AddBoardgameActivity extends AppCompatActivity {
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        galleryResultLauncher.launch(intent);  // Llamamos al launcher en lugar de startActivityForResult
     }
 
     private void openCamera() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(intent, CAPTURE_IMAGE_REQUEST);
+            // Crea una URI para almacenar la imagen tomada
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, "Nueva Foto");
+            values.put(MediaStore.Images.Media.DESCRIPTION, "Foto tomada desde la cámara");
+            imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            cameraResultLauncher.launch(imageUri);  // Llamamos al launcher para tomar la foto
         } else {
             Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == PICK_IMAGE_REQUEST) {
-                imageUri = data.getData();
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                    imageViewBoardgame.setImageBitmap(bitmap); // Muestra la imagen en el ImageView
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show();
-                }
-            } else if (requestCode == CAPTURE_IMAGE_REQUEST) {
-                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                imageViewBoardgame.setImageBitmap(bitmap); // Muestra la foto tomada en el ImageView
-            }
         }
     }
 
@@ -156,6 +215,7 @@ public class AddBoardgameActivity extends AppCompatActivity {
             Toast.makeText(this, "Debes llenar todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
+
         int yearPublished;
         try {
             yearPublished = Integer.parseInt(yearString);
@@ -172,29 +232,47 @@ public class AddBoardgameActivity extends AppCompatActivity {
             return;
         }
 
-        // Aquí puedes guardar la URI de la imagen si la has tomado o cargado
-        long boardgameId = db.addBoardgame(name, imageUri.toString(), description, yearPublished, numberOfPlayers, time);
-        if (boardgameId != -1) {
-            Toast.makeText(this, "Juego añadido con éxito", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, SearchActivity.class);
-            startActivity(intent);
-            finish();
-        } else {
-            Toast.makeText(this, "Error al añadir el juego", Toast.LENGTH_SHORT).show();
+        if (imageUri == null) {
+            Toast.makeText(this, "Debes cargar o tomar una foto", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        // Subir la imagen a Cloudinary
+        new Thread(() -> {
+            try {
+                Cloudinary cloudinary = CloudinaryConfig.getInstance();
+                Map uploadResult = cloudinary.uploader().upload(getRealPathFromURI(imageUri), ObjectUtils.emptyMap());
+                String imageUrl = uploadResult.get("secure_url").toString();
+
+                // Guardar en la base de datos
+                long boardgameId = db.addBoardgame(name, imageUrl, description, yearPublished, numberOfPlayers, time);
+                if (boardgameId != -1) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "Juego añadido con éxito", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(this, SearchActivity.class);
+                        startActivity(intent);
+                        finish();
+                    });
+                } else {
+                    runOnUiThread(() -> Toast.makeText(this, "Error al añadir el juego", Toast.LENGTH_SHORT).show());
+                }
+            } catch (Exception e) {
+                runOnUiThread(() -> Toast.makeText(this, "Error al subir la imagen", Toast.LENGTH_SHORT).show());
+                e.printStackTrace();
+            }
+        }).start();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CAMERA_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // El permiso fue concedido
-                Toast.makeText(this, "Permiso de cámara concedido", Toast.LENGTH_SHORT).show();
-            } else {
-                // El permiso fue denegado, puedes manejarlo aquí si es necesario
-                Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
-            }
+    private String getRealPathFromURI(Uri contentUri) {
+        Cursor cursor = getContentResolver().query(contentUri, null, null, null, null);
+        if (cursor == null) {
+            return contentUri.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            String path = cursor.getString(idx);
+            cursor.close();
+            return path;
         }
     }
 }

@@ -191,6 +191,15 @@
                     android:text="@string/tomar_foto" />
             </LinearLayout>
 
+            <!-- ImageView para mostrar la imagen seleccionada -->
+            <ImageView
+                android:id="@+id/iv_selected_image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="16dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/foto_seleccionada"
+                android:visibility="visible" />
             <Button
                 android:id="@+id/btn_add_game"
                 android:layout_width="match_parent"
