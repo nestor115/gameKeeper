@@ -5,17 +5,42 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.gamekeeper.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class BaseActivity extends AppCompatActivity {
     protected boolean useToolbar = true;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_base); // Asegúrate de estar inflando correctamente el layout
+        setupToolbar();
+
+        // Inicializar el BottomNavigationView
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        // Establecer el listener para las opciones del BottomNavigationView (usando el nuevo método)
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.opcion1:
+                    Toast.makeText(BaseActivity.this, "Opción 1", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.opcion2:
+                    Toast.makeText(BaseActivity.this, "Opción 2", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.opcion3:
+                    Toast.makeText(BaseActivity.this, "Opción 3", Toast.LENGTH_SHORT).show();
+                    return true;
+                default:
+                    return false;
+            }
+        });
     }
 
     @Override

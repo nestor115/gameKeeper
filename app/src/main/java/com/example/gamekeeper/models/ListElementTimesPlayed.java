@@ -1,6 +1,6 @@
 package com.example.gamekeeper.models;
 
-public class ListElementTimesPlayed extends ListElement{
+public class ListElementTimesPlayed extends ListElement {
 
     public int timesPlayed;
 
@@ -8,7 +8,8 @@ public class ListElementTimesPlayed extends ListElement{
         super(name, id, image);
         this.timesPlayed = timesPlayed;
     }
-    public int getTimesPlayed(){
+
+    public int getTimesPlayed() {
         return this.timesPlayed;
 
     }

@@ -13,8 +13,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.adapters.HomeAdapter;
-import com.example.gamekeeper.adapters.SearchAdapter;
-import com.example.gamekeeper.fragments.PlayerFragment;
+import com.example.gamekeeper.fragments.SearchGenreFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
 
@@ -86,7 +85,7 @@ public class HomeActivity extends BaseActivity {
 
     private void loadSearchFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, new PlayerFragment());
+        transaction.replace(R.id.fragment_container, new SearchGenreFragment());
         transaction.commit();
     }
 
@@ -131,8 +130,6 @@ public class HomeActivity extends BaseActivity {
     }
 
 
-
-
     private void insertData() {
         dB.addGenre("Estrategia");
         dB.addGenre("Rol");
@@ -141,33 +138,33 @@ public class HomeActivity extends BaseActivity {
         dB.addGenre("Construcción de mazos");
         dB.addGenre("Construcción");
         dB.addGenre("Party");
-        dB.addGenre("Draft");
+        dB.addGenre("Selección de cartas");
         dB.addGenre("Familiar");
         dB.addGenre("Deducción");
         dB.addGenre("Palabras");
         dB.addGenre("Trivia");
         dB.addGenre("Colocación de trabajadores");
-        dB.addGenre("Wargames");
+        dB.addGenre("Juegos de guerra");
         dB.addGenre("Miniaturas");
-        dB.addGenre("Tablero abstractos");
+        dB.addGenre("Tableros abstractos");
         dB.addGenre("Economía");
         dB.addGenre("Aventura");
         dB.addGenre("Gestión de recursos");
-        dB.addGenre("Set collection");
+        dB.addGenre("Colección de sets");
         dB.addGenre("Negociación");
         dB.addGenre("Memoria");
         dB.addGenre("Habilidad/destreza");
-        dB.addGenre("Partida Rápida");
-        dB.addGenre("Role-playing (RPG)");
-        dB.addGenre("Tiradas de Dados");
-        dB.addGenre("Colocación de Losetas");
+        dB.addGenre("Partida rápida");
+        dB.addGenre("Rol");
+        dB.addGenre("Tiradas de dados");
+        dB.addGenre("Colocación de losetas");
         dB.addGenre("Temáticos");
 
         long gameId;
         String explodingKittensPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738305/ExplodingKittens_cn9atc.webp";
         String sushiGoPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738307/SushiGo_diof8y.webp";
         String theMindPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738307/TheMind_s56v7u.webp";
-        String catanPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738308/Catan_huslox.webp" ;
+        String catanPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738308/Catan_huslox.webp";
         String cubirdsPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738304/Cubirds_timhhw.webp";
         String unstableUnicornsPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738307/UnstableUnicorns_gstjke.webp";
         String virusPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738307/Virus_i6jr1j.webp";
@@ -175,11 +172,11 @@ public class HomeActivity extends BaseActivity {
         String paradicePhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738306/Paradice_y1ljq4.webp";
         String diosesPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738305/Dioses_xps1gm.webp";
         String azulPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738307/Azul_mq3ctb.webp";
-        String barBestialPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738308/BarBestial_ihxfl7.webp" ;
+        String barBestialPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738308/BarBestial_ihxfl7.webp";
         String desplumadosPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738305/Desplumados_gc51k6.webp";
         String arreUnicornioPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738307/ArreUnicornio_e9bhha.webp";
         String cabrasMontesasPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738308/CabrasMontesas_gdzcri.webp";
-        String bangPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738308/Bang_jt2mrc.webp" ;
+        String bangPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738308/Bang_jt2mrc.webp";
         String cercaYLejosPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738308/CercaYLejos_jzgkue.webp";
         String coatlPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738308/Coatl_jmdbnq.webp";
         String polillaTramposaPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738306/PolillaTramposa_q4dlic.webp";
@@ -188,14 +185,13 @@ public class HomeActivity extends BaseActivity {
         String cafePhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738308/Cafe_wtys2t.webp";
         String holiPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738305/Holi_k5usuz.webp";
         String ladrillazoPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738306/Ladrillazo_jg6zxb.webp";
-        String lavinaPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738305/LaVina_yjr5ut.webp" ;
-        String notAlonePhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738305/NotAlone_ovvgpv.webp" ;
+        String lavinaPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738305/LaVina_yjr5ut.webp";
+        String notAlonePhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738305/NotAlone_ovvgpv.webp";
         String picnicPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738306/Picnic_thfogw.webp";
         String rebelPrincessPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738306/RebelPrincess_qx4afn.webp";
         String sagradaPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738307/Sagrada_kokrkg.webp";
         String samuraiSwordPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738307/SamuraiSword_bb5gvs.webp";
         String samoaPhoto = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1732738306/Samoa_zzelmr.webp";
-
 
 
         gameId = dB.addBoardgame("Exploding Kittens", explodingKittensPhoto, "Un juego de cartas de estrategia y humor en el que los jugadores deben evitar explotar.", 2015, "2-5", "15 min");
@@ -204,9 +200,8 @@ public class HomeActivity extends BaseActivity {
 
 
         gameId = dB.addBoardgame("Sushi Go!", sushiGoPhoto, "Un juego de cartas de draft rápido en el que los jugadores intentan crear la mejor combinación de sushi.", 2013, "2-5", "15 min");
-        dB.addBoardgameGenre(gameId, dB.getGenreId("Draft"));
+        dB.addBoardgameGenre(gameId, dB.getGenreId("Selección de cartas"));
         dB.addBoardgameGenre(gameId, dB.getGenreId("Cartas"));
-
 
 
         gameId = dB.addBoardgame("The Mind", theMindPhoto, "Un juego cooperativo donde los jugadores intentan sincronizar sus cartas en orden ascendente sin comunicación verbal.", 2018, "2-4", "20 min");
@@ -301,7 +296,7 @@ public class HomeActivity extends BaseActivity {
 
         gameId = dB.addBoardgame("Munchkin", munchkinPhoto, "Un juego de cartas lleno de humor en el que los jugadores suben de nivel y traicionan a sus amigos.", 2001, "3-6", "60-120 min");
         dB.addBoardgameGenre(gameId, dB.getGenreId("Cartas"));
-        dB.addBoardgameGenre(gameId, dB.getGenreId("Role-playing (RPG)"));
+        dB.addBoardgameGenre(gameId, dB.getGenreId("Rol"));
 
 
         gameId = dB.addBoardgame("Café", cafePhoto, "Un juego estratégico donde los jugadores gestionan plantaciones de café y cadenas de suministro.", 2020, "1-4", "20-40 min");
@@ -321,7 +316,7 @@ public class HomeActivity extends BaseActivity {
 
         gameId = dB.addBoardgame("La Viña", lavinaPhoto, "Un juego de gestión y colección de uvas para crear los mejores vinos.", 2019, "2-5", "45 min");
         dB.addBoardgameGenre(gameId, dB.getGenreId("Gestión de recursos"));
-        dB.addBoardgameGenre(gameId, dB.getGenreId("Set collection"));
+        dB.addBoardgameGenre(gameId, dB.getGenreId("Colección de Sets"));
 
 
         gameId = dB.addBoardgame("Not Alone", notAlonePhoto, "Un juego de supervivencia donde un jugador es una criatura que persigue a los demás.", 2016, "2-7", "30-60 min");

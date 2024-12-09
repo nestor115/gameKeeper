@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.adapters.SearchAdapter;
-import com.example.gamekeeper.fragments.PlayerFragment;
+import com.example.gamekeeper.fragments.SearchGenreFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
 
@@ -46,9 +46,10 @@ public class SearchActivity extends BaseActivity {
         loadData();
         loadSearchFragment();
     }
+
     private void loadSearchFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, new PlayerFragment());
+        transaction.replace(R.id.fragment_container, new SearchGenreFragment());
         transaction.commit();
     }
 
@@ -62,9 +63,11 @@ public class SearchActivity extends BaseActivity {
             Toast.makeText(this, "No se encontraron juegos.", Toast.LENGTH_SHORT).show();
         }
     }
+
     public List<String> getGenres() {
         return dB.getGenres();
     }
+
     public void filterList(String query, String selectedGenre) {
         List<ListElement> filteredList = new ArrayList<>();
         for (ListElement element : fullList) {

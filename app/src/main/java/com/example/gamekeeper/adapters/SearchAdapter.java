@@ -16,17 +16,16 @@ import com.bumptech.glide.Glide;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.models.ListElement;
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElementViewHolder>{
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElementViewHolder> {
     private List<ListElement> listElements;
     private OnItemClickListener itemClickListener;
 
 
-
-
-//constructor vacio
+    //constructor vacio
     public SearchAdapter() {
         this.listElements = new ArrayList<>();
     }
+
     public void submitList(List<ListElement> newListElements) {
         if (listElements == null) {
             listElements = new ArrayList<>();
@@ -37,6 +36,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
         }
         notifyDataSetChanged();
     }
+
     @NonNull
     @Override
     public ListElementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -60,17 +60,21 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
         }
 
     }
+
     @Override
     public int getItemCount() {
         return listElements.size();
     }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.itemClickListener = listener;
     }
+
     public class ListElementViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName;
         ImageView imageView;
         View detailsButton;
+
         public ListElementViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.tv_BoardgameName);
@@ -85,6 +89,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
 
         }
     }
+
     public interface OnItemClickListener {
         void onItemClick(ListElement listElement);
     }

@@ -132,6 +132,7 @@ public class AddBoardgameActivity extends AppCompatActivity {
             finish();
         });
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -156,7 +157,8 @@ public class AddBoardgameActivity extends AppCompatActivity {
                 break;
         }
     }
-    private void setupGenreSpinners(){
+
+    private void setupGenreSpinners() {
         Cursor cursor = db.getAllGenres();
         List<String> genreList = new ArrayList<>();
         genreList.add("Selecciona un género");

@@ -1,5 +1,7 @@
 package com.example.gamekeeper.models;
+
 import java.util.Objects;
+
 public class ListElement {
     private String name;
     private int id;

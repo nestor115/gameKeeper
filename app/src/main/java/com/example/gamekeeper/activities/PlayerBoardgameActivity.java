@@ -3,9 +3,6 @@ package com.example.gamekeeper.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.CheckBox;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentTransaction;
@@ -13,9 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamekeeper.R;
-import com.example.gamekeeper.activities.SuggesterActivity;
 import com.example.gamekeeper.adapters.PlayerAdapter;
-import com.example.gamekeeper.fragments.PlayerFragment;
+import com.example.gamekeeper.fragments.SearchGenreFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -30,6 +26,7 @@ public class PlayerBoardgameActivity extends BaseActivity {
     private int currentUserId;
     private List<ListElement> fullList = new ArrayList<>();
     private ArrayList<String> playerNames;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +53,7 @@ public class PlayerBoardgameActivity extends BaseActivity {
         loadData();
         loadSearchFragment();
     }
+
     private void loadData() {
         List<ListElement> elements = dB.getUserBoardgames(currentUserId);
         if (elements != null && !elements.isEmpty()) {
@@ -66,9 +64,11 @@ public class PlayerBoardgameActivity extends BaseActivity {
             Toast.makeText(this, "No se encontraron juegos.", Toast.LENGTH_SHORT).show();
         }
     }
+
     public List<String> getGenres() {
         return dB.getGenres();
     }
+
     public void filterList(String query, String selectedGenre) {
         List<ListElement> filteredList = new ArrayList<>();
         for (ListElement element : fullList) {
@@ -81,11 +81,13 @@ public class PlayerBoardgameActivity extends BaseActivity {
         }
         adapter.submitList(filteredList);
     }
+
     private void loadSearchFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, new PlayerFragment());
+        transaction.replace(R.id.fragment_container, new SearchGenreFragment());
         transaction.commit();
     }
+
     private void processSelectedPlayers() {
 
         for (int i = 0; i < adapter.getItemCount(); i++) {
@@ -104,8 +106,6 @@ public class PlayerBoardgameActivity extends BaseActivity {
 
         Log.d("DEBUGPlayers", "processSelectedPlayers: Finalizado");
     }
-
-
 
 
 }

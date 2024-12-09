@@ -38,6 +38,7 @@ public class PlayerActivity extends BaseActivity {
     private ArrayList<String> addedPlayers;
     private int currentUserId;
     private static final int MAX_AUTOCOMPLETE_CHIPS = 8;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +75,8 @@ public class PlayerActivity extends BaseActivity {
         playerNameInput.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
         playerNameInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int after) {
@@ -94,7 +96,8 @@ public class PlayerActivity extends BaseActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {}
+            public void afterTextChanged(Editable editable) {
+            }
         });
 
         playerNameInput.setOnItemClickListener((parent, view, position, id) -> {
@@ -108,6 +111,7 @@ public class PlayerActivity extends BaseActivity {
             validateAndAddPlayer(newPlayer);
         });
     }
+
     private void loadPlayerNames() {
         playerNames.clear();
         Cursor cursor = dbHelper.getPlayersByUserId(currentUserId);
@@ -152,6 +156,7 @@ public class PlayerActivity extends BaseActivity {
 
         updatePlayButtonState();
     }
+
     private void updatePlayButtonState() {
         if (!addedPlayers.isEmpty()) {
             playButton.setEnabled(true);
@@ -161,36 +166,37 @@ public class PlayerActivity extends BaseActivity {
             playButton.setAlpha(0.5f);
         }
     }
+
     private void validateAndAddPlayer(String playerName) {
-    if (playerName.isEmpty()) {
-        return;
-    }
-
-    playerName = playerName.substring(0, 1).toUpperCase() + playerName.substring(1).toLowerCase();
-
-    if (addedPlayers.contains(playerName)) {
-        Toast.makeText(PlayerActivity.this, "Este jugador ya está en la lista.", Toast.LENGTH_SHORT).show();
-        return;
-    }
-
-    if (addedPlayers.size() >= 4) {
-        Toast.makeText(PlayerActivity.this, "No puedes agregar más de 4 jugadores.", Toast.LENGTH_SHORT).show();
-        return;
-    }
-
-    if (!playerNames.contains(playerName)) {
-        boolean isInserted = dbHelper.addPlayer(currentUserId, playerName);
-        if (isInserted) {
-            Toast.makeText(PlayerActivity.this, "Jugador añadido a la base de datos.", Toast.LENGTH_SHORT).show();
-            playerNames.add(playerName);
-        } else {
-            Toast.makeText(PlayerActivity.this, "Error al agregar jugador a la base de datos.", Toast.LENGTH_SHORT).show();
+        if (playerName.isEmpty()) {
+            return;
         }
+
+        playerName = playerName.substring(0, 1).toUpperCase() + playerName.substring(1).toLowerCase();
+
+        if (addedPlayers.contains(playerName)) {
+            Toast.makeText(PlayerActivity.this, "Este jugador ya está en la lista.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (addedPlayers.size() >= 4) {
+            Toast.makeText(PlayerActivity.this, "No puedes agregar más de 4 jugadores.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!playerNames.contains(playerName)) {
+            boolean isInserted = dbHelper.addPlayer(currentUserId, playerName);
+            if (isInserted) {
+                Toast.makeText(PlayerActivity.this, "Jugador añadido a la base de datos.", Toast.LENGTH_SHORT).show();
+                playerNames.add(playerName);
+            } else {
+                Toast.makeText(PlayerActivity.this, "Error al agregar jugador a la base de datos.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        addPlayerToFinalChips(playerName);
+
+        playerNameInput.setText("");
     }
-
-    addPlayerToFinalChips(playerName);
-
-    playerNameInput.setText("");
-}
 
 }

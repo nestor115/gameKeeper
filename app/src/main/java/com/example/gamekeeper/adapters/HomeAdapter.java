@@ -24,6 +24,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
 
     public HomeAdapter() {
     }
+
     // Método para actualizar la lista de elementos
     public void submitList(List<ListElement> newListElements) {
         listElements.clear();
@@ -32,6 +33,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
         }
         notifyDataSetChanged();
     }
+
     //Crea nuevas vistas de los elementos
     @NonNull
     @Override
@@ -39,6 +41,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_activity_home, parent, false);
         return new ListElementViewHolder(view);
     }
+
     //Vincula los datos a las vistas
     @Override
     public void onBindViewHolder(@NonNull ListElementViewHolder holder, int position) {
@@ -55,17 +58,20 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
             holder.imageView.setImageResource(R.drawable.ic_launcher_foreground);
         }
     }
-//Devuelve el número de elementos en la lista
+
+    //Devuelve el número de elementos en la lista
     @Override
     public int getItemCount() {
         return listElements.size();
     }
+
     //Define el comportamiento de los elementos de la lista
     public class ListElementViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName;
         ImageView imageView;
         View deleteButton;
         View detailsButton;
+
         //Constructor de la clase
         public ListElementViewHolder(@NonNull View itemView) {
             super(itemView);

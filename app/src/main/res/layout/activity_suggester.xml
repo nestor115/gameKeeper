@@ -1,46 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".activities.SuggesterActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:gravity="center_horizontal"
+        android:background="@android:color/white">
 
-        <Button
-            android:id="@+id/newGameButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/juego_nuevo" />
-
-        <Button
-            android:id="@+id/playedGameButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/juego_jugado" />
-
-        <Button
-            android:id="@+id/randomButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/aleatorio" />
-
+        <!-- Título "Sugerencias" -->
         <TextView
-            android:id="@+id/gameNameTextView"
+            android:id="@+id/suggestionsTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/game_name"
-            android:textSize="18sp"
-            android:paddingTop="16dp"/>
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="Sugerencias"
+            android:textColor="@color/black"
+            android:textSize="32sp" />
 
+        <!-- Imagen del juego -->
         <ImageView
             android:id="@+id/gameImageView"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_marginTop="8dp"
-            android:scaleType="centerCrop"/>
+            android:layout_marginBottom="16dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/game_image_description"/>
+
+        <!-- Recuadro con el nombre del juego -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/darker_gray"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/gameNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/gameOrderTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Botones: Más jugado y Menos jugado en la misma fila -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="16dp">
+
+            <!-- Botón de más jugado -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/button_background"
+                android:layout_marginEnd="8dp"
+                android:padding="8dp">
+
+                <Button
+                    android:id="@+id/newGameButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:text="@string/juego_nuevo"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Botón de menos jugado -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/button_background"
+                android:layout_marginStart="8dp"
+                android:padding="8dp">
+
+                <Button
+                    android:id="@+id/playedGameButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:text="@string/juego_jugado"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Botón aleatorio (ocupa todo el ancho) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/button_background"
+            android:layout_marginBottom="24dp"
+            android:padding="8dp">
+
+            <Button
+                android:id="@+id/randomButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/aleatorio"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:background="?android:attr/selectableItemBackground" />
+        </LinearLayout>
 
     </LinearLayout>
 

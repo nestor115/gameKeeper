@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -20,15 +21,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class SuggesterActivity extends AppCompatActivity {
+public class SuggesterActivity extends BaseActivity {
 
     private DatabaseHelper dbHelper;
     private TextView gameNameTextView;
+    private TextView gameOrderTextView;
     private ImageView gameImageView;
     private int currentUserId;
     private ArrayList<String> playerNames;
     private List<ListElement> shownNewGames = new ArrayList<>();
     private List<ListElement> shownPlayedGames = new ArrayList<>();
+    private int newGameCounter = 0;
+    private int playedGameCounter = 0;
+    private int randomGameCounter = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +43,7 @@ public class SuggesterActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
         gameNameTextView = findViewById(R.id.gameNameTextView);
         gameImageView = findViewById(R.id.gameImageView);
-
+        gameOrderTextView = findViewById(R.id.gameOrderTextView);
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         currentUserId = sharedPreferences.getInt("user_id", -1);
 
@@ -67,7 +73,8 @@ public class SuggesterActivity extends AppCompatActivity {
 
 
     }
-//Devuelve un juego al azar
+
+    //Devuelve un juego al azar
     private void showRandomGame() {
         List<ListElement> userGames = dbHelper.getUserBoardgames(currentUserId);
 
@@ -77,23 +84,65 @@ public class SuggesterActivity extends AppCompatActivity {
             List<ListElement> filteredGames = new ArrayList<>(userGames);
 
             if (currentGame != null) {
-
                 filteredGames.remove(currentGame);
             }
 
             if (!filteredGames.isEmpty()) {
                 int randomIndex = random.nextInt(filteredGames.size());
                 ListElement randomGame = filteredGames.get(randomIndex);
+
+                // Contar cuántos jugadores han jugado este juego
+                int playedCount = 0;
+
+                // Suponiendo que 'playerNames' contiene los nombres de los jugadores
+                for (String playerName : playerNames) {
+                    int playerId = dbHelper.getPlayerIdByName(playerName, currentUserId);
+                    if (playerId != -1) {
+                        boolean hasPlayed = dbHelper.hasPlayerPlayedGame(playerId, randomGame.getId());
+                        if (hasPlayed) {
+                            playedCount++;
+                        }
+                    }
+                }
+
+                randomGameCounter++;
                 gameNameTextView.setText(randomGame.getName());
                 Glide.with(this).load(randomGame.getImage()).into(gameImageView);
+                gameOrderTextView.setText(randomGameCounter + " - " + "Juego aleatorio (" + playedCount + ") jugadores");
+
+                if (shownNewGames.size() + shownPlayedGames.size() >= userGames.size()) {
+                    shownNewGames.clear();
+                    shownPlayedGames.clear();
+                    randomGameCounter = 0;  // Reinicia el contador de juegos aleatorios
+                    Log.d("RandomButton", "Todos los juegos aleatorios han sido mostrados. Reiniciando contador.");
+                }
             }
         } else if (userGames.size() == 1) {
             ListElement game = userGames.get(0);
 
+            // Contar cuántos jugadores han jugado este juego
+            int playedCount = 0;
+
+            // Suponiendo que 'playerNames' contiene los nombres de los jugadores
+            for (String playerName : playerNames) {
+                int playerId = dbHelper.getPlayerIdByName(playerName, currentUserId);
+                if (playerId != -1) {
+                    boolean hasPlayed = dbHelper.hasPlayerPlayedGame(playerId, game.getId());
+                    if (hasPlayed) {
+                        playedCount++;
+                    }
+                }
+            }
+
+            randomGameCounter++;
             gameNameTextView.setText(game.getName());
             Glide.with(this).load(game.getImage()).into(gameImageView);
+            gameOrderTextView.setText(randomGameCounter + " - " + "Juego aleatorio (" + playedCount + ")");
         }
     }
+
+
+
     //Devuelve un juego el cual no ha sido jugado por nadie o por la mayor parte de jugadores
     private void showNewGame() {
         List<ListElement> userGames = dbHelper.getUserBoardgames(currentUserId);
@@ -115,7 +164,7 @@ public class SuggesterActivity extends AppCompatActivity {
 
         for (ListElement game : userGames) {
             if (shownNewGames.contains(game)) {
-                continue; // Excluye juegos ya mostrados
+                continue;
             }
 
             int gameId = game.getId();
@@ -127,7 +176,6 @@ public class SuggesterActivity extends AppCompatActivity {
                     unplayedCount++;
                 }
             }
-
 
             switch (unplayedCount) {
                 case 4:
@@ -147,7 +195,6 @@ public class SuggesterActivity extends AppCompatActivity {
                     break;
             }
         }
-
 
         Collections.shuffle(unplayedByAll);
         Collections.shuffle(unplayedByThree);
@@ -177,22 +224,33 @@ public class SuggesterActivity extends AppCompatActivity {
             // Reiniciar la lista si todos los juegos han sido mostrados
             Log.d("NewGameButton", "Todos los juegos han sido mostrados. Reiniciando lista.");
             shownNewGames.clear();
+            newGameCounter=0;
             showNewGame();
             return;
         }
 
         // Mostrar el juego seleccionado
         if (selectedGame != null) {
+            int playedCount = 0;
+            for (int playerId : playerIds) {
+                boolean hasPlayed = dbHelper.hasPlayerPlayedGame(playerId, selectedGame.getId());
+                if (hasPlayed) {
+                    playedCount++;
+                }
+            }
             gameNameTextView.setText(selectedGame.getName());
             Glide.with(this).load(selectedGame.getImage()).into(gameImageView);
 
             shownNewGames.add(selectedGame);
+            newGameCounter++;  // Incrementa el contador de juegos nuevos
+            gameOrderTextView.setText(newGameCounter + " - " + "Juego menos jugado (" + playedCount + ") jugadores");
             Log.d("NewGameButton", "Juego mostrado: " + selectedGame.getName());
         } else {
             Log.d("NewGameButton", "No hay juegos disponibles para mostrar.");
         }
     }
-//Devuelve un juego el cual ha sido jugado por todos los jugadores o por la mayor parte de jugadores
+
+    //Devuelve un juego el cual ha sido jugado por todos los jugadores o por la mayor parte de jugadores
     private void showPlayedGame() {
         List<ListElement> userGames = dbHelper.getUserBoardgames(currentUserId);
         List<Integer> playerIds = new ArrayList<>();
@@ -271,21 +329,29 @@ public class SuggesterActivity extends AppCompatActivity {
         if (selectedGame == null && !userGames.isEmpty()) {
             Log.d("PlayedGameButton", "Reiniciando lista de juegos mostrados.");
             shownPlayedGames.clear();
+            playedGameCounter=0;
             showPlayedGame();
             return;
         }
 
         if (selectedGame != null) {
+            int playedCount = 0;
+            for (int playerId : playerIds) {
+                boolean hasPlayed = dbHelper.hasPlayerPlayedGame(playerId, selectedGame.getId());
+                if (hasPlayed) {
+                    playedCount++;
+                }
+            }
             shownPlayedGames.add(selectedGame);
             gameNameTextView.setText(selectedGame.getName());
+            playedGameCounter++;
+            gameOrderTextView.setText(playedGameCounter + " - " + "Juego mas jugado " + "("+  playedCount   +") jugadores");
             Glide.with(this).load(selectedGame.getImage()).into(gameImageView);
             Log.d("PlayedGameButton", "Juego mostrado: " + selectedGame.getName());
         } else {
             Log.d("PlayedGameButton", "No hay juegos disponibles para mostrar.");
         }
     }
-
-
 
 
     private ListElement getCurrentGame() {

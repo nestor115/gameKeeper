@@ -16,7 +16,9 @@ import com.example.gamekeeper.models.ListElement;
 import com.example.gamekeeper.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElementViewHolder> {
     private DatabaseHelper db;
@@ -26,6 +28,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
     private List<String> playerNames;
     private RecyclerView recyclerView;
     private boolean[][] checkBoxStates;
+    private Map<Integer, boolean[]> checkBoxStateMap = new HashMap<>();  // Mapa para guardar el estado de los CheckBox
 
     public void setRecyclerView(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
@@ -34,6 +37,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
     public PlayerAdapter(List<String> playerNames) {
         this.playerNames = playerNames;
     }
+
     public PlayerAdapter(List<String> playerNames, DatabaseHelper db, int currentUserId) {
         this.playerNames = playerNames;
         this.db = db;
@@ -45,7 +49,8 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         if (newListElements != null) {
             listElements.addAll(newListElements);
         }
-        checkBoxStates = new boolean[listElements.size()][playerNames.size()];
+        int maxPlayers = Math.min(playerNames.size(), 4);
+        checkBoxStates = new boolean[listElements.size()][maxPlayers]; // Asegúrate de que el tamaño se actualice con la nueva lista.
         notifyDataSetChanged();
     }
 
@@ -62,7 +67,6 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         holder.itemTitle.setText(listElement.getName());
 
         String imageUrl = listElement.getImage();
-
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Glide.with(holder.itemView.getContext())
                     .load(imageUrl)
@@ -82,21 +86,34 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
             holder.getPlayerName(i).setVisibility(View.GONE);
         }
     }
+
     private void updatePlayerInfo(ListElementViewHolder holder, int playerIndex, int position, boolean alreadyPlayed) {
+        if (position < 0 || position >= checkBoxStates.length || playerIndex < 0 || playerIndex >= checkBoxStates[position].length) {
+            return; // Salir si los índices no son válidos
+        }
+
         if (playerIndex < playerNames.size()) {
             holder.getPlayerName(playerIndex).setText(playerNames.get(playerIndex));
             holder.getCheckBox(playerIndex).setVisibility(View.VISIBLE);
             holder.getCheckBox(playerIndex).setChecked(alreadyPlayed);
-            holder.getCheckBox(playerIndex).setEnabled(!alreadyPlayed); // Deshabilita el CheckBox si ya ha jugado
+            holder.getCheckBox(playerIndex).setEnabled(!alreadyPlayed);
 
             if (!alreadyPlayed) {
                 holder.getCheckBox(playerIndex).setOnCheckedChangeListener((buttonView, isChecked) -> {
                     checkBoxStates[position][playerIndex] = isChecked;
+                    updateCheckBoxState(position, playerIndex, isChecked); // Guardar el estado al cambiar
                 });
             } else {
-                holder.getCheckBox(playerIndex).setOnCheckedChangeListener(null); // Elimina el listener para evitar conflictos
+                holder.getCheckBox(playerIndex).setOnCheckedChangeListener(null);
             }
         }
+    }
+
+    private void updateCheckBoxState(int position, int playerIndex, boolean isChecked) {
+        if (!checkBoxStateMap.containsKey(position)) {
+            checkBoxStateMap.put(position, new boolean[4]);  // Suponemos que hay 4 jugadores
+        }
+        checkBoxStateMap.get(position)[playerIndex] = isChecked;
     }
 
     public CheckBox getCheckBoxByIndex(int itemIndex, int playerIndex) {
@@ -107,16 +124,21 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
             PlayerAdapter.ListElementViewHolder viewHolder = (PlayerAdapter.ListElementViewHolder) holder;
 
             switch (playerIndex) {
-                case 0: return viewHolder.checkBox1;
-                case 1: return viewHolder.checkBox2;
-                case 2: return viewHolder.checkBox3;
-                case 3: return viewHolder.checkBox4;
+                case 0:
+                    return viewHolder.checkBox1;
+                case 1:
+                    return viewHolder.checkBox2;
+                case 2:
+                    return viewHolder.checkBox3;
+                case 3:
+                    return viewHolder.checkBox4;
             }
         }
         return null;
     }
+
     public boolean getCheckBoxState(int itemIndex, int playerIndex) {
-        return checkBoxStates[itemIndex][playerIndex];  // Obtener el estado del CheckBox
+        return checkBoxStateMap.containsKey(itemIndex) && checkBoxStateMap.get(itemIndex)[playerIndex]; // Obtener el estado del CheckBox
     }
 
     @Override
@@ -145,38 +167,42 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
             itemName4 = itemView.findViewById(R.id.item_name4);
         }
 
-        // Método para obtener el nombre del jugador
         public TextView getPlayerName(int index) {
             switch (index) {
-                case 0: return itemName1;
-                case 1: return itemName2;
-                case 2: return itemName3;
-                case 3: return itemName4;
-                default: return null;
+                case 0:
+                    return itemName1;
+                case 1:
+                    return itemName2;
+                case 2:
+                    return itemName3;
+                case 3:
+                    return itemName4;
+                default:
+                    return null;
             }
         }
 
-        // Método para obtener el CheckBox
         public CheckBox getCheckBox(int index) {
             switch (index) {
-                case 0: return checkBox1;
-                case 1: return checkBox2;
-                case 2: return checkBox3;
-                case 3: return checkBox4;
-                default: return null;
+                case 0:
+                    return checkBox1;
+                case 1:
+                    return checkBox2;
+                case 2:
+                    return checkBox3;
+                case 3:
+                    return checkBox4;
+                default:
+                    return null;
             }
         }
     }
-
 
     public interface OnItemClickListener {
         void onItemClick(ListElement listElement);
     }
 
-
-
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
-
 }

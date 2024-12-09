@@ -1,4 +1,5 @@
 package com.example.gamekeeper.helpers;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -106,21 +107,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_UB_BOARDGAME_ID + " INTEGER, " +
                     "PRIMARY KEY (" + COLUMN_UB_USER_ID + ", " + COLUMN_UB_BOARDGAME_ID + "), " +
                     "FOREIGN KEY (" + COLUMN_UB_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "), " +
-                    "FOREIGN KEY (" + COLUMN_UB_BOARDGAME_ID + ") REFERENCES " + TABLE_BOARDGAME + "(" + COLUMN_BOARDGAME_ID + "));";
-
+                    "FOREIGN KEY (" + COLUMN_UB_BOARDGAME_ID + ") REFERENCES " + TABLE_BOARDGAME + "(" + COLUMN_BOARDGAME_ID + ") ON DELETE CASCADE);";
     private static final String TABLE_CREATE_PLAYER_BOARDGAME =
             "CREATE TABLE " + TABLE_PLAYER_BOARDGAME + " (" +
                     COLUMN_PLAYER_BOARDGAME_PLAYER_ID + " INTEGER, " +
                     COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + " INTEGER, " +
-                    COLUMN_PLAYER_BOARDGAME_HAS_PLAYED + " INTEGER DEFAULT 0, " + // Campo binario: 0 o 1
+                    COLUMN_PLAYER_BOARDGAME_HAS_PLAYED + " INTEGER DEFAULT 0, " +
                     "PRIMARY KEY (" + COLUMN_PLAYER_BOARDGAME_PLAYER_ID + ", " + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + "), " +
                     "FOREIGN KEY (" + COLUMN_PLAYER_BOARDGAME_PLAYER_ID + ") REFERENCES " + TABLE_PLAYERS + "(" + COLUMN_PLAYER_ID + "), " +
-                    "FOREIGN KEY (" + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + ") REFERENCES " + TABLE_BOARDGAME + "(" + COLUMN_BOARDGAME_ID + "));";
-
+                    "FOREIGN KEY (" + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + ") REFERENCES " + TABLE_BOARDGAME + "(" + COLUMN_BOARDGAME_ID + ") ON DELETE CASCADE);";
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
     }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(TABLE_CREATE_USERS);
@@ -131,6 +131,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(TABLE_CREATE_USER_BOARDGAME);
         db.execSQL(TABLE_CREATE_PLAYER_BOARDGAME);
     }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
@@ -142,15 +143,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYER_BOARDGAME);
         onCreate(db);
     }
-    public boolean addUser(String email, String password){
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true);
+    }
+
+    public boolean addUser(String email, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_EMAIL, email);
         values.put(COLUMN_PASSWORD, password);
-        long result = db.insert(TABLE_USERS, null,values);
+        long result = db.insert(TABLE_USERS, null, values);
         db.close();
         return result != -1;
     }
+
     public int checkUser(String email, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT id FROM users WHERE email = ? AND password = ?", new String[]{email, password});
@@ -162,6 +170,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return -1;
     }
+
     public String getStoredPasswordByEmail(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT password FROM users WHERE email = ?", new String[]{email});
@@ -173,6 +182,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return null;
     }
+
     public void addGenre(String genreName) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query("genre", new String[]{"name"}, "name = ?", new String[]{genreName}, null, null, null);
@@ -186,6 +196,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d("Database", "Género insertado: " + genreName);
         }
     }
+    public boolean hasGamesForUser(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM " + TABLE_USER_BOARDGAME + " WHERE " + COLUMN_UB_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        boolean hasGames = false;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                hasGames = cursor.getInt(0) > 0; // Comprueba si el conteo es mayor a 0
+            }
+            cursor.close();
+        }
+        db.close();
+        return hasGames;
+    }
+
     public int getGenreId(String genreName) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_GENRE, new String[]{COLUMN_GENRE_ID},
@@ -199,6 +225,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return -1;
     }
+
     public long addBoardgame(String name, String photoURl, String description, int yearPublished, String numberOfPlayers, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -220,6 +247,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return result;
     }
+
     public void addBoardgameGenre(long gameId, int genreId) {
         if (genreId == -1) {
             Log.e("Database", "No se encontró el género para el juego con ID: " + gameId);
@@ -235,13 +263,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else {
             Log.d("Database", "Relación de género insertada correctamente para el juego: " + gameId);
         }
-        }
+    }
 
 
     public Cursor getAllGenres() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_GENRE, null);
     }
+
     public List<ListElement> getAllBoardgames() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<ListElement> boardgameList = new ArrayList<>();
@@ -278,6 +307,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return result != -1;
     }
+
     public boolean removeUserBoardgame(int userId, int boardgameId) {
         SQLiteDatabase db = this.getWritableDatabase();
         int rowsAffected = db.delete(TABLE_USER_BOARDGAME,
@@ -309,12 +339,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return listElements;
     }
+
     public Cursor searchBoardgamesByName(String query) {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_BOARDGAME + " WHERE " + COLUMN_BOARDGAME_NAME + " LIKE ?";
         String[] selectionArgs = new String[]{"%" + query + "%"};
         return db.rawQuery(sql, selectionArgs);
     }
+
     public Cursor getAllBoardgamesForUser(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_BOARDGAME + " boardgame " +
@@ -324,6 +356,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] selectionArgs = new String[]{String.valueOf(userId)};
         return db.rawQuery(sql, selectionArgs);
     }
+
     public Cursor searchBoardgamesForUserByName(int userId, String query) {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_BOARDGAME + " boardgame " +
@@ -333,6 +366,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] selectionArgs = new String[]{String.valueOf(userId), "%" + query + "%"};
         return db.rawQuery(sql, selectionArgs);
     }
+
     public String uploadImageToCloudinary(Bitmap bitmap) {
         File tempFile;
         try {
@@ -351,6 +385,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return null;
         }
     }
+
     public boolean addPlayer(int userId, String playerName) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -379,6 +414,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return genres;
     }
+
     public boolean isBoardgameInGenre(int boardgameId, String genreName) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT 1 FROM " + TABLE_BOARDGAME_GENRE + " boardgame_genre " +
@@ -389,6 +425,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
+
     public List<String> getGenresForUser(int userId) {
         List<String> genres = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -411,6 +448,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return genres;
     }
+
     public boolean addPlayerBoardgameOnce(int playerId, int boardgameId) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -473,6 +511,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return alreadyPlayed;
     }
+
     public boolean hasPlayerPlayedGame(int playerId, int gameId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT " + COLUMN_PLAYER_BOARDGAME_HAS_PLAYED +

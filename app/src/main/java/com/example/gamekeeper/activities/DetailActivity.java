@@ -32,6 +32,7 @@ public class DetailActivity extends AppCompatActivity {
     public static final String BOARDGAME_ID = "BOARDGAME_ID";
     public static final String NAME_VIEW = "NAME_VIEW";
     private Button btnAddBoardgame;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,27 +54,27 @@ public class DetailActivity extends AppCompatActivity {
         if ("SEARCH".equals(nameView)) {
             btnAddBoardgame.setVisibility(View.VISIBLE);
             btnAddBoardgame.setEnabled(true);
-        } else if("HOME".equals(nameView)) {
+        } else if ("HOME".equals(nameView)) {
             btnAddBoardgame.setVisibility(View.INVISIBLE);
             btnAddBoardgame.setEnabled(false);
         }
         loadBoardGameDetails(boardGameId);
         FloatingActionButton fabBack = findViewById(R.id.fab_back);
         fabBack.setOnClickListener(new View.OnClickListener() {
-                                       @Override
-                                       public void onClick(View v) {
-                                           Intent intent;
-                                           if ("SEARCH".equals(nameView)) {
-                                               intent = new Intent(DetailActivity.this, SearchActivity.class);
-                                           } else if ("HOME".equals(nameView)) {
-                                               intent = new Intent(DetailActivity.this, HomeActivity.class);
-                                           } else {
-                                               intent = new Intent(DetailActivity.this, HomeActivity.class);
-                                           }
-                                           startActivity(intent);
-                                           finish();
-                                       }
-                                   });
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                if ("SEARCH".equals(nameView)) {
+                    intent = new Intent(DetailActivity.this, SearchActivity.class);
+                } else if ("HOME".equals(nameView)) {
+                    intent = new Intent(DetailActivity.this, HomeActivity.class);
+                } else {
+                    intent = new Intent(DetailActivity.this, HomeActivity.class);
+                }
+                startActivity(intent);
+                finish();
+            }
+        });
         btnAddBoardgame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,7 +86,7 @@ public class DetailActivity extends AppCompatActivity {
                     boolean added = dB.addUserBoardgame(userId, boardGameId);
                     if (added) {
                         Toast.makeText(DetailActivity.this, "Juego añadido a tu colección", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(DetailActivity.this, HomeActivity.class);
+                        Intent intent = new Intent(DetailActivity.this, SearchActivity.class);
                         startActivity(intent);
                     } else {
                         Toast.makeText(DetailActivity.this, "Ese juego ya existe en tu colección", Toast.LENGTH_SHORT).show();
@@ -136,9 +137,9 @@ public class DetailActivity extends AppCompatActivity {
                     } else {
                         ivGame.setImageResource(R.drawable.ic_launcher_foreground);
                     }
-                    String yearStr = "año de publicación " +year;
-                    String playersStr = "numero de jugadores: " + players ;
-                    String timeStr = "duracion: " + time ;
+                    String yearStr = "año de publicación " + year;
+                    String playersStr = "numero de jugadores: " + players;
+                    String timeStr = "duracion: " + time;
                     tvDescription.setText(description);
                     tvYear.setText(yearStr);
                     tvPlayers.setText(playersStr);
@@ -147,9 +148,9 @@ public class DetailActivity extends AppCompatActivity {
                     List<String> genres = getBoardGameGenre(id);
                     if (genres.size() == 2) {
                         tvGenre.setText("genero:  " + genres.get(0) + "/" + genres.get(1));
-                    } else if(genres.size() == 1) {
+                    } else if (genres.size() == 1) {
                         tvGenre.setText("genero:  " + genres.get(0));
-                    }else {
+                    } else {
                         tvGenre.setText("genero: ");
                     }
                 }

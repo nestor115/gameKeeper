@@ -19,8 +19,8 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        buttonGoRegister =findViewById(R.id.buttonGoRegister);
-        buttonGoLogin =findViewById(R.id.buttonGoLogin);
+        buttonGoRegister = findViewById(R.id.buttonGoRegister);
+        buttonGoLogin = findViewById(R.id.buttonGoLogin);
 
         buttonGoRegister.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RegisterActivity.class);

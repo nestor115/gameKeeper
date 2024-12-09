@@ -19,13 +19,13 @@ import com.example.gamekeeper.activities.SearchActivity;
 
 import java.util.List;
 
-public class PlayerFragment extends Fragment {
+public class SearchGenreFragment extends Fragment {
     private SearchView searchView;
     private Spinner genreSpinner;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_player, container, false);
+        View view = inflater.inflate(R.layout.fragment_search_genre, container, false);
 
         searchView = view.findViewById(R.id.searchView);
         genreSpinner = view.findViewById(R.id.genreSpinner);
@@ -67,7 +67,7 @@ public class PlayerFragment extends Fragment {
             genres = ((PlayerBoardgameActivity) activity).getGenres();
         } else if (activity instanceof HomeActivity) {
             genres = ((HomeActivity) activity).getGenres();
-        }else if (activity instanceof SearchActivity) {
+        } else if (activity instanceof SearchActivity) {
             genres = ((SearchActivity) activity).getGenres();
         }
 

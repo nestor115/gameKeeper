@@ -36,8 +36,8 @@
     <string name="inicio">Inicio</string>
     <string name="a_adir">Añadir</string>
     <string name="aleatorio">Aleatorio</string>
-    <string name="juego_jugado">Juego jugado</string>
-    <string name="juego_nuevo">Juego nuevo</string>
+    <string name="juego_jugado">Juego mas jugado</string>
+    <string name="juego_nuevo">Juego menos jugado</string>
     <string name="game_name">Titulo</string>
     <string name="detalles">Detalles</string>
     <string name="titulo_formulario">Nuevo juego</string>
@@ -46,4 +46,6 @@
     <string name="cargar_imagen">Cargar imagen</string>
     <string name="tomar_foto">Tomar foto</string>
     <string name="foto_seleccionada">Foto seleccionada</string>
+    <string name="game_image_description">Descripción de la imagen del juego</string>
+
 </resources>
