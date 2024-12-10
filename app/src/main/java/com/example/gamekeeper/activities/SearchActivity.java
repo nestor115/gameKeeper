@@ -2,6 +2,7 @@ package com.example.gamekeeper.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,7 +34,11 @@ public class SearchActivity extends BaseActivity {
         searchAdapter = new SearchAdapter();
         recyclerViewSearch.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewSearch.setAdapter(searchAdapter);
-
+        Button btnAddBoardgame = findViewById(R.id.btnAddBoardgame);
+        btnAddBoardgame.setOnClickListener(v -> {
+            Intent intent = new Intent(SearchActivity.this, AddBoardgameActivity.class);
+            startActivity(intent);
+        });
         searchAdapter.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(ListElement listElement) {

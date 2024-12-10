@@ -25,6 +25,7 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         etEmailInputLogin = findViewById(R.id.et_EmailInputLogin);
         etPasswordInputLogin = findViewById(R.id.et_PasswordInputLogin);
         buttonLogin = findViewById(R.id.btn_Login);

@@ -13,7 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="8dp">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_ItemBoardgame"
@@ -58,34 +58,34 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_details"
                 android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="4dp"
-            android:gravity="center"
-            android:text=""
-            app:backgroundTint="#4CAF50"
-            app:cornerRadius="20dp"
-            app:icon="@drawable/ic_info"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:iconSize="24dp"
-            app:iconTint="@android:color/white"
-            android:layout_weight="1" />
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text=""
+                app:backgroundTint="#4CAF50"
+                app:cornerRadius="20dp"
+                app:icon="@drawable/ic_info"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="@android:color/white" />
 
             <!-- Botón Borrar (rojo) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_delete"
                 android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text=""
-            app:backgroundTint="#FF5722"
-            app:cornerRadius="20dp"
-            app:icon="@drawable/ic_delete"
-            app:iconPadding="0dp"
-            app:iconSize="24dp"
-            app:iconGravity="textStart"
-            app:iconTint="@android:color/white"
-            android:layout_weight="1" />
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text=""
+                app:backgroundTint="#FF5722"
+                app:cornerRadius="20dp"
+                app:icon="@drawable/ic_delete"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="@android:color/white" />
 
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -24,7 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends BaseActivity {
     private TextView tvTitle, tvDescription, tvYear, tvPlayers, tvTime, tvGenre;
     private ImageView ivGame;
     private DatabaseHelper dB;

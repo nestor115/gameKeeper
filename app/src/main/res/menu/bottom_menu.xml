@@ -4,16 +4,16 @@
     <item
         android:id="@+id/opcion1"
         android:icon="@drawable/ic_home"
-        android:title="Opción 1" />
+        android:title="Colección" />
 
     <item
         android:id="@+id/opcion2"
         android:icon="@drawable/ic_search"
-        android:title="Opción 2" />
+        android:title="Buscar" />
 
     <item
         android:id="@+id/opcion3"
         android:icon="@drawable/ic_players"
-        android:title="Opción 3" />
+        android:title="Jugadores" />
 
 </menu>
