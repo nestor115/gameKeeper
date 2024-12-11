@@ -47,5 +47,7 @@
     <string name="tomar_foto">Tomar foto</string>
     <string name="foto_seleccionada">Foto seleccionada</string>
     <string name="game_image_description">Descripción de la imagen del juego</string>
-
+    <string name="min">Min</string>
+    <string name="max">Max</string>
+    <string name="volver">Volver</string>
 </resources>

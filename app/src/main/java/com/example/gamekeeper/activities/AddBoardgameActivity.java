@@ -41,9 +41,9 @@ public class AddBoardgameActivity extends BaseActivity {
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private static final int REQUEST_STORAGE_PERMISSION = 101;
 
-    private EditText editTextName, editTextDescription, editTextYear, editTextPlayers, editTextTime;
+    private EditText editTextName, editTextDescription, editTextYear, editTextPlayersMax, editTextPlayersMin, editTextTimeMax, editTextTimeMin;
     private Spinner spinnerGenre1, spinnerGenre2;
-    private Button buttonAddGame, buttonUploadImage, buttonTakePhoto;
+    private Button buttonAddGame, buttonTakePhoto;
     private ImageView imageViewBoardgame;
     private DatabaseHelper db;
     private Uri imageUri;
@@ -62,12 +62,13 @@ public class AddBoardgameActivity extends BaseActivity {
         editTextName = findViewById(R.id.et_name);
         editTextDescription = findViewById(R.id.et_description);
         editTextYear = findViewById(R.id.et_year);
-        editTextPlayers = findViewById(R.id.et_players);
-        editTextTime = findViewById(R.id.et_time);
+        editTextPlayersMax = findViewById(R.id.et_players_max);
+        editTextPlayersMin = findViewById(R.id.et_players_min);
+        editTextTimeMax = findViewById(R.id.et_time_max);
+        editTextTimeMin = findViewById(R.id.et_time_min);
         spinnerGenre1 = findViewById(R.id.spinner_genre1);
         spinnerGenre2 = findViewById(R.id.spinner_genre2);
         buttonAddGame = findViewById(R.id.btn_add_game);
-        buttonUploadImage = findViewById(R.id.btn_upload_image);
         buttonTakePhoto = findViewById(R.id.btn_take_photo);
         FloatingActionButton fabBack = findViewById(R.id.fab_back);
 
@@ -122,7 +123,6 @@ public class AddBoardgameActivity extends BaseActivity {
                 });
 
         // Configuración de los botones para cargar la imagen o tomar la foto
-        buttonUploadImage.setOnClickListener(v -> openGallery());
         buttonTakePhoto.setOnClickListener(v -> openCamera());
 
         buttonAddGame.setOnClickListener(v -> addBoardGame());
@@ -146,15 +146,7 @@ public class AddBoardgameActivity extends BaseActivity {
                     Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case REQUEST_STORAGE_PERMISSION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permiso concedido, puedes acceder al almacenamiento
-                    openGallery();
-                } else {
-                    // Permiso denegado, muestra un mensaje o deshabilita la funcionalidad
-                    Toast.makeText(this, "Permiso de almacenamiento denegado", Toast.LENGTH_SHORT).show();
-                }
-                break;
+
         }
     }
 
@@ -183,11 +175,7 @@ public class AddBoardgameActivity extends BaseActivity {
         spinnerGenre2.setAdapter(adapter);
     }
 
-    private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/*");
-        galleryResultLauncher.launch(intent);  // Llamamos al launcher en lugar de startActivityForResult
-    }
+
 
     private void openCamera() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -207,25 +195,54 @@ public class AddBoardgameActivity extends BaseActivity {
         String name = editTextName.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
         String yearString = editTextYear.getText().toString().trim();
-        String numberOfPlayers = editTextPlayers.getText().toString().trim();
-        String time = editTextTime.getText().toString().trim();
+        String playersMax = editTextPlayersMax.getText().toString().trim();
+        String playersMin = editTextPlayersMin.getText().toString().trim();
+        String timeMax = editTextTimeMax.getText().toString().trim();
+        String timeMin = editTextTimeMin.getText().toString().trim();
 
         String genre1 = spinnerGenre1.getSelectedItem().toString();
         String genre2 = spinnerGenre2.getSelectedItem().toString();
 
-        if (name.isEmpty() || description.isEmpty() || yearString.isEmpty() || numberOfPlayers.isEmpty() || time.isEmpty()) {
+        if (name.isEmpty() || description.isEmpty() || yearString.isEmpty() || playersMax.isEmpty() || playersMin.isEmpty() || timeMax.isEmpty() || timeMin.isEmpty()) {
             Toast.makeText(this, "Debes llenar todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Validación del año
         int yearPublished;
         try {
             yearPublished = Integer.parseInt(yearString);
-            if (yearPublished <= 0) {
+            if (yearPublished <= 0 || yearPublished >= 2024) {
                 throw new NumberFormatException("Año inválido");
             }
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "El año debe ser un número positivo válido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "El año debe ser un número válido y menor de 2024", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Validación de los jugadores
+        int maxPlayers, minPlayers;
+        try {
+            maxPlayers = Integer.parseInt(playersMax);
+            minPlayers = Integer.parseInt(playersMin);
+            if (minPlayers < 1 || maxPlayers < 1 || minPlayers > maxPlayers || maxPlayers > 100) {
+                throw new NumberFormatException("Número de jugadores inválido");
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Los jugadores deben ser números positivos válidos y el máximo no puede superar 100", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Validación del tiempo
+        int maxTime, minTime;
+        try {
+            maxTime = Integer.parseInt(timeMax);
+            minTime = Integer.parseInt(timeMin);
+            if (minTime < 1 || maxTime < 1 || minTime > maxTime || maxTime > 360) {
+                throw new NumberFormatException("Tiempo de juego inválido");
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "El tiempo de juego debe ser un número positivo válido y no puede superar los 180 minutos", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -239,6 +256,9 @@ public class AddBoardgameActivity extends BaseActivity {
             return;
         }
 
+        String players = playersMin + "-" + playersMax;
+        String playTime = timeMin + "-" + timeMax + " min";
+
         // Subir la imagen a Cloudinary
         new Thread(() -> {
             try {
@@ -247,9 +267,11 @@ public class AddBoardgameActivity extends BaseActivity {
                 String imageUrl = uploadResult.get("secure_url").toString();
 
                 // Guardar en la base de datos
-                long boardgameId = db.addBoardgame(name, imageUrl, description, yearPublished, numberOfPlayers, time);
+                long boardgameId = db.addBoardgame(name, imageUrl, description, yearPublished, players, playTime);
                 if (boardgameId != -1) {
                     runOnUiThread(() -> {
+                        db.addBoardgameGenre(boardgameId, db.getGenreId(genre1));
+                        db.addBoardgameGenre(boardgameId, db.getGenreId(genre2));
                         Toast.makeText(this, "Juego añadido con éxito", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(this, SearchActivity.class);
                         startActivity(intent);

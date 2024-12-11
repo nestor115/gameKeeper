@@ -9,27 +9,17 @@
         android:required="true" /> <!-- Permisos de cámara y almacenamiento -->
     <uses-permission android:name="android.permission.CAMERA" /> <!-- Permisos de almacenamiento -->
     <!-- Para Android 12 y versiones anteriores (hasta API 32) -->
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" /> <!-- Para Android 11 en adelante (API 30+) -->
-    <uses-permission
-        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        android:required="false" /> <!-- Para Android 13 en adelante (API 33+) -->
-    <uses-permission
-        android:name="android.permission.READ_MEDIA_IMAGES"
-        android:minSdkVersion="33" />
-    <uses-permission
-        android:name="android.permission.READ_MEDIA_IMAGES"
-        android:minSdkVersion="33" />
-    <uses-permission
-        android:name="android.permission.READ_MEDIA_VIDEO"
-        android:minSdkVersion="33" />
-    <uses-permission
-        android:name="android.permission.READ_MEDIA_AUDIO"
-        android:minSdkVersion="33" />
+
+
+    <!-- Permiso para leer y escribir en almacenamiento externo hasta Android 12 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <!-- Permisos para Android 13 y superiores -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" android:required="false" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" android:required="false" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" android:required="false" />
+
 
     <application
         android:allowBackup="true"
@@ -41,12 +31,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GameKeeper"
         tools:targetApi="31">
-        <activity
-            android:name=".activities.PruebaMenuActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.BaseWithBottomNavActivity"
-            android:exported="false" />
+
         <activity
             android:name=".activities.BaseActivity"
             android:exported="false" />

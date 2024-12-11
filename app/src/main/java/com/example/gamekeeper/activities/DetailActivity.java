@@ -137,13 +137,12 @@ public class DetailActivity extends BaseActivity {
                     } else {
                         ivGame.setImageResource(R.drawable.ic_launcher_foreground);
                     }
-                    String yearStr = "año de publicación " + year;
-                    String playersStr = "numero de jugadores: " + players;
-                    String timeStr = "duracion: " + time;
+                    String yearStr = ""+ year;
+
                     tvDescription.setText(description);
                     tvYear.setText(yearStr);
-                    tvPlayers.setText(playersStr);
-                    tvTime.setText(timeStr);
+                    tvPlayers.setText(players);
+                    tvTime.setText(time);
 
                     List<String> genres = getBoardGameGenre(id);
                     if (genres.size() == 2) {

@@ -23,10 +23,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:shadowColor="#888888"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="1"
             android:text="Título del Juego"
             android:textColor="#333333"
-            android:textStyle="bold"
-            android:textSize="24sp" />
+            android:textSize="26sp"
+            android:textStyle="bold" />
 
         <!-- Imagen del juego -->
         <ImageView
@@ -42,11 +46,11 @@
             android:id="@+id/tv_TittleDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:text="Descripción"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="#555555" />
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_Description"
@@ -55,7 +59,8 @@
             android:layout_marginTop="8dp"
             android:text="Descripción del juego"
             android:textSize="16sp"
-            android:textColor="#666666" />
+            android:textColor="#666666"
+             />
 
         <!-- Año, jugadores y duración -->
         <TextView
@@ -63,22 +68,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:text="Año de publicación: "
+            android:textColor="#333333"
             android:textSize="16sp"
-            android:textColor="#333333" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_Players"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Número de jugadores: "
+            android:textColor="#333333"
             android:textSize="16sp"
-            android:textColor="#333333" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Duración: "
+            android:textColor="#333333"
             android:textSize="16sp"
-            android:textColor="#333333" />
+            android:textStyle="bold" />
 
         <!-- Género -->
         <TextView
@@ -87,17 +98,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textSize="16sp"
-            android:textColor="#333333" />
+            android:textColor="#333333"
+            android:textStyle="bold" />
 
-        <!-- Botón -->
-        <Button
-            android:id="@+id/btn_AddBoardgame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:backgroundTint="#FF5722"
-            android:textColor="#FFFFFF"
-            android:text="Añadir a mi colección" />
 
     </LinearLayout>
 
@@ -109,9 +112,8 @@
         android:src="@drawable/ic_arrow_back"
         android:contentDescription="@string/back_button_description"
         app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:backgroundTint="@color/primaryColor"
-    />
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:backgroundTint="@color/primaryColor"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

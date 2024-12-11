@@ -78,29 +78,33 @@ public class BaseActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         if (bottomNavigationView != null) {
-            bottomNavigationView.setVisibility(View.VISIBLE); // Hacer visible el menú
+            // Si la actividad actual es LoginActivity, ocultamos el BottomNavigationView
+            if (this instanceof LoginActivity || this instanceof RegisterActivity || this instanceof MainActivity) {
+                bottomNavigationView.setVisibility(View.GONE); // Ocultar el menú en LoginActivity
+            } else {
+                bottomNavigationView.setVisibility(View.VISIBLE); // Hacer visible el menú en otras actividades
+                bottomNavigationView.setOnItemSelectedListener(item -> {
+                    Log.d("MenuInferior", "Evento disparado con ID: " + item.getItemId());
+
+                    switch (item.getItemId()) {
+                        case R.id.opcion1:
+                            startActivity(new Intent(this, HomeActivity.class));
+                            return true;
+                        case R.id.opcion2:
+                            startActivity(new Intent(this, SearchActivity.class));
+                            return true;
+                        case R.id.opcion3:
+                            startActivity(new Intent(this, PlayerActivity.class));
+                            return true;
+                        default:
+                            return false;
+                    }
+                });
+            }
 
             // Usa post() para asegurarte de que el diseño se ha inflado completamente antes de agregar listeners
             bottomNavigationView.post(() -> {
                 Log.d("MenuInferior", "Tamaño final: ancho=" + bottomNavigationView.getWidth() + ", alto=" + bottomNavigationView.getHeight());
-            });
-
-            bottomNavigationView.setOnItemSelectedListener(item -> {
-                Log.d("MenuInferior", "Evento disparado con ID: " + item.getItemId());
-
-                switch (item.getItemId()) {
-                    case R.id.opcion1:
-                        startActivity(new Intent(this, HomeActivity.class));
-                        return true;
-                    case R.id.opcion2:
-                        startActivity(new Intent(this, SearchActivity.class));
-                        return true;
-                    case R.id.opcion3:
-                        startActivity(new Intent(this, PlayerActivity.class));
-                        return true;
-                    default:
-                        return false;
-                }
             });
         } else {
             Log.e("MenuInferior", "El BottomNavigationView es null");

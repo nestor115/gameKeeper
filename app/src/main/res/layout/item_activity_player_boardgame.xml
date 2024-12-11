@@ -17,12 +17,12 @@
 
         <ImageView
             android:id="@+id/item_icon"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_marginEnd="8dp"
             android:paddingLeft="14dp"
             android:paddingRight="14dp"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_launcher_foreground" />
 
         <LinearLayout
@@ -43,7 +43,6 @@
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:alignmentMode="alignMargins"
                 android:columnCount="2"
@@ -65,7 +64,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
-                        android:buttonTint="?attr/colorPrimary"/>
+                        android:buttonTint="?attr/colorPrimary" />
 
                     <TextView
                         android:id="@+id/item_name1"
@@ -89,7 +88,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
-                        android:buttonTint="?attr/colorPrimary"/>
+                        android:buttonTint="?attr/colorPrimary" />
 
                     <TextView
                         android:id="@+id/item_name2"
@@ -113,7 +112,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
-                        android:buttonTint="?attr/colorPrimary"/>
+                        android:buttonTint="?attr/colorPrimary" />
 
                     <TextView
                         android:id="@+id/item_name3"
@@ -137,7 +136,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
-                        android:buttonTint="?attr/colorPrimary"/>
+                        android:buttonTint="?attr/colorPrimary" />
 
                     <TextView
                         android:id="@+id/item_name4"
