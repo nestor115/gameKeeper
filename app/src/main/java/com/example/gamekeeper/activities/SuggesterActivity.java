@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
+import com.example.gamekeeper.utils.IntentExtras;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +52,7 @@ public class SuggesterActivity extends BaseActivity {
         Button playedGameButton = findViewById(R.id.playedGameButton);
         Button randomButton = findViewById(R.id.randomButton);
         Intent intent = getIntent();
-        playerNames = intent.getStringArrayListExtra("selected_players");
+        playerNames = intent.getStringArrayListExtra(IntentExtras.SELECTED_PLAYERS);
         randomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

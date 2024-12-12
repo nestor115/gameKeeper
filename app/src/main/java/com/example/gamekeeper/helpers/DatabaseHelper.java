@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.example.gamekeeper.models.Boardgame;
 import com.example.gamekeeper.models.ListElement;
 import com.example.gamekeeper.models.ListElementTimesPlayed;
 import com.example.gamekeeper.sampledata.CloudinaryConfig;
@@ -265,6 +266,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public Boardgame getBoardgameById(int boardgameId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Boardgame boardgame = null;
+        Cursor cursor = null;
+
+        try {
+            // Realiza la consulta a la base de datos para obtener los detalles del juego
+            String query = "SELECT * FROM " + TABLE_BOARDGAME + " WHERE " + COLUMN_BOARDGAME_ID + " = ?";
+            cursor = db.rawQuery(query, new String[]{String.valueOf(boardgameId)});
+
+            if (cursor != null && cursor.moveToFirst()) {
+                // Extrae los datos del cursor
+                int indexId = cursor.getColumnIndex(COLUMN_BOARDGAME_ID);
+                int indexName = cursor.getColumnIndex(COLUMN_BOARDGAME_NAME);
+                int indexPhoto = cursor.getColumnIndex(COLUMN_BOARDGAME_PHOTO);
+                int indexDescription = cursor.getColumnIndex(COLUMN_BOARDGAME_DESCRIPTION);
+                int indexYear = cursor.getColumnIndex(COLUMN_BOARDGAME_YEAR_PUBLISHED);
+                int indexNumberOfPlayers = cursor.getColumnIndex(COLUMN_BOARDGAME_NUMBER_OF_PLAYERS);
+                int indexTime = cursor.getColumnIndex(COLUMN_BOARDGAME_TIME);
+                int id = cursor.getInt(indexId);
+                String name = cursor.getString(indexName);
+                String description = cursor.getString(indexPhoto);
+                int year = cursor.getInt(indexDescription);
+                String numberOfPlayers = cursor.getString(indexYear);
+                String time = cursor.getString(indexNumberOfPlayers);
+                String photo = cursor.getString(indexTime);
+
+                // Crea un objeto Boardgame con los datos recuperados
+                boardgame = new Boardgame(id, name, description, year, numberOfPlayers, time, photo);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return boardgame;
+    }
+
 
     public Cursor getAllGenres() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -414,7 +454,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return genres;
     }
+    public List<String> getGenresByBoardgameId(int boardgameId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<String> genres = new ArrayList<>();
 
+        // Consulta para obtener los géneros relacionados con el juego
+        String query = "SELECT genre." + COLUMN_GENRE_NAME +
+                " FROM " + TABLE_GENRE + " genre " +
+                "JOIN " + TABLE_BOARDGAME_GENRE + " boardgame_genre " +
+                "ON genre." + COLUMN_GENRE_ID + " = boardgame_genre." + COLUMN_BOARDGAME_GENRE_GENRE_ID +
+                " WHERE boardgame_genre." + COLUMN_BOARDGAME_GENRE_BOARDGAME_ID + " = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(boardgameId)});
+
+        // Recorrer los géneros y añadirlos a la lista
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int genreIndex = cursor.getColumnIndex(COLUMN_GENRE_NAME);  // Cambiado a COLUMN_GENRE_NAME
+                String genreName = cursor.getString(genreIndex);
+                genres.add(genreName);
+            }
+            cursor.close();
+        }
+
+        return genres;
+    }
+
+    // Método para verificar si un género está asociado a un juego
     public boolean isBoardgameInGenre(int boardgameId, String genreName) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT 1 FROM " + TABLE_BOARDGAME_GENRE + " boardgame_genre " +

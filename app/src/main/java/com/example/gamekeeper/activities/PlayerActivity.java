@@ -20,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
+import com.example.gamekeeper.utils.IntentExtras;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -49,8 +50,9 @@ public class PlayerActivity extends BaseActivity {
 
         playButton.setOnClickListener(v -> {
             Intent intent = new Intent(PlayerActivity.this, PlayerBoardgameActivity.class);
-            intent.putStringArrayListExtra("player_names", addedPlayers);
+            intent.putStringArrayListExtra(IntentExtras.PLAYER_NAMES, addedPlayers);
             startActivity(intent);
+            finish();
         });
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         currentUserId = sharedPreferences.getInt("user_id", -1);

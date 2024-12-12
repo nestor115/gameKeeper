@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
+import com.example.gamekeeper.utils.IntentExtras;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -68,7 +69,7 @@ public class LoginActivity extends BaseActivity {
         if (dB.hasGamesForUser(userId)) {
             // Redirige a PlayerActivity si hay juegos
             Intent intent = new Intent(LoginActivity.this, PlayerActivity.class);
-            intent.putExtra("userId", userId);
+            intent.putExtra(IntentExtras.USER_ID, userId);
             startActivity(intent);
         } else {
             // Redirige a HomeActivity si no hay juegos

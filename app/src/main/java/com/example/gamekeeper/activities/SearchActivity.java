@@ -14,6 +14,7 @@ import com.example.gamekeeper.adapters.SearchAdapter;
 import com.example.gamekeeper.fragments.SearchGenreFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
+import com.example.gamekeeper.utils.IntentExtras;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,16 +38,23 @@ public class SearchActivity extends BaseActivity {
         Button btnAddBoardgame = findViewById(R.id.btnAddBoardgame);
         btnAddBoardgame.setOnClickListener(v -> {
             Intent intent = new Intent(SearchActivity.this, AddBoardgameActivity.class);
+            intent.putExtra(IntentExtras.ACTION_BUTTON, "ADD");
             startActivity(intent);
         });
         searchAdapter.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(ListElement listElement) {
                 Intent intent = new Intent(SearchActivity.this, DetailActivity.class);
-                intent.putExtra(DetailActivity.BOARDGAME_ID, listElement.getId());
-                intent.putExtra(DetailActivity.NAME_VIEW, "SEARCH");
+                intent.putExtra(IntentExtras.BOARDGAME_ID, listElement.getId());
+                intent.putExtra(IntentExtras.NAME_VIEW, "SEARCH");
                 startActivity(intent);
             }
+        });
+        searchAdapter.setOnEditClickListener(listElement -> {
+            Intent intent = new Intent(this, AddBoardgameActivity.class);
+            intent.putExtra(IntentExtras.ACTION_BUTTON, "EDIT"); // Indica que es una edición
+            intent.putExtra(IntentExtras.GAME_ID, listElement.getId()); // Pasa el ID del juego
+            startActivity(intent);
         });
         loadData();
         loadSearchFragment();

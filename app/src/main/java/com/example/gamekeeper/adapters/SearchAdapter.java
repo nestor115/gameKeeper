@@ -74,16 +74,23 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
         TextView textViewName;
         ImageView imageView;
         View detailsButton;
+        View editButton;
 
         public ListElementViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.tv_BoardgameName);
             imageView = itemView.findViewById(R.id.iv_Boardgame);
             detailsButton = itemView.findViewById(R.id.btn_details);
+            editButton = itemView.findViewById(R.id.btn_edit);
             //Listener para los clics en los elementos de la lista
             detailsButton.setOnClickListener(v -> {
                 if (itemClickListener != null) {
                     itemClickListener.onItemClick(listElements.get(getAdapterPosition()));
+                }
+            });
+            editButton.setOnClickListener(v -> {
+                if (editClickListener != null) {
+                    editClickListener.onEditClick(listElements.get(getAdapterPosition()));
                 }
             });
 
@@ -92,6 +99,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
 
     public interface OnItemClickListener {
         void onItemClick(ListElement listElement);
+    }
+    public interface OnEditClickListener {
+        void onEditClick(ListElement listElement);
+    }
+    private OnEditClickListener editClickListener;
+
+    public void setOnEditClickListener(OnEditClickListener listener) {
+        this.editClickListener = listener;
     }
 }
 

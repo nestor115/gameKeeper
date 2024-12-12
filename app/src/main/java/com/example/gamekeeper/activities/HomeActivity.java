@@ -16,6 +16,7 @@ import com.example.gamekeeper.adapters.HomeAdapter;
 import com.example.gamekeeper.fragments.SearchGenreFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
+import com.example.gamekeeper.utils.IntentExtras;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,9 +61,9 @@ public class HomeActivity extends BaseActivity {
 
 
                 Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
-                intent.putExtra(DetailActivity.BOARDGAME_ID, listElement.getId());
+                intent.putExtra(IntentExtras.BOARDGAME_ID, listElement.getId());
 
-                intent.putExtra(DetailActivity.NAME_VIEW, "HOME");
+                intent.putExtra(IntentExtras.NAME_VIEW, "HOME");
                 startActivity(intent);
             }
         });

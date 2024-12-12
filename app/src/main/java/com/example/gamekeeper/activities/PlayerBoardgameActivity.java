@@ -14,6 +14,7 @@ import com.example.gamekeeper.adapters.PlayerAdapter;
 import com.example.gamekeeper.fragments.SearchGenreFragment;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.models.ListElement;
+import com.example.gamekeeper.utils.IntentExtras;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class PlayerBoardgameActivity extends BaseActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         Intent intent = getIntent();
-        playerNames = intent.getStringArrayListExtra("player_names");
+        playerNames = intent.getStringArrayListExtra(IntentExtras.PLAYER_NAMES);
         adapter = new PlayerAdapter(playerNames, dB, currentUserId);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -45,8 +46,9 @@ public class PlayerBoardgameActivity extends BaseActivity {
         fabConfirmSelection.setOnClickListener(v -> {
             processSelectedPlayers();
             Intent intentSuggester = new Intent(PlayerBoardgameActivity.this, SuggesterActivity.class);
-            intentSuggester.putStringArrayListExtra("selected_players", playerNames);
+            intentSuggester.putStringArrayListExtra(IntentExtras.SELECTED_PLAYERS, playerNames);
             startActivity(intentSuggester);
+            finish();
 
         });
 

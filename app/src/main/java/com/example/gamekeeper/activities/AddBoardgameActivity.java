@@ -4,13 +4,13 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,15 +20,16 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
 import com.example.gamekeeper.sampledata.CloudinaryConfig;
+import com.example.gamekeeper.utils.IntentExtras;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
@@ -45,10 +46,11 @@ public class AddBoardgameActivity extends BaseActivity {
     private Spinner spinnerGenre1, spinnerGenre2;
     private Button buttonAddGame, buttonTakePhoto;
     private ImageView imageViewBoardgame;
-    private DatabaseHelper db;
+    private DatabaseHelper dB;
     private Uri imageUri;
+    private List<String> genreList = new ArrayList<>();
 
-    // ActivityResultLaunchers para galería y cámara
+
     private ActivityResultLauncher<Intent> galleryResultLauncher;
     private ActivityResultLauncher<Uri> cameraResultLauncher;
 
@@ -57,7 +59,7 @@ public class AddBoardgameActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_boardgame);
 
-        db = new DatabaseHelper(this);
+        dB = new DatabaseHelper(this);
 
         editTextName = findViewById(R.id.et_name);
         editTextDescription = findViewById(R.id.et_description);
@@ -70,19 +72,20 @@ public class AddBoardgameActivity extends BaseActivity {
         spinnerGenre2 = findViewById(R.id.spinner_genre2);
         buttonAddGame = findViewById(R.id.btn_add_game);
         buttonTakePhoto = findViewById(R.id.btn_take_photo);
+        imageViewBoardgame = findViewById(R.id.iv_selected_image);
         FloatingActionButton fabBack = findViewById(R.id.fab_back);
 
         imageViewBoardgame = findViewById(R.id.iv_selected_image);
 
         setupGenreSpinners();
 
-        // Verificar y solicitar permisos
+
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
         }
 
 
-        // Verificar si los permisos de almacenamiento son necesarios
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
@@ -90,7 +93,6 @@ public class AddBoardgameActivity extends BaseActivity {
         }
 
 
-        // Registrar el launcher para la galería
         galleryResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -122,27 +124,135 @@ public class AddBoardgameActivity extends BaseActivity {
                     }
                 });
 
-        // Configuración de los botones para cargar la imagen o tomar la foto
+        Intent intent = getIntent();
+        String action = intent.getStringExtra(IntentExtras.ACTION_BUTTON);
+        if (action != null && action.equals("EDIT")) {
+            int gameId = intent.getIntExtra(IntentExtras.GAME_ID, -1);
+            if (gameId != -1) {
+                loadGameData(gameId);
+            }
+        }
+
         buttonTakePhoto.setOnClickListener(v -> openCamera());
 
         buttonAddGame.setOnClickListener(v -> addBoardGame());
         fabBack.setOnClickListener(v -> {
-            Intent intent = new Intent(AddBoardgameActivity.this, SearchActivity.class);
-            startActivity(intent);
+            Intent intentBack = new Intent(AddBoardgameActivity.this, SearchActivity.class);
+            startActivity(intentBack);
             finish();
         });
     }
 
+    private void loadGameData(int gameId) {
+        SQLiteDatabase db = this.dB.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_BOARDGAME + " WHERE " + DatabaseHelper.COLUMN_BOARDGAME_ID + " = ?", new String[]{String.valueOf(gameId)});
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int titleIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NAME);
+                int photoIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_PHOTO);
+                int descriptionIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_DESCRIPTION);
+                int yearIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_YEAR_PUBLISHED);
+                int playersIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NUMBER_OF_PLAYERS);
+                int timeIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_TIME);
+
+                if (titleIndex == -1 || photoIndex == -1 || descriptionIndex == -1 || yearIndex == -1 || playersIndex == -1 || timeIndex == -1) {
+                    Toast.makeText(this, "Error: One or more columns not found in the database", Toast.LENGTH_LONG).show();
+                } else {
+                    String title = cursor.getString(titleIndex);
+                    String photo = cursor.getString(photoIndex);
+                    String description = cursor.getString(descriptionIndex);
+                    int year = cursor.getInt(yearIndex);
+                    String players = cursor.getString(playersIndex);
+                    String time = cursor.getString(timeIndex);
+
+
+                    editTextName.setText(title);
+                    editTextDescription.setText(description);
+                    editTextYear.setText(String.valueOf(year));
+
+
+                    if (players != null && !players.isEmpty()) {
+                        String[] playersRange = players.split("-");
+                        if (playersRange.length == 2) {
+                            editTextPlayersMin.setText(playersRange[0]);
+                            editTextPlayersMax.setText(playersRange[1]);
+                        }
+                    }
+
+
+                    if (time != null && !time.isEmpty()) {
+                        String[] timeRange = time.split(" ");
+                        if (timeRange.length > 0) {
+                            editTextTimeMin.setText(timeRange[0]);
+                        }
+                        if (timeRange.length > 1) {
+                            editTextTimeMax.setText(timeRange[1]);
+                        }
+                    }
+
+
+                    if (photo != null && !photo.isEmpty()) {
+                        Glide.with(this)
+                                .load(photo)
+                                .placeholder(R.drawable.ic_launcher_foreground)
+                                .into(imageViewBoardgame);
+                    }
+
+                    // Cargar los géneros del juego
+                    List<String> genres = getBoardGameGenre(gameId);
+                    if (genres.size() > 0) {
+                        String genre1 = genres.get(0);
+                        spinnerGenre1.setSelection(getGenreIndex(genre1));
+
+                        if (genres.size() > 1) {
+                            String genre2 = genres.get(1);
+                            spinnerGenre2.setSelection(getGenreIndex(genre2));
+                        }
+                    }
+                }
+            }
+            cursor.close();
+        }
+    }
+    private List<String> getBoardGameGenre(int boardGameId) {
+        SQLiteDatabase db = dB.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT g." + DatabaseHelper.COLUMN_GENRE_NAME +
+                " FROM " + DatabaseHelper.TABLE_GENRE + " g " +
+                " JOIN " + DatabaseHelper.TABLE_BOARDGAME_GENRE + " bg " +
+                " ON g." + DatabaseHelper.COLUMN_GENRE_ID + " = bg." + DatabaseHelper.COLUMN_BOARDGAME_GENRE_GENRE_ID +
+                " WHERE bg." + DatabaseHelper.COLUMN_BOARDGAME_GENRE_BOARDGAME_ID + " = ?", new String[]{String.valueOf(boardGameId)});
+
+        List<String> genres = new ArrayList<>();
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int genreIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_GENRE_NAME);
+                if (genreIndex != -1) {
+                    genres.add(cursor.getString(genreIndex));
+                } else {
+                    Log.e("DetailActivity", "Column index not found for genre");
+                }
+            }
+            cursor.close();
+        }
+        return genres;
+    }
+    private int getGenreIndex(String genreName) {
+        for (int i = 0; i < genreList.size(); i++) {
+            if (genreList.get(i).equals(genreName)) {
+                return i;
+            }
+        }
+        return 0;
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case REQUEST_CAMERA_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permiso concedido, puedes continuar con la cámara
                     openCamera();
                 } else {
-                    // Permiso denegado, muestra un mensaje o deshabilita la funcionalidad
                     Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -151,8 +261,8 @@ public class AddBoardgameActivity extends BaseActivity {
     }
 
     private void setupGenreSpinners() {
-        Cursor cursor = db.getAllGenres();
-        List<String> genreList = new ArrayList<>();
+        Cursor cursor = dB.getAllGenres();
+        genreList.clear();
         genreList.add("Selecciona un género");
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -179,7 +289,6 @@ public class AddBoardgameActivity extends BaseActivity {
 
     private void openCamera() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            // Crea una URI para almacenar la imagen tomada
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, "Nueva Foto");
             values.put(MediaStore.Images.Media.DESCRIPTION, "Foto tomada desde la cámara");
@@ -208,7 +317,6 @@ public class AddBoardgameActivity extends BaseActivity {
             return;
         }
 
-        // Validación del año
         int yearPublished;
         try {
             yearPublished = Integer.parseInt(yearString);
@@ -220,7 +328,6 @@ public class AddBoardgameActivity extends BaseActivity {
             return;
         }
 
-        // Validación de los jugadores
         int maxPlayers, minPlayers;
         try {
             maxPlayers = Integer.parseInt(playersMax);
@@ -233,7 +340,6 @@ public class AddBoardgameActivity extends BaseActivity {
             return;
         }
 
-        // Validación del tiempo
         int maxTime, minTime;
         try {
             maxTime = Integer.parseInt(timeMax);
@@ -266,12 +372,11 @@ public class AddBoardgameActivity extends BaseActivity {
                 Map uploadResult = cloudinary.uploader().upload(getRealPathFromURI(imageUri), ObjectUtils.emptyMap());
                 String imageUrl = uploadResult.get("secure_url").toString();
 
-                // Guardar en la base de datos
-                long boardgameId = db.addBoardgame(name, imageUrl, description, yearPublished, players, playTime);
+                long boardgameId = dB.addBoardgame(name, imageUrl, description, yearPublished, players, playTime);
                 if (boardgameId != -1) {
                     runOnUiThread(() -> {
-                        db.addBoardgameGenre(boardgameId, db.getGenreId(genre1));
-                        db.addBoardgameGenre(boardgameId, db.getGenreId(genre2));
+                        dB.addBoardgameGenre(boardgameId, dB.getGenreId(genre1));
+                        dB.addBoardgameGenre(boardgameId, dB.getGenreId(genre2));
                         Toast.makeText(this, "Juego añadido con éxito", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(this, SearchActivity.class);
                         startActivity(intent);

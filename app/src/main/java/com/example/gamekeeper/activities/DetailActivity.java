@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
+import com.example.gamekeeper.utils.IntentExtras;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -29,8 +30,7 @@ public class DetailActivity extends BaseActivity {
     private ImageView ivGame;
     private DatabaseHelper dB;
 
-    public static final String BOARDGAME_ID = "BOARDGAME_ID";
-    public static final String NAME_VIEW = "NAME_VIEW";
+
     private Button btnAddBoardgame;
 
     @Override
@@ -49,8 +49,8 @@ public class DetailActivity extends BaseActivity {
 
 
         dB = new DatabaseHelper(this);
-        int boardGameId = getIntent().getIntExtra(BOARDGAME_ID, 1);
-        String nameView = getIntent().getStringExtra(NAME_VIEW);
+        int boardGameId = getIntent().getIntExtra(IntentExtras.BOARDGAME_ID, 1);
+        String nameView = getIntent().getStringExtra(IntentExtras.NAME_VIEW);
         if ("SEARCH".equals(nameView)) {
             btnAddBoardgame.setVisibility(View.VISIBLE);
             btnAddBoardgame.setEnabled(true);

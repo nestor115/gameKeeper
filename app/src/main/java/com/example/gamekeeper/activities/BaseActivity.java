@@ -89,12 +89,15 @@ public class BaseActivity extends AppCompatActivity {
                     switch (item.getItemId()) {
                         case R.id.opcion1:
                             startActivity(new Intent(this, HomeActivity.class));
+                            finish();
                             return true;
                         case R.id.opcion2:
                             startActivity(new Intent(this, SearchActivity.class));
+                            finish();
                             return true;
                         case R.id.opcion3:
                             startActivity(new Intent(this, PlayerActivity.class));
+                            finish();
                             return true;
                         default:
                             return false;
