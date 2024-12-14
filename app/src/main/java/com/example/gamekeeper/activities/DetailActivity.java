@@ -100,9 +100,7 @@ public class DetailActivity extends BaseActivity {
     }
 
     private void loadBoardGameDetails(int id) {
-        SQLiteDatabase db = dB.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_BOARDGAME + " WHERE " + DatabaseHelper.COLUMN_BOARDGAME_ID + " = ?", new String[]{String.valueOf(id)});
-
+        Cursor cursor = dB.getGameData(id);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 String[] columnNames = cursor.getColumnNames();

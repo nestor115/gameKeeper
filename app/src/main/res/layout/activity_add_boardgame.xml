@@ -107,6 +107,12 @@
                 android:textColor="#555555"
                 android:textSize="16sp" />
 
+            <ToggleButton
+                android:id="@+id/togglePlayer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textOff="Rango"
+                android:textOn="Único" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -145,7 +151,12 @@
                 android:text="@string/tiempo_de_juego"
                 android:textColor="#555555"
                 android:textSize="16sp" />
-
+            <ToggleButton
+                android:id="@+id/toggleTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textOff="Rango"
+                android:textOn="Único" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -198,23 +209,6 @@
                 android:text="@string/cargar_foto"
                 android:textColor="#555555"
                 android:textSize="16sp" />
-
-            <!-- Contenedor horizontal para los botones -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp">
-
-                <!-- Botón para Tomar Foto con la Cámara -->
-                <Button
-                    android:id="@+id/btn_take_photo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:backgroundTint="@color/primaryColor"
-                    android:text="@string/tomar_foto" />
-            </LinearLayout>
 
             <!-- ImageView para mostrar la imagen seleccionada -->
             <ImageView

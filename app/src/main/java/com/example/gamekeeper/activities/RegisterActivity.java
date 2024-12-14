@@ -3,6 +3,7 @@ package com.example.gamekeeper.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,7 +39,27 @@ public class RegisterActivity extends BaseActivity {
 
             if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
                 Toast.makeText(RegisterActivity.this, "todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
-            } else {
+            }
+
+            // Validar email
+            if (!isValidEmail(email)) {
+                Toast.makeText(RegisterActivity.this, "Por favor ingresa un correo electrónico válido.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Validar contraseña
+            String passwordValidationResult = validatePassword(password);
+            if (passwordValidationResult != null) {
+                Toast.makeText(RegisterActivity.this, passwordValidationResult, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Verificar si el correo ya está registrado
+            if (dB.isEmailAlreadyRegistered(email)) {
+                Toast.makeText(RegisterActivity.this, "El correo electrónico ya está registrado.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
                 String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
                 boolean isAdded = dB.addUser(email, hashedPassword);
                 if (isAdded) {
@@ -49,7 +70,7 @@ public class RegisterActivity extends BaseActivity {
                 } else {
                     Toast.makeText(RegisterActivity.this, "Error al registrar", Toast.LENGTH_SHORT).show();
                 }
-            }
+
 
         });
         fabBack.setOnClickListener(v -> {
@@ -57,5 +78,42 @@ public class RegisterActivity extends BaseActivity {
             startActivity(intent);
             finish();
         });
+    }
+    private boolean isValidEmail(String email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private String validatePassword(String password) {
+        // Verificar si la contraseña está vacía
+        if (password.isEmpty()) {
+            return "La contraseña no puede estar vacía.";
+        }
+        // Tiene al menos una letra minúscula
+        if (!password.matches(".*[a-z].*")) {
+            return "La contraseña debe contener al menos una letra minúscula.";
+        }
+
+        // Tiene al menos una letra mayúscula
+        if (!password.matches(".*[A-Z].*")) {
+            return "La contraseña debe contener al menos una letra mayúscula.";
+        }
+
+        // Tiene al menos un número
+        if (!password.matches(".*[0-9].*")) {
+            return "La contraseña debe contener al menos un número.";
+        }
+
+        // Tiene al menos un carácter especial
+        if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            return "La contraseña debe contener al menos un carácter especial.";
+        }
+
+        // Tiene al menos 8 caracteres
+        if (password.length() < 8) {
+            return "La contraseña debe tener al menos 8 caracteres.";
+        }
+
+        // Si pasa todas las validaciones
+        return null;
     }
 }

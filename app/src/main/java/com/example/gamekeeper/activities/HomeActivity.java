@@ -96,8 +96,6 @@ public class HomeActivity extends BaseActivity {
         if (elements != null && !elements.isEmpty()) {
             fullList = new ArrayList<>(elements);
             adapter.submitList(fullList);
-        } else {
-            Toast.makeText(this, "No se encontraron juegos.", Toast.LENGTH_SHORT).show();
         }
     }
 
