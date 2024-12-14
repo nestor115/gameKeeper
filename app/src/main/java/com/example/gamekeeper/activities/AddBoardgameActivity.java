@@ -2,14 +2,10 @@ package com.example.gamekeeper.activities;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -21,24 +17,16 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+
 
 import com.bumptech.glide.Glide;
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
-import com.example.gamekeeper.sampledata.CloudinaryConfig;
 import com.example.gamekeeper.utils.IntentExtras;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class AddBoardgameActivity extends BaseActivity {
 
@@ -49,7 +37,7 @@ public class AddBoardgameActivity extends BaseActivity {
     private DatabaseHelper dB;
     private Uri imageUri;
     private List<String> genreList = new ArrayList<>();
-    private ToggleButton toggleTime ;
+    private ToggleButton toggleTime;
     private ToggleButton togglePlayer;
     private String action;
 
@@ -76,19 +64,15 @@ public class AddBoardgameActivity extends BaseActivity {
         togglePlayer = findViewById(R.id.togglePlayer);
         setupGenreSpinners();
         Intent intent = getIntent();
-         action = intent.getStringExtra(IntentExtras.ACTION_BUTTON);
-        if (action != null && action.equals("EDIT")) {
-            int gameId = intent.getIntExtra(IntentExtras.GAME_ID, -1);
-            if (gameId != -1) {
-                loadGameData(gameId);
-            }
-        }
+        action = intent.getStringExtra(IntentExtras.ACTION_BUTTON);
+        //Cambia el texto del boton
         buttonAddGame.setText("EDIT".equals(action) ? "Actualizar Juego" : "Añadir Juego");
         String defaultImageUrl = "https://res.cloudinary.com/dxgk71sz7/image/upload/v1734118500/default_pp4xqf.jpg";
         Glide.with(this)
                 .load(defaultImageUrl)
                 .placeholder(R.drawable.ic_launcher_foreground)
                 .into(imageViewBoardgame);
+        //Boton que cambia de 2 inputs a uno solo
         togglePlayer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -102,7 +86,7 @@ public class AddBoardgameActivity extends BaseActivity {
                 }
             }
         });
-
+        //Boton que cambia de 2 inputs a uno solo
         toggleTime.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -116,8 +100,12 @@ public class AddBoardgameActivity extends BaseActivity {
                 }
             }
         });
-
-
+        if (action != null && action.equals("EDIT")) {
+            int gameId = intent.getIntExtra(IntentExtras.GAME_ID, -1);
+            if (gameId != -1) {
+                loadGameData(gameId);
+            }
+        }
 
 
         buttonAddGame.setOnClickListener(v -> onSaveButtonClick());
@@ -129,8 +117,9 @@ public class AddBoardgameActivity extends BaseActivity {
         });
 
 
-
     }
+
+    //Metodo para cambiar entre guardar y editar un juego
     public void onSaveButtonClick() {
         if ("EDIT".equals(action)) {
             int gameId = getIntent().getIntExtra(IntentExtras.GAME_ID, -1);
@@ -141,6 +130,8 @@ public class AddBoardgameActivity extends BaseActivity {
             addBoardGame();
         }
     }
+
+    //Valida los campos del formulario
     private boolean validateFields() {
         String name = editTextName.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
@@ -200,96 +191,97 @@ public class AddBoardgameActivity extends BaseActivity {
         return true;
     }
 
-
+    //Carga los datos del juego desde la base de datos
     private void loadGameData(int gameId) {
         Cursor cursor = null;
         SQLiteDatabase db = this.dB.getReadableDatabase();
         try {
-            // Usar el método de DatabaseHelper
             cursor = this.dB.getBoardGameById(gameId);
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                int titleIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NAME);
-                int photoIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_PHOTO);
-                int descriptionIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_DESCRIPTION);
-                int yearIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_YEAR_PUBLISHED);
-                int playersIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NUMBER_OF_PLAYERS);
-                int timeIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_TIME);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    int titleIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NAME);
+                    int photoIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_PHOTO);
+                    int descriptionIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_DESCRIPTION);
+                    int yearIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_YEAR_PUBLISHED);
+                    int playersIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_NUMBER_OF_PLAYERS);
+                    int timeIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BOARDGAME_TIME);
 
-                if (titleIndex == -1 || photoIndex == -1 || descriptionIndex == -1 || yearIndex == -1 || playersIndex == -1 || timeIndex == -1) {
-                    Toast.makeText(this, "Error: One or more columns not found in the database", Toast.LENGTH_LONG).show();
-                } else {
-                    String title = cursor.getString(titleIndex);
-                    String photo = cursor.getString(photoIndex);
-                    String description = cursor.getString(descriptionIndex);
-                    int year = cursor.getInt(yearIndex);
-                    String players = cursor.getString(playersIndex);
-                    String time = cursor.getString(timeIndex);
-
-
-                    editTextName.setText(title);
-                    editTextDescription.setText(description);
-                    editTextYear.setText(String.valueOf(year));
+                    if (titleIndex == -1 || photoIndex == -1 || descriptionIndex == -1 || yearIndex == -1 || playersIndex == -1 || timeIndex == -1) {
+                        Toast.makeText(this, "Error: One or more columns not found in the database", Toast.LENGTH_LONG).show();
+                    } else {
+                        String title = cursor.getString(titleIndex);
+                        String photo = cursor.getString(photoIndex);
+                        String description = cursor.getString(descriptionIndex);
+                        int year = cursor.getInt(yearIndex);
+                        String players = cursor.getString(playersIndex);
+                        String time = cursor.getString(timeIndex);
 
 
-                    if (players != null && !players.isEmpty()) {
-                        if (players.contains("-")) {
-                            String[] playersRange = players.split("-");
-                            if (playersRange.length > 1) {
-                                editTextPlayersMin.setText(playersRange[0]);
-                                editTextPlayersMax.setText(playersRange[1]);
+                        editTextName.setText(title);
+                        editTextDescription.setText(description);
+                        editTextYear.setText(String.valueOf(year));
+
+
+                        if (players != null && !players.isEmpty()) {
+                            if (players.contains("-")) {
+                                String[] playersRange = players.split("-");
+                                if (playersRange.length > 1) {
+                                    editTextPlayersMin.setText(playersRange[0]);
+                                    editTextPlayersMax.setText(playersRange[1]);
+                                }
+                            } else {
+                                editTextPlayersMin.setText(players);
+                                editTextPlayersMax.setText("");
+                                togglePlayer.setChecked(true);
                             }
-                        } else {
-                            editTextPlayersMin.setText(players);
-                            editTextPlayersMax.setText("");
-                            togglePlayer.setChecked(true);
                         }
-                    }
 
 
-                    if (time != null && !time.isEmpty()) {
-                        time = time.replace("min", "").trim();
-                        if (time.contains("-")) {
-                            // Separar en función del guion si hay un rango de tiempo
-                            String[] timeMultiple = time.split("-");
-                            if (timeMultiple.length > 1) {
-                                editTextTimeMin.setText(timeMultiple[0].trim());
-                                editTextTimeMax.setText(timeMultiple[1].trim());
+                        if (time != null && !time.isEmpty()) {
+                            time = time.replace("min", "").trim();
+                            if (time.contains("-")) {
+                                // Separar en función del guion si hay un rango de tiempo
+                                String[] timeMultiple = time.split("-");
+                                if (timeMultiple.length > 1) {
+                                    editTextTimeMin.setText(timeMultiple[0].trim());
+                                    editTextTimeMax.setText(timeMultiple[1].trim());
+                                }
+
+                            } else {
+                                editTextTimeMin.setText(time.trim());
+                                editTextTimeMax.setText("");
+
+                                toggleTime.setChecked(true);
                             }
-
-                        } else {
-                            editTextTimeMin.setText(time.trim());
-                            editTextTimeMax.setText("");
-
-                            toggleTime.setChecked(true);
                         }
-                    }
 
-                    if (photo != null && !photo.isEmpty()) {
-                        Glide.with(this)
-                                .load(photo)
-                                .placeholder(R.drawable.ic_launcher_foreground)
-                                .into(imageViewBoardgame);
-                    }
-
-                    // Cargar los géneros del juego
-                    List<String> genres = dB.getBoardGameGenres(gameId);
-                    if (!genres.isEmpty()) {
-                        String genre1 = genres.get(0);
-                        spinnerGenre1.setSelection(getGenreIndex(genre1));
-
-
-                        if (genres.size() > 1) {
-                            String genre2 = genres.get(1);
-                            spinnerGenre2.setSelection(getGenreIndex(genre2));
+                        if (photo != null && !photo.isEmpty()) {
+                            imageUri = Uri.parse(photo);
+                            Glide.with(this)
+                                    .load(photo)
+                                    .placeholder(R.drawable.ic_launcher_foreground)
+                                    .into(imageViewBoardgame);
                         }
-                    }
-                    spinnerGenre1.setEnabled(false);
-                    spinnerGenre2.setEnabled(false);
 
+                        // Cargar los géneros del juego
+                        List<String> genres = dB.getBoardGameGenres(gameId);
+                        if (!genres.isEmpty()) {
+                            String genre1 = genres.get(0);
+                            spinnerGenre1.setSelection(getGenreIndex(genre1));
+
+
+                            if (genres.size() > 1) {
+                                String genre2 = genres.get(1);
+                                spinnerGenre2.setSelection(getGenreIndex(genre2));
+                            }
+                        }
+                        spinnerGenre1.setEnabled(false);
+                        spinnerGenre2.setEnabled(false);
+
+                    }
                 }
             }
-        }} catch (Exception e) {
+        } catch (Exception e) {
             // Manejo de errores si es necesario
             e.printStackTrace();
         } finally {
@@ -301,13 +293,14 @@ public class AddBoardgameActivity extends BaseActivity {
             }
         }
     }
-    private void editBoardGame(int gameId){
+
+    //Actualiza los datos del juego en la base de datos
+    private void editBoardGame(int gameId) {
         Log.e("DetailActivity", "Entro en editBoardGame");
         if (!validateFields()) {
             return;
         }
 
-        // Obtener los datos de los campos
         String name = editTextName.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
         String yearString = editTextYear.getText().toString().trim();
@@ -344,6 +337,7 @@ public class AddBoardgameActivity extends BaseActivity {
         }
     }
 
+    //Añade un nuevo juego a la base de datos
     private void addBoardGame() {
         if (!validateFields()) {
             return;
@@ -373,14 +367,14 @@ public class AddBoardgameActivity extends BaseActivity {
             if (!genre2.equals("Selecciona un género")) {
                 dB.addBoardgameGenre(boardgameId, dB.getGenreId(genre2));
             }
-                Toast.makeText(this, "Juego añadido con éxito", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, SearchActivity.class);
-                startActivity(intent);
-                finish();
+            Toast.makeText(this, "Juego añadido con éxito", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 
-
+    //obtiene el indice del genero en la lista de generos
     private int getGenreIndex(String genreName) {
         for (int i = 0; i < genreList.size(); i++) {
             if (genreList.get(i).equals(genreName)) {
@@ -390,6 +384,7 @@ public class AddBoardgameActivity extends BaseActivity {
         return 0;
     }
 
+    //Carga los generos de la base de datos
     private void setupGenreSpinners() {
         Cursor cursor = dB.getAllGenres();
         genreList.clear();

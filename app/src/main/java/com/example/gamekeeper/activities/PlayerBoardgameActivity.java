@@ -43,8 +43,9 @@ public class PlayerBoardgameActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         FloatingActionButton fabConfirmSelection = findViewById(R.id.fab_confirm_selection);
+        //Boton de confirmacion de que los jugadores han jugado a esos juegos
         fabConfirmSelection.setOnClickListener(v -> {
-            processSelectedPlayers();
+            associatePlayersWithGames();
             Intent intentSuggester = new Intent(PlayerBoardgameActivity.this, SuggesterActivity.class);
             intentSuggester.putStringArrayListExtra(IntentExtras.SELECTED_PLAYERS, playerNames);
             startActivity(intentSuggester);
@@ -55,7 +56,7 @@ public class PlayerBoardgameActivity extends BaseActivity {
         loadData();
         loadSearchFragment();
     }
-
+    //Carga los juegos del usuario y los envia al adapter
     private void loadData() {
         List<ListElement> elements = dB.getUserBoardgames(currentUserId);
         if (elements != null && !elements.isEmpty()) {
@@ -66,11 +67,11 @@ public class PlayerBoardgameActivity extends BaseActivity {
             Toast.makeText(this, "No se encontraron juegos.", Toast.LENGTH_SHORT).show();
         }
     }
-
+    //Obtiene los generos de la base de datos
     public List<String> getGenres() {
         return dB.getGenres();
     }
-
+    //Filtra la lista de juegos segun la busqueda y el genero seleccionado
     public void filterList(String query, String selectedGenre) {
         List<ListElement> filteredList = new ArrayList<>();
         for (ListElement element : fullList) {
@@ -83,14 +84,14 @@ public class PlayerBoardgameActivity extends BaseActivity {
         }
         adapter.submitList(filteredList);
     }
-
+    //Carga el fragmento de busqueda
     private void loadSearchFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, new SearchGenreFragment());
         transaction.commit();
     }
-
-    private void processSelectedPlayers() {
+    //Asocia jugadores seleccionados con juegos en la base de datos evitando duplicados.
+    private void associatePlayersWithGames() {
 
         for (int i = 0; i < adapter.getItemCount(); i++) {
             ListElement boardgame = fullList.get(i);

@@ -4,6 +4,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
+    <TextView
+        android:id="@+id/playerTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="Jugadores"
+        android:textColor="@color/black"
+        android:textSize="32sp" />
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/auto_complete_chip_group"

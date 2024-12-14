@@ -9,8 +9,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.adapters.HomeAdapter;
 import com.example.gamekeeper.fragments.SearchGenreFragment;
@@ -33,28 +31,18 @@ public class HomeActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        /*showBottomNavigation();*/
         dB = new DatabaseHelper(this);
-
-
         currentUserId = getSharedPreferences("user_prefs", MODE_PRIVATE).getInt("user_id", -1);
-
-        Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "dxgk71sz7",
-                "api_key", "795251117794363",
-                "api_secret", "RJp_HzvaYZNktbfxKJP7UcJtsnA"
-        ));
-
+        //Si es la primera vez que se abre la app, se cargan los juegos
         if (isFirstLaunch()) {
             insertData();
             setFirstLaunchFlag();
         }
-
         recyclerView = findViewById(R.id.recyclerView);
         adapter = new HomeAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
-
+        //Maneja el click de cada elemento de la lista en el boton de detalle
         adapter.setOnItemClickListener(new HomeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(ListElement listElement) {
@@ -67,6 +55,7 @@ public class HomeActivity extends BaseActivity {
                 startActivity(intent);
             }
         });
+        //Maneja el click de cada elemento de la lista en el boton de borrar
         adapter.setOnDeleteClickListener(listElement -> {
             int position = fullList.indexOf(listElement);
             boolean isDeleted = dB.removeUserBoardgame(currentUserId, listElement.getId());
@@ -79,17 +68,19 @@ public class HomeActivity extends BaseActivity {
                 Toast.makeText(this, "Error al borrar el juego", Toast.LENGTH_SHORT).show();
             }
         });
+        //Le pasa los juegos al adapter
         loadData();
-
         loadSearchFragment();
     }
 
+    //Carga el fragment de busqueda de juegos
     private void loadSearchFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, new SearchGenreFragment());
         transaction.commit();
     }
 
+    //Le pasa los juegos al adapter
     private void loadData() {
         List<ListElement> elements = dB.getUserBoardgames(currentUserId);
 
@@ -103,6 +94,7 @@ public class HomeActivity extends BaseActivity {
         return dB.getGenres();
     }
 
+    //Filtra los juegos por nombre y género
     public void filterList(String query, String selectedGenre) {
         List<ListElement> filteredList = new ArrayList<>();
         for (ListElement element : fullList) {
@@ -116,11 +108,13 @@ public class HomeActivity extends BaseActivity {
         adapter.submitList(filteredList);
     }
 
+    //Verifica si es la primera vez que se abre la app
     private boolean isFirstLaunch() {
         SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         return preferences.getBoolean("first_launch", true);
     }
 
+    //Marca que no es la primera vez que se abre la app
     private void setFirstLaunchFlag() {
         SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -128,7 +122,7 @@ public class HomeActivity extends BaseActivity {
         editor.apply();
     }
 
-
+    //Carga los juegos en la base de datos, la primera vez que se abre la app
     private void insertData() {
         dB.addGenre("Estrategia");
         dB.addGenre("Rol");
@@ -234,7 +228,7 @@ public class HomeActivity extends BaseActivity {
 
 
         gameId = dB.addBoardgame("Paradice", paradicePhoto, "Un juego de feria donde los jugadores deben completar casetas con dados de colores para ganar tickets y sorpresas. ¡Una experiencia llena de diversión y estrategia!", 2020, "2-6", "30-60 min");
-        dB.addBoardgameGenre(gameId, dB.getGenreId("Tiradas de Dados"));
+        dB.addBoardgameGenre(gameId, dB.getGenreId("Tiradas de dados"));
         dB.addBoardgameGenre(gameId, dB.getGenreId("Familiar"));
 
 
@@ -245,7 +239,7 @@ public class HomeActivity extends BaseActivity {
 
         gameId = dB.addBoardgame("Azul", azulPhoto, "Un juego de estrategia abstracto en el que los jugadores deben completar patrones con losetas de colores.", 2017, "2-4", "30-45 min");
         dB.addBoardgameGenre(gameId, dB.getGenreId("Estrategia"));
-        dB.addBoardgameGenre(gameId, dB.getGenreId("Colocación de Losetas"));
+        dB.addBoardgameGenre(gameId, dB.getGenreId("Colocación de losetas"));
 
 
         gameId = dB.addBoardgame("Bar Bestial", barBestialPhoto, "Un juego de estrategia rápida en el que los animales intentan entrar en el mejor bar de la ciudad.", 2011, "2-4", "20 min");
@@ -315,7 +309,7 @@ public class HomeActivity extends BaseActivity {
 
         gameId = dB.addBoardgame("La Viña", lavinaPhoto, "Un juego de gestión y colección de uvas para crear los mejores vinos.", 2019, "2-5", "45 min");
         dB.addBoardgameGenre(gameId, dB.getGenreId("Gestión de recursos"));
-        dB.addBoardgameGenre(gameId, dB.getGenreId("Colección de Sets"));
+        dB.addBoardgameGenre(gameId, dB.getGenreId("Colección de sets"));
 
 
         gameId = dB.addBoardgame("Not Alone", notAlonePhoto, "Un juego de supervivencia donde un jugador es una criatura que persigue a los demás.", 2016, "2-7", "30-60 min");
@@ -324,7 +318,7 @@ public class HomeActivity extends BaseActivity {
 
 
         gameId = dB.addBoardgame("Picnic", picnicPhoto, "Un juego rápido y competitivo donde los jugadores recogen alimentos para hacer el mejor picnic.", 2019, "2-6", "15-20 min");
-        dB.addBoardgameGenre(gameId, dB.getGenreId("Partida Rápida"));
+        dB.addBoardgameGenre(gameId, dB.getGenreId("Partida rápida"));
         dB.addBoardgameGenre(gameId, dB.getGenreId("Cartas"));
 
 
@@ -334,7 +328,7 @@ public class HomeActivity extends BaseActivity {
 
 
         gameId = dB.addBoardgame("Sagrada", sagradaPhoto, "Un juego de colocación de dados donde los jugadores crean coloridos vitrales.", 2017, "1-4", "30-45 min");
-        dB.addBoardgameGenre(gameId, dB.getGenreId("Tiradas de Dados"));
+        dB.addBoardgameGenre(gameId, dB.getGenreId("Tiradas de dados"));
         dB.addBoardgameGenre(gameId, dB.getGenreId("Estrategia"));
 
 

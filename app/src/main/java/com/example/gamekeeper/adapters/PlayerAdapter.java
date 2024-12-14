@@ -34,10 +34,6 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         this.recyclerView = recyclerView;
     }
 
-    public PlayerAdapter(List<String> playerNames) {
-        this.playerNames = playerNames;
-    }
-
     public PlayerAdapter(List<String> playerNames, DatabaseHelper db, int currentUserId) {
         this.playerNames = playerNames;
         this.db = db;

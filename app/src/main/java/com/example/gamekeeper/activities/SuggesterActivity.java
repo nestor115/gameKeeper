@@ -138,7 +138,7 @@ public class SuggesterActivity extends BaseActivity {
             randomGameCounter++;
             gameNameTextView.setText(game.getName());
             Glide.with(this).load(game.getImage()).into(gameImageView);
-            gameOrderTextView.setText(randomGameCounter + " - " + "Juego aleatorio (" + playedCount + ")");
+            gameOrderTextView.setText(randomGameCounter + ". " + "Juego aleatorio - Jugado por " + playedCount + " jugadores");
         }
     }
 
@@ -244,7 +244,7 @@ public class SuggesterActivity extends BaseActivity {
 
             shownNewGames.add(selectedGame);
             newGameCounter++;  // Incrementa el contador de juegos nuevos
-            gameOrderTextView.setText(newGameCounter + " - " + "Juego menos jugado (" + playedCount + ") jugadores");
+            gameOrderTextView.setText(newGameCounter + ". " + "Juego menos jugado - Jugado por " + playedCount + " jugadores");
             Log.d("NewGameButton", "Juego mostrado: " + selectedGame.getName());
         } else {
             Log.d("NewGameButton", "No hay juegos disponibles para mostrar.");
@@ -346,7 +346,7 @@ public class SuggesterActivity extends BaseActivity {
             shownPlayedGames.add(selectedGame);
             gameNameTextView.setText(selectedGame.getName());
             playedGameCounter++;
-            gameOrderTextView.setText(playedGameCounter + " - " + "Juego mas jugado " + "("+  playedCount   +") jugadores");
+            gameOrderTextView.setText(playedGameCounter + ". " + "Juego mas jugado - Jugado por " +  playedCount   +" jugadores");
             Glide.with(this).load(selectedGame.getImage()).into(gameImageView);
             Log.d("PlayedGameButton", "Juego mostrado: " + selectedGame.getName());
         } else {

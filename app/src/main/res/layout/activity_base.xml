@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="?attr/colorSecondary"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:title="@string/gamekeeper" />
 
     <!-- El contenedor para el contenido -->
     <FrameLayout

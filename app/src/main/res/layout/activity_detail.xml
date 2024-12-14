@@ -17,7 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Título del juego -->
         <TextView
             android:id="@+id/tv_TittleDetail"
             android:layout_width="wrap_content"
@@ -27,12 +26,11 @@
             android:shadowDx="2"
             android:shadowDy="2"
             android:shadowRadius="1"
-            android:text="Título del Juego"
+            android:text="@string/t_tulo_del_juego"
             android:textColor="#333333"
             android:textSize="26sp"
             android:textStyle="bold" />
 
-        <!-- Imagen del juego -->
         <ImageView
             android:id="@+id/iv_Game"
             android:layout_width="200dp"
@@ -41,13 +39,12 @@
             android:layout_gravity="center"
             android:background="@drawable/image_background" />
 
-        <!-- Descripción -->
         <TextView
             android:id="@+id/tv_TittleDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Descripción"
+            android:text="@string/descripci_n"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -57,56 +54,76 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Descripción del juego"
+            android:text="@string/descripci_n_del_juego"
             android:textSize="16sp"
             android:textColor="#666666" />
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
         <!-- Año, jugadores y duración -->
+        <TextView
+            android:id="@+id/tv_YearLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/a_o_de_publicaci_n"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:textStyle="bold" />
         <TextView
             android:id="@+id/tv_Year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Año de publicación: "
+            android:text=""
             android:textColor="#333333"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
+            android:textSize="16sp" />
+    </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="8dp">
 
-            <!-- Texto fijo para el número de jugadores -->
             <TextView
                 android:id="@+id/tv_PlayersLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Número de jugadores: "
+                android:text="@string/n_mero_de_jugadores"
                 android:textColor="#333333"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <!-- Texto de datos para el número de jugadores -->
             <TextView
                 android:id="@+id/tv_Players"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2-4"
+                android:text=""
                 android:textColor="#333333"
                 android:textSize="16sp" />
         </LinearLayout>
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
         <TextView
-            android:id="@+id/tv_time"
+            android:id="@+id/tv_timeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Duración: "
             android:textColor="#333333"
             android:textSize="16sp"
             android:textStyle="bold" />
-
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#333333"
+            android:textSize="16sp"
+             />
+    </LinearLayout>
         <!-- Género -->
         <TextView
             android:id="@+id/tv_genre"

@@ -29,8 +29,8 @@
     <string name="nombre">Nombre</string>
     <string name="nombre_del_juego">Nombre del juego</string>
     <string name="descripci_n_del_juego">Descripción del juego</string>
-    <string name="a_o_de_publicaci_n">Año de publicación</string>
-    <string name="n_mero_de_jugadores">Número de jugadores</string>
+    <string name="a_o_de_publicaci_n">Año de publicación: </string>
+    <string name="n_mero_de_jugadores">Número de jugadores: </string>
     <string name="tiempo_de_juego">Tiempo de juego</string>
     <string name="a_adir_juego">Añadir juego</string>
     <string name="inicio">Inicio</string>
@@ -50,4 +50,6 @@
     <string name="min">Min</string>
     <string name="max">Max</string>
     <string name="volver">Volver</string>
+    <string name="t_tulo_del_juego">Título del Juego</string>
+    <string name="descripci_n">Descripción</string>
 </resources>

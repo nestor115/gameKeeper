@@ -35,6 +35,7 @@ public class SearchActivity extends BaseActivity {
         searchAdapter = new SearchAdapter();
         recyclerViewSearch.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewSearch.setAdapter(searchAdapter);
+
         Button btnAddBoardgame = findViewById(R.id.btnAddBoardgame);
         btnAddBoardgame.setOnClickListener(v -> {
             Intent intent = new Intent(SearchActivity.this, AddBoardgameActivity.class);
