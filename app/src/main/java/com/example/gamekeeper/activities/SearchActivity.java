@@ -37,11 +37,13 @@ public class SearchActivity extends BaseActivity {
         recyclerViewSearch.setAdapter(searchAdapter);
 
         Button btnAddBoardgame = findViewById(R.id.btnAddBoardgame);
+        //Boton para añadir un juego de mesa
         btnAddBoardgame.setOnClickListener(v -> {
             Intent intent = new Intent(SearchActivity.this, AddBoardgameActivity.class);
             intent.putExtra(IntentExtras.ACTION_BUTTON, "ADD");
             startActivity(intent);
         });
+        //Boton para ver los detalles de un juego de mesa
         searchAdapter.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(ListElement listElement) {
@@ -51,6 +53,7 @@ public class SearchActivity extends BaseActivity {
                 startActivity(intent);
             }
         });
+        //Boton para editar un juego de mesa
         searchAdapter.setOnEditClickListener(listElement -> {
             Intent intent = new Intent(this, AddBoardgameActivity.class);
             intent.putExtra(IntentExtras.ACTION_BUTTON, "EDIT"); // Indica que es una edición
@@ -61,12 +64,14 @@ public class SearchActivity extends BaseActivity {
         loadSearchFragment();
     }
 
+    //Metodo para cargar el fragmento de busqueda y del filtro de generos
     private void loadSearchFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, new SearchGenreFragment());
         transaction.commit();
     }
 
+    //Metodo para cargar los juegos de la base de datos
     private void loadData() {
         List<ListElement> elements = dB.getAllBoardgames();
 
@@ -78,10 +83,12 @@ public class SearchActivity extends BaseActivity {
         }
     }
 
+    //Metodo para obtener los generos de la base de datos
     public List<String> getGenres() {
         return dB.getGenres();
     }
 
+    //Metodo filtrar la lista de juegos segun la busqueda y el genero seleccionado
     public void filterList(String query, String selectedGenre) {
         List<ListElement> filteredList = new ArrayList<>();
         for (ListElement element : fullList) {

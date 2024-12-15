@@ -21,11 +21,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
     private OnItemClickListener itemClickListener;
 
 
-    //constructor vacio
+    //Constructor
     public SearchAdapter() {
         this.listElements = new ArrayList<>();
     }
 
+    // Método para actualizar la lista de elementos
     public void submitList(List<ListElement> newListElements) {
         if (listElements == null) {
             listElements = new ArrayList<>();
@@ -37,6 +38,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
         notifyDataSetChanged();
     }
 
+    //Crea nuevas vistas de los elementos
     @NonNull
     @Override
     public ListElementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -44,6 +46,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
         return new ListElementViewHolder(view);
     }
 
+    //Vincula los datos a las vistas
     @Override
     public void onBindViewHolder(@NonNull ListElementViewHolder holder, int position) {
         ListElement listElement = listElements.get(position);
@@ -55,12 +58,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
             Glide.with(holder.itemView.getContext())
                     .load(imageUrl)
                     .into(holder.imageView);
-        } else {
+        } else {//Si no encuentra la imagen pone una por defecto
             holder.imageView.setImageResource(R.drawable.ic_launcher_foreground);
         }
 
     }
 
+    //Devuelve el número de elementos en la lista
     @Override
     public int getItemCount() {
         return listElements.size();
@@ -70,24 +74,27 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
         this.itemClickListener = listener;
     }
 
+    //Define el comportamiento de los elementos de la lista
     public class ListElementViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName;
         ImageView imageView;
         View detailsButton;
         View editButton;
 
+        //Constructor de la clase
         public ListElementViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.tv_BoardgameName);
             imageView = itemView.findViewById(R.id.iv_Boardgame);
             detailsButton = itemView.findViewById(R.id.btn_details);
             editButton = itemView.findViewById(R.id.btn_edit);
-            //Listener para los clics en los elementos de la lista
+            //Listener para los el boton de detalles
             detailsButton.setOnClickListener(v -> {
                 if (itemClickListener != null) {
                     itemClickListener.onItemClick(listElements.get(getAdapterPosition()));
                 }
             });
+            //Listener para los el boton de editar
             editButton.setOnClickListener(v -> {
                 if (editClickListener != null) {
                     editClickListener.onEditClick(listElements.get(getAdapterPosition()));
@@ -100,9 +107,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ListElemen
     public interface OnItemClickListener {
         void onItemClick(ListElement listElement);
     }
+
     public interface OnEditClickListener {
         void onEditClick(ListElement listElement);
     }
+
     private OnEditClickListener editClickListener;
 
     public void setOnEditClickListener(OnEditClickListener listener) {

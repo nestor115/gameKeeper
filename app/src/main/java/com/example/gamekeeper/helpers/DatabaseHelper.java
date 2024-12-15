@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.gamekeeper.models.ListElement;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,6 +103,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "PRIMARY KEY (" + COLUMN_PLAYER_BOARDGAME_PLAYER_ID + ", " + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + "), " +
                     "FOREIGN KEY (" + COLUMN_PLAYER_BOARDGAME_PLAYER_ID + ") REFERENCES " + TABLE_PLAYERS + "(" + COLUMN_PLAYER_ID + "), " +
                     "FOREIGN KEY (" + COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID + ") REFERENCES " + TABLE_BOARDGAME + "(" + COLUMN_BOARDGAME_ID + ") ON DELETE CASCADE);";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
@@ -129,12 +131,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYER_BOARDGAME);
         onCreate(db);
     }
+
     @Override
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
         db.setForeignKeyConstraintsEnabled(true);
     }
 
+    //Metodo para añadir un usuario a la base de datos
     public boolean addUser(String email, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -145,6 +149,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    //Metodo para verificar si un usuario existe en la base de datos
     public int checkUser(String email, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT id FROM users WHERE email = ? AND password = ?", new String[]{email, password});
@@ -157,6 +162,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return -1;
     }
 
+    //Metodo para obtener la contraseña de un usuario por su email
     public String getStoredPasswordByEmail(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT password FROM users WHERE email = ?", new String[]{email});
@@ -168,6 +174,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return null;
     }
+
+    //Metodo para verificar si un email ya está registrado
     public boolean isEmailAlreadyRegistered(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -182,6 +190,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return exists;
     }
+
+    //Metodo para añadir un género a la base de datos
     public void addGenre(String genreName) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query("genre", new String[]{"name"}, "name = ?", new String[]{genreName}, null, null, null);
@@ -195,6 +205,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d("Database", "Género insertado: " + genreName);
         }
     }
+
+    //Metodo para verificar si un usuario tiene juegos guardados
     public boolean hasGamesForUser(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT COUNT(*) FROM " + TABLE_USER_BOARDGAME + " WHERE " + COLUMN_UB_USER_ID + " = ?";
@@ -211,6 +223,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return hasGames;
     }
 
+    //Metodo para obtener el ID de un género por su nombre
     public int getGenreId(String genreName) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_GENRE, new String[]{COLUMN_GENRE_ID},
@@ -225,6 +238,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return -1;
     }
 
+    //Metodo para añadir un juego a la base de datos
     public long addBoardgame(String name, String photoURl, String description, int yearPublished, String numberOfPlayers, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -247,6 +261,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    //Metodo para añadir un género a un juego
     public void addBoardgameGenre(long gameId, int genreId) {
         if (genreId == -1) {
             Log.e("Database", "No se encontró el género para el juego con ID: " + gameId);
@@ -264,26 +279,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    //Metodo para obtener un juego por su ID
     public Cursor getBoardGameById(int gameId) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_BOARDGAME + " WHERE " + COLUMN_BOARDGAME_ID + " = ?", new String[]{String.valueOf(gameId)});
     }
 
-
-
+    //Metodo para obtener todos los géneros
     public Cursor getAllGenres() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_GENRE, null);
     }
 
+    //Metodo para obtener todos los juegos de mesa
     public List<ListElement> getAllBoardgames() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<ListElement> boardgameList = new ArrayList<>();
 
-        // Realizar la consulta para obtener todos los juegos de mesa
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BOARDGAME, null);
 
-        // Iterar a través del cursor para crear los objetos ListElement
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 int indexId = cursor.getColumnIndex(COLUMN_BOARDGAME_ID);
@@ -293,16 +307,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String name = cursor.getString(indexName);
                 String image = cursor.getString(indexPhoto);
 
-                // Crear un nuevo ListElement y añadirlo a la lista
                 ListElement boardgame = new ListElement(name, id, image);
                 boardgameList.add(boardgame);
             }
-            cursor.close(); // Cerrar el cursor después de usarlo
+            cursor.close();
         }
 
         return boardgameList;
     }
 
+    //Metodo para añadir un juego a tabla de la relación de un usuario
     public boolean addUserBoardgame(int userId, int boardgameId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -313,6 +327,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    //Metodo para eliminar un juego de la tabla de la relación de un usuario
     public boolean removeUserBoardgame(int userId, int boardgameId) {
         SQLiteDatabase db = this.getWritableDatabase();
         int rowsAffected = db.delete(TABLE_USER_BOARDGAME,
@@ -322,6 +337,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rowsAffected > 0;
     }
 
+    //Metodo para obtener todos los juegos de mesa de un usuario
     public List<ListElement> getUserBoardgames(int userId) {
         List<ListElement> listElements = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -345,6 +361,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return listElements;
     }
 
+    //Metodo para añadir un jugador a la base de datos
     public boolean addPlayer(int userId, String playerName) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -355,11 +372,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    //Metodo para obtener todos los jugadores de un usuario
     public Cursor getPlayersByUserId(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_PLAYERS + " WHERE " + COLUMN_PLAYER_USER_ID + " = ?", new String[]{String.valueOf(userId)});
     }
 
+    //Metodo para obtener todos los géneros y devolverlos en una lista
     public List<String> getGenres() {
         List<String> genres = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -373,11 +392,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return genres;
     }
+
+    //Metodo para obtener los datos de un juego por su id
     public Cursor getGameData(int gameId) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_BOARDGAME + " WHERE " + COLUMN_BOARDGAME_ID + " = ?",
                 new String[]{String.valueOf(gameId)});
     }
+
+    //Metodo para obtener los géneros de un juego
     public List<String> getBoardGameGenres(int boardGameId) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT g." + COLUMN_GENRE_NAME +
@@ -402,7 +425,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
     // Método para verificar si un género está asociado a un juego
     public boolean isBoardgameInGenre(int boardgameId, String genreName) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -415,7 +437,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return exists;
     }
 
-
+    //Metodo para añadir una relación  entre jugador  y un juego a la base de datos
     public boolean addPlayerBoardgameOnce(int playerId, int boardgameId) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -443,7 +465,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_PLAYER_BOARDGAME_PLAYER_ID, playerId);
         values.put(COLUMN_PLAYER_BOARDGAME_BOARDGAME_ID, boardgameId);
-        values.put(COLUMN_PLAYER_BOARDGAME_HAS_PLAYED, 1); // Suponiendo que '1' indica que el jugador ya jugó el juego
+        values.put(COLUMN_PLAYER_BOARDGAME_HAS_PLAYED, 1);
 
         long result = db.insert(TABLE_PLAYER_BOARDGAME, null, values);
 
@@ -457,6 +479,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    //Método para verificar si un jugador ya ha jugado un juego
     public boolean hasPlayerAlreadyPlayed(int playerId, int boardgameId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(
@@ -479,6 +502,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return alreadyPlayed;
     }
 
+    //Método para verificar si un jugador ha jugado un juego
     public boolean hasPlayerPlayedGame(int playerId, int gameId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT " + COLUMN_PLAYER_BOARDGAME_HAS_PLAYED +
@@ -497,6 +521,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return hasPlayed;
     }
 
+    //Método para obtener el ID de un jugador por su nombre
     public int getPlayerIdByName(String playerName, int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(

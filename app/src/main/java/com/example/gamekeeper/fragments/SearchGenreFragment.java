@@ -31,7 +31,7 @@ public class SearchGenreFragment extends Fragment {
         genreSpinner = view.findViewById(R.id.genreSpinner);
 
         setupSpinner();
-
+        //Detecta cambios en el texto de busqueda y actualiza la lista de juegos
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -44,12 +44,13 @@ public class SearchGenreFragment extends Fragment {
                 return true;
             }
         });
-
+        //desactiva el modo minimizado de searchView
         searchView.setOnClickListener(v -> searchView.setIconified(false));
 
         return view;
     }
 
+    //Determina a que actividad pertenece el fragment
     private void setupSpinner() {
         if (getActivity() instanceof PlayerBoardgameActivity) {
             setupSpinnerForActivity(getActivity());
@@ -60,6 +61,7 @@ public class SearchGenreFragment extends Fragment {
         }
     }
 
+    //setea el spinner con la lista de generos
     private void setupSpinnerForActivity(Object activity) {
         List<String> genres = null;
 
@@ -72,6 +74,7 @@ public class SearchGenreFragment extends Fragment {
         }
 
         if (genres != null) {
+            //El primer valor sera Todos, este valor mostrará todos los juegos
             genres.add(0, "Todos");
 
             ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, genres);
@@ -79,6 +82,7 @@ public class SearchGenreFragment extends Fragment {
             genreSpinner.setAdapter(spinnerAdapter);
 
             genreSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                //Al seleccionar un genero, actualiza la lista de juegos
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     String selectedGenre = (String) parent.getItemAtPosition(position);
@@ -92,6 +96,7 @@ public class SearchGenreFragment extends Fragment {
         }
     }
 
+    //Al cambiar el texto de busqueda, actualiza la lista de juegos
     private void handleSearchChange(String query) {
         String selectedGenre = (String) genreSpinner.getSelectedItem();
 

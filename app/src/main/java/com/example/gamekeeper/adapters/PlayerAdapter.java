@@ -30,16 +30,15 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
     private boolean[][] checkBoxStates;
     private Map<Integer, boolean[]> checkBoxStateMap = new HashMap<>();  // Mapa para guardar el estado de los CheckBox
 
-    public void setRecyclerView(RecyclerView recyclerView) {
-        this.recyclerView = recyclerView;
-    }
-
+    // Inicializa la lista de nombres de jugadores, la base de datos y el ID del usuario actual.
     public PlayerAdapter(List<String> playerNames, DatabaseHelper db, int currentUserId) {
         this.playerNames = playerNames;
         this.db = db;
         this.currentUserId = currentUserId;
     }
 
+    // Método para establecer el
+    //Actuañiza la lista de elementos de la lista y notifica al adaptador del cambio.
     public void submitList(List<ListElement> newListElements) {
         listElements.clear();
         if (newListElements != null) {
@@ -57,6 +56,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         return new ListElementViewHolder(view);
     }
 
+    //Vincula los datos a las vistas
     @Override
     public void onBindViewHolder(@NonNull ListElementViewHolder holder, int position) {
         ListElement listElement = listElements.get(position);
@@ -83,11 +83,12 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         }
     }
 
+    //Actualiza la información de los checkbox en la vista
     private void updatePlayerInfo(ListElementViewHolder holder, int playerIndex, int position, boolean alreadyPlayed) {
         if (position < 0 || position >= checkBoxStates.length || playerIndex < 0 || playerIndex >= checkBoxStates[position].length) {
-            return; // Salir si los índices no son válidos
+            return;
         }
-
+        // Establece el nombre del jugador, muestra los checkbox y actualiza su estado
         if (playerIndex < playerNames.size()) {
             holder.getPlayerName(playerIndex).setText(playerNames.get(playerIndex));
             holder.getCheckBox(playerIndex).setVisibility(View.VISIBLE);
@@ -95,58 +96,45 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
             holder.getCheckBox(playerIndex).setEnabled(!alreadyPlayed);
 
             if (!alreadyPlayed) {
+                //Actualiza el estado cuando se selecciona o deselecciona el checkbox
                 holder.getCheckBox(playerIndex).setOnCheckedChangeListener((buttonView, isChecked) -> {
                     checkBoxStates[position][playerIndex] = isChecked;
-                    updateCheckBoxState(position, playerIndex, isChecked); // Guardar el estado al cambiar
+                    updateCheckBoxState(position, playerIndex, isChecked);
                 });
             } else {
+                //Quita el listener si el jugador ya ha jugado y no se puede clickar el checkbox
                 holder.getCheckBox(playerIndex).setOnCheckedChangeListener(null);
             }
         }
     }
 
+    //Actualiza el estado del checkbox de un jugador en una posición específica
     private void updateCheckBoxState(int position, int playerIndex, boolean isChecked) {
         if (!checkBoxStateMap.containsKey(position)) {
-            checkBoxStateMap.put(position, new boolean[4]);  // Suponemos que hay 4 jugadores
+            checkBoxStateMap.put(position, new boolean[4]);
         }
         checkBoxStateMap.get(position)[playerIndex] = isChecked;
     }
 
-    public CheckBox getCheckBoxByIndex(int itemIndex, int playerIndex) {
-        if (recyclerView == null) return null;
 
-        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(itemIndex);
-        if (holder instanceof PlayerAdapter.ListElementViewHolder) {
-            PlayerAdapter.ListElementViewHolder viewHolder = (PlayerAdapter.ListElementViewHolder) holder;
-
-            switch (playerIndex) {
-                case 0:
-                    return viewHolder.checkBox1;
-                case 1:
-                    return viewHolder.checkBox2;
-                case 2:
-                    return viewHolder.checkBox3;
-                case 3:
-                    return viewHolder.checkBox4;
-            }
-        }
-        return null;
-    }
-
+    //Obtiene el estado del checkbox de un jugador en una posición específica
     public boolean getCheckBoxState(int itemIndex, int playerIndex) {
-        return checkBoxStateMap.containsKey(itemIndex) && checkBoxStateMap.get(itemIndex)[playerIndex]; // Obtener el estado del CheckBox
+        return checkBoxStateMap.containsKey(itemIndex) && checkBoxStateMap.get(itemIndex)[playerIndex];
     }
 
+    //Devuelve el número de elementos en la lista
     @Override
     public int getItemCount() {
         return listElements.size();
     }
 
+    //Define el comportamiento de los elementos de la lista
     public class ListElementViewHolder extends RecyclerView.ViewHolder {
         TextView itemTitle, itemName1, itemName2, itemName3, itemName4;
         ImageView itemIcon;
         CheckBox checkBox1, checkBox2, checkBox3, checkBox4;
 
+        //Constructor de la clase
         public ListElementViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -163,6 +151,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
             itemName4 = itemView.findViewById(R.id.item_name4);
         }
 
+        //Devuelve el nombre del jugador en una posición específica
         public TextView getPlayerName(int index) {
             switch (index) {
                 case 0:
@@ -178,6 +167,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
             }
         }
 
+        //Devuelve el checkbox en una posición específica
         public CheckBox getCheckBox(int index) {
             switch (index) {
                 case 0:
@@ -194,11 +184,9 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ListElemen
         }
     }
 
+    //Interfaz para manejar los clics en los elementos de la lista
     public interface OnItemClickListener {
         void onItemClick(ListElement listElement);
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
-    }
 }

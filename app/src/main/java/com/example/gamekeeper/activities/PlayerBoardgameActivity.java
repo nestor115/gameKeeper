@@ -38,6 +38,7 @@ public class PlayerBoardgameActivity extends BaseActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         Intent intent = getIntent();
+        //Obtiene los nombres de los jugadores seleccionados de la actividad anterior
         playerNames = intent.getStringArrayListExtra(IntentExtras.PLAYER_NAMES);
         adapter = new PlayerAdapter(playerNames, dB, currentUserId);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -71,6 +72,7 @@ public class PlayerBoardgameActivity extends BaseActivity {
     public List<String> getGenres() {
         return dB.getGenres();
     }
+
     //Filtra la lista de juegos segun la busqueda y el genero seleccionado
     public void filterList(String query, String selectedGenre) {
         List<ListElement> filteredList = new ArrayList<>();

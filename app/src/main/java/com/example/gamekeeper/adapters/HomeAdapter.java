@@ -85,7 +85,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ListElementVie
                     itemClickListener.onItemClick(listElements.get(getAdapterPosition()));
                 }
             });
-
+            //Listener para el boton borrar.
             deleteButton.setOnClickListener(v -> {
                 if (deleteClickListener != null) {
                     deleteClickListener.onDeleteClick(listElements.get(getAdapterPosition()));

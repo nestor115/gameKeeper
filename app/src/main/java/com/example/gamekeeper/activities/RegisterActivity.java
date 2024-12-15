@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gamekeeper.R;
 import com.example.gamekeeper.helpers.DatabaseHelper;
@@ -36,7 +34,7 @@ public class RegisterActivity extends BaseActivity {
         buttonRegister.setOnClickListener(v -> {
             String email = etEmailInput.getText().toString().trim();
             String password = etPasswordIput.getText().toString().trim();
-
+            // Validar campos
             if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
                 Toast.makeText(RegisterActivity.this, "todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
             }
@@ -59,30 +57,34 @@ public class RegisterActivity extends BaseActivity {
                 Toast.makeText(RegisterActivity.this, "El correo electrónico ya está registrado.", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-                String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-                boolean isAdded = dB.addUser(email, hashedPassword);
-                if (isAdded) {
-                    Toast.makeText(RegisterActivity.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Toast.makeText(RegisterActivity.this, "Error al registrar", Toast.LENGTH_SHORT).show();
-                }
+            //Encripta la contraseña
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+            boolean isAdded = dB.addUser(email, hashedPassword);
+            if (isAdded) {
+                Toast.makeText(RegisterActivity.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(RegisterActivity.this, "Error al registrar", Toast.LENGTH_SHORT).show();
+            }
 
 
         });
+        //Boton para volver a la vista anterior
         fabBack.setOnClickListener(v -> {
             Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         });
     }
+
+    //Valida el email
     private boolean isValidEmail(String email) {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
+    //Metodo para validar la contraseña
     private String validatePassword(String password) {
         // Verificar si la contraseña está vacía
         if (password.isEmpty()) {
@@ -113,7 +115,6 @@ public class RegisterActivity extends BaseActivity {
             return "La contraseña debe tener al menos 8 caracteres.";
         }
 
-        // Si pasa todas las validaciones
         return null;
     }
 }

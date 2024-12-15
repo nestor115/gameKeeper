@@ -2,6 +2,7 @@ package com.example.gamekeeper.models;
 
 import java.util.Objects;
 
+//Clase listElement usada para gestionar los elementos de la listas
 public class ListElement {
     private String name;
     private int id;
