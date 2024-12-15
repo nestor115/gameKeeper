@@ -48,10 +48,12 @@
     <string name="foto_seleccionada">Foto seleccionada</string>
     <string name="game_image_description">Descripción de la imagen del juego</string>
     <string name="min">Min</string>
+    <string name="unico">Único</string>
     <string name="max">Max</string>
     <string name="volver">Volver</string>
     <string name="t_tulo_del_juego">Título del Juego</string>
     <string name="descripci_n">Descripción</string>
     <string name="min_max">Min/Max</string>
     <string name="mi_colecci_n">Mi colección</string>
+    <string name="genero">Género: </string>
 </resources>

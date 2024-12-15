@@ -125,15 +125,28 @@
              />
     </LinearLayout>
         <!-- Género -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+        <TextView
+            android:id="@+id/tv_genreLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/genero"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:textStyle="bold" />
         <TextView
             android:id="@+id/tv_genre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:text=""
             android:textSize="16sp"
             android:textColor="#333333"
-            android:textStyle="bold" />
-
+           />
+    </LinearLayout>
         <Button
             android:id="@+id/btn_AddBoardgame"
             android:layout_width="match_parent"

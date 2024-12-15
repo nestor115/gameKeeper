@@ -137,11 +137,9 @@ public class DetailActivity extends BaseActivity {
                     List<String> genres = dB.getBoardGameGenres(id);
 
                     if (genres.size() == 2) {
-                        tvGenre.setText("genero:  " + genres.get(0) + "/" + genres.get(1));
+                        tvGenre.setText( genres.get(0) + "/" + genres.get(1));
                     } else if (genres.size() == 1) {
-                        tvGenre.setText("genero:  " + genres.get(0));
-                    } else {
-                        tvGenre.setText("genero: ");
+                        tvGenre.setText(genres.get(0));
                     }
                 }
             }
