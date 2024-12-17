@@ -1,4 +1,4 @@
-# Titulo:GameKeeper
+# GameKeeper
 
 ## Descripción
 
