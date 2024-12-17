@@ -31,6 +31,7 @@ public class HomeActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        selectBottomNavigationMenuItem(R.id.opcion1);
         dB = new DatabaseHelper(this);
         currentUserId = getSharedPreferences("user_prefs", MODE_PRIVATE).getInt("user_id", -1);
         //Si es la primera vez que se abre la app, se cargan los juegos

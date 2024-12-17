@@ -29,6 +29,7 @@ public class SearchActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        selectBottomNavigationMenuItem(R.id.opcion2);
         dB = new DatabaseHelper(this);
 
         recyclerViewSearch = findViewById(R.id.listRecyclerView);

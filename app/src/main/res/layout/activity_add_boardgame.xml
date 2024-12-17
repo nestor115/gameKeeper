@@ -110,7 +110,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textOff="@string/min_max"
-                android:textOn="@string/min" />
+                android:textOn="@string/unico" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -123,7 +123,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_weight="1"
                     android:background="@drawable/input_background"
-                    android:hint="@string/unico"
+                    android:hint="@string/min"
                     android:inputType="number"
                     android:padding="12dp" />
 

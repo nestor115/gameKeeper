@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="@string/login"
-        android:textColor="#333333"
+        android:textColor="@color/primaryTextColor"
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/email"
-            android:textColor="#555555"
+            android:textColor="@color/secondaryTextColor"
             android:textSize="16sp" />
 
         <EditText
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/contrase_a"
-            android:textColor="#555555"
+            android:textColor="@color/secondaryTextColor"
             android:textSize="16sp" />
 
         <EditText
@@ -76,10 +76,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:backgroundTint="#FF5722"
+            android:backgroundTint="@color/primaryColor"
             android:elevation="4dp"
             android:text="@string/enviar"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -91,7 +91,7 @@
         android:layout_margin="16dp"
         android:contentDescription="@string/back_button_description"
         android:src="@drawable/ic_arrow_back"
-        app:backgroundTint="#FF5722"
+        app:backgroundTint="@color/primaryColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

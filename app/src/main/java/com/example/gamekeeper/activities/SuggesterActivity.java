@@ -344,7 +344,7 @@ public class SuggesterActivity extends BaseActivity {
             shownPlayedGames.add(selectedGame);
             gameNameTextView.setText(selectedGame.getName());
             playedGameCounter++;
-            gameOrderTextView.setText(playedGameCounter + ". " + "Juego mas jugado - Jugado por " + playedCount + " jugadores");
+            gameOrderTextView.setText(playedGameCounter + ". " + "Juego más jugado - Jugado por " + playedCount + " jugadores");
             Glide.with(this).load(selectedGame.getImage()).into(gameImageView);
             Log.d("PlayedGameButton", "Juego mostrado: " + selectedGame.getName());
         } else {

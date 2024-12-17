@@ -37,6 +37,7 @@ public class PlayerActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
+        selectBottomNavigationMenuItem(R.id.opcion3);
         playButton = findViewById(R.id.play_button);
         playButton.setEnabled(false);
         playButton.setAlpha(0.5f);

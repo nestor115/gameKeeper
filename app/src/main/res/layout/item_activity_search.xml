@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:padding="8dp">
 
-        <!-- Imagen del juego -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_Boardgame"
             android:layout_width="90dp"
@@ -27,7 +26,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Contenedor para título y botones -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -37,7 +35,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_Boardgame">
 
-            <!-- Título del juego -->
             <TextView
                 android:id="@+id/tv_BoardgameName"
                 android:layout_width="match_parent"
@@ -50,14 +47,12 @@
                 android:layout_marginBottom="8dp"
                 tools:text="Nombre del Juego" />
 
-            <!-- Botones en fila -->
             <LinearLayout
                 android:id="@+id/btn_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <!-- Botón Detalles -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_details"
                     android:layout_width="0dp"
@@ -66,7 +61,7 @@
                     android:layout_marginEnd="4dp"
                     android:layout_weight="1"
                     android:text=""
-                    app:backgroundTint="#4CAF50"
+                    app:backgroundTint="@color/detailColor"
                     app:cornerRadius="20dp"
                     app:icon="@drawable/ic_info"
                     app:iconGravity="textStart"
@@ -74,7 +69,6 @@
                     app:iconSize="24dp"
                     app:iconTint="@android:color/white" />
 
-                <!-- Botón Editar -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_edit"
                     android:layout_width="0dp"
@@ -83,7 +77,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:text=""
-                    app:backgroundTint="#FFC107"
+                    app:backgroundTint="@color/editColor"
                     app:cornerRadius="20dp"
                     app:icon="@drawable/ic_edit"
                     app:iconGravity="textStart"

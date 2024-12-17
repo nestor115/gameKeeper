@@ -1,19 +1,17 @@
 <resources>
     <string name="app_name">gameKeeper</string>
     <string name="boardgame_image">Imagen del juego de mesa</string>
-    <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="back_button_description">Botón de volver</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="email">Email</string>
     <string name="contrase_a">Contraseña</string>
     <string name="enviar">Enviar</string>
-    <string name="login">Login</string>
+    <string name="login">Iniciar sesion</string>
     <string name="register">Registrarse</string>
     <string name="borrar">Borrar</string>
     <string name="t_tulo">Título</string>
@@ -36,9 +34,9 @@
     <string name="inicio">Inicio</string>
     <string name="a_adir">Añadir</string>
     <string name="aleatorio">Aleatorio</string>
-    <string name="juego_jugado">Juego mas jugado</string>
+    <string name="juego_jugado">Juego más jugado</string>
     <string name="juego_nuevo">Juego menos jugado</string>
-    <string name="game_name">Titulo</string>
+    <string name="game_name">Título</string>
     <string name="detalles">Detalles</string>
     <string name="titulo_formulario">Nuevo juego</string>
     <string name="cargar_foto">Cargar Foto</string>
@@ -56,4 +54,5 @@
     <string name="min_max">Min/Max</string>
     <string name="mi_colecci_n">Mi colección</string>
     <string name="genero">Género: </string>
+    <string name="sugerencias">Sugerencias</string>
 </resources>

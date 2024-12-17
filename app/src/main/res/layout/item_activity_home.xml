@@ -44,7 +44,6 @@
             app:layout_constraintVertical_bias="0.3"
             app:layout_constraintVertical_chainStyle="packed" />
 
-        <!-- LinearLayout para los botones Detalles y Borrar -->
         <LinearLayout
             android:id="@+id/btn_layout"
             android:layout_width="0dp"
@@ -54,7 +53,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_ItemBoardgame">
 
-            <!-- Botón Detalles (verde) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_details"
                 android:layout_width="0dp"
@@ -64,7 +62,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text=""
-                app:backgroundTint="#4CAF50"
+                app:backgroundTint="@color/detailColor"
                 app:cornerRadius="20dp"
                 app:icon="@drawable/ic_info"
                 app:iconGravity="textStart"
@@ -72,14 +70,13 @@
                 app:iconSize="24dp"
                 app:iconTint="@android:color/white" />
 
-            <!-- Botón Borrar (rojo) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_delete"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:text=""
-                app:backgroundTint="#FF5722"
+                app:backgroundTint="@color/primaryColor"
                 app:cornerRadius="20dp"
                 app:icon="@drawable/ic_delete"
                 app:iconGravity="textStart"

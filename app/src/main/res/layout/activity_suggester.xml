@@ -14,18 +14,16 @@
         android:gravity="center_horizontal"
         android:background="@android:color/white">
 
-        <!-- Título "Sugerencias" -->
         <TextView
             android:id="@+id/suggestionsTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:gravity="center"
-            android:text="Sugerencias"
+            android:text="@string/sugerencias"
             android:textColor="@color/black"
             android:textSize="32sp" />
 
-        <!-- Imagen del juego -->
         <ImageView
             android:id="@+id/gameImageView"
             android:layout_width="match_parent"
@@ -34,7 +32,6 @@
             android:scaleType="fitCenter"
             android:contentDescription="@string/game_image_description"/>
 
-        <!-- Recuadro con el nombre del juego -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -64,7 +61,6 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-        <!-- Botones: Más jugado y Menos jugado en la misma fila -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -72,7 +68,6 @@
             android:gravity="center_horizontal"
             android:layout_marginBottom="16dp">
 
-            <!-- Botón de más jugado -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -92,7 +87,6 @@
                     android:textSize="16sp" />
             </LinearLayout>
 
-            <!-- Botón de menos jugado -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -114,7 +108,6 @@
 
         </LinearLayout>
 
-        <!-- Botón aleatorio (ocupa todo el ancho) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

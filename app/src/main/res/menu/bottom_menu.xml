@@ -3,16 +3,19 @@
 
     <item
         android:id="@+id/opcion1"
+        android:enabled="true"
         android:icon="@drawable/ic_home"
         android:title="Colección" />
 
     <item
         android:id="@+id/opcion2"
+        android:enabled="true"
         android:icon="@drawable/ic_search"
         android:title="Buscar" />
 
     <item
         android:id="@+id/opcion3"
+        android:enabled="true"
         android:icon="@drawable/ic_players"
         android:title="Jugadores" />
 
